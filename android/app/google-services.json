@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "315311514431",
+    "project_id": "spotifo-ded50",
+    "storage_bucket": "spotifo-ded50.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315311514431:android:73685ce5626893645a698a",
+        "android_client_info": {
+          "package_name": "com.example.spotifo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHh5Dd3I2D83lifp00bF4dEkqnQKlm8Yo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
