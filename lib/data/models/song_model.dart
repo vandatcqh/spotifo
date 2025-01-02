@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../domain/entities/song_entity.dart';
 
 class SongModel extends SongEntity {
+  final int playCount; // Thêm trường playCount
+
   const SongModel({
     required String id,
     required String songName,
@@ -14,6 +16,7 @@ class SongModel extends SongEntity {
     DateTime? releaseDate,
     String? lyric,
     required String audioUrl,
+    this.playCount = 0,
   }) : super(
     id: id,
     songName: songName,
@@ -26,7 +29,7 @@ class SongModel extends SongEntity {
     audioUrl: audioUrl,
   );
 
-  // Từ Firestore DocumentSnapshot sang SongModel
+  /// Từ Firestore DocumentSnapshot sang SongModel
   factory SongModel.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return SongModel(
@@ -41,10 +44,12 @@ class SongModel extends SongEntity {
           : null,
       lyric: data['lyric'],
       audioUrl: data['audioUrl'],
+      playCount: data['playCount'] ?? 0, // Lấy playCount hoặc mặc định là 0
     );
   }
 
-  // Từ SongModel sang JSON để lưu vào Firestore
+  /// Từ SongModel sang JSON để lưu vào Firestore
+  @override
   Map<String, dynamic> toDocument() {
     return {
       'songName': songName,
@@ -56,6 +61,7 @@ class SongModel extends SongEntity {
       releaseDate != null ? Timestamp.fromDate(releaseDate!) : null,
       'lyric': lyric,
       'audioUrl': audioUrl,
+      'playCount': playCount, // Bao gồm playCount trong JSON
     };
   }
 }
