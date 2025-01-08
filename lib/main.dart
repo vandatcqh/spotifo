@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'presentation/screens/sign_up_screen.dart';
 import 'presentation/screens/sign_in_screen.dart';
+import 'injection_container.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     // Nếu bạn sử dụng Firebase options, hãy thêm vào đây
     // options: DefaultFirebaseOptions.currentPlatform,
   );
+  await di.init();
   runApp(MyApp());
 }
 

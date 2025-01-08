@@ -32,3 +32,14 @@ class UserInfoFailure extends UserInfoState {
   @override
   List<Object?> get props => [error];
 }
+
+class UserInfoUpdating extends UserInfoState {}
+
+class UserInfoUpdateFailure extends UserInfoState {
+  final String error;
+
+  const UserInfoUpdateFailure(this.error);
+
+  @override
+  List<Object?> get props => [error];
+}

@@ -1,43 +1,33 @@
-// presentation/screens/user_info_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../cubit/user/user_info_cubit.dart';
-import '../../../domain/usecases/get_current_user.dart';
-import '../../../domain/usecases/sign_out.dart';
-import '../../../data/datasources/auth_remote_datasource.dart';
-import '../../../data/datasources/user_remote_datasource.dart';
-import '../../../data/repositories/auth_repository_impl.dart';
+import '../cubit/genre/genre_cubit.dart';
+import '../cubit/genre/genre_state.dart';
 import 'sign_in_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../injection_container.dart';
 
 class UserInfoScreen extends StatelessWidget {
   UserInfoScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Khởi tạo các phụ thuộc
-    final authRemoteDataSource = AuthRemoteDataSource(firebaseAuth: FirebaseAuth.instance);
-    final userRemoteDataSource = UserRemoteDataSource(firestore: FirebaseFirestore.instance);
-    final authRepository = AuthRepositoryImpl(
-      authRemoteDataSource: authRemoteDataSource,
-      userRemoteDataSource: userRemoteDataSource,
-    );
-    final getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
-    final signOutUseCase = SignOutUseCase(authRepository);
-
-    return BlocProvider(
-      create: (_) => UserInfoCubit(
-        getCurrentUserUseCase: getCurrentUserUseCase,
-        signOutUseCase: signOutUseCase,
-      )..fetchUser(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<UserInfoCubit>(
+          create: (_) => sl<UserInfoCubit>()..fetchUser(),
+        ),
+        BlocProvider<GenreCubit>(
+          create: (_) => sl<GenreCubit>()..fetchGenres(),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Thông Tin Người Dùng'),
+          title: const Text('Thông Tin Người Dùng'),
           actions: [
             IconButton(
-              icon: Icon(Icons.logout),
+              icon: const Icon(Icons.logout),
               onPressed: () {
                 context.read<UserInfoCubit>().signOut();
               },
@@ -47,7 +37,6 @@ class UserInfoScreen extends StatelessWidget {
         body: BlocConsumer<UserInfoCubit, UserInfoState>(
           listener: (context, state) {
             if (state is UserInfoNotAuthenticated) {
-              // Điều hướng đến màn hình đăng nhập
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => SignInScreen()),
               );
@@ -59,29 +48,75 @@ class UserInfoScreen extends StatelessWidget {
           },
           builder: (context, state) {
             if (state is UserInfoLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (state is UserInfoLoaded) {
               final user = state.user;
               return Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Họ và Tên: ${user.fullName}', style: TextStyle(fontSize: 18)),
-                    Text('Email: ${user.username}', style: TextStyle(fontSize: 18)),
-                    // Hiển thị các trường khác nếu cần
-                    // Ví dụ: avatar
+                    Text('Họ và Tên: ${user.fullName}',
+                        style: const TextStyle(fontSize: 18)),
+                    Text('Email: ${user.username}',
+                        style: const TextStyle(fontSize: 18)),
                     if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
                       Image.network(user.avatarUrl!),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Thể loại yêu thích:',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    BlocBuilder<GenreCubit, GenreState>(
+                      builder: (context, genreState) {
+                        if (genreState is GenreLoaded) {
+                          return Expanded(
+                            child: ListView.builder(
+                              itemCount: genreState.selectedGenres.length,
+                              itemBuilder: (context, index) {
+                                final genre = genreState.selectedGenres[index];
+                                final isSelected =
+                                genreState.selectedGenres.contains(genre);
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                      isSelected ? Colors.blue : Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      context
+                                          .read<GenreCubit>()
+                                          .toggleFavoriteGenre(genre);
+                                    },
+                                    child: Text(
+                                      genre,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        } else if (genreState is GenreError) {
+                          return Center(child: Text(genreState.message));
+                        }
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    ),
                   ],
                 ),
               );
             } else if (state is UserInfoNotAuthenticated) {
-              return Center(child: Text('Chưa đăng nhập'));
+              return const Center(child: Text('Chưa đăng nhập'));
             } else if (state is UserInfoFailure) {
-              return Center(child: Text('Không thể tải thông tin người dùng'));
+              return const Center(child: Text('Không thể tải thông tin người dùng'));
             }
-            return Container();
+            return const SizedBox.shrink();
           },
         ),
       ),

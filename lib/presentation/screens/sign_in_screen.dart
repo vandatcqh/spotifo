@@ -2,15 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+// Chỉ import Cubit và các screen cần thiết
 import '../cubit/auth/sign_in_cubit.dart';
-import '../../../domain/usecases/sign_in.dart';
-import '../../../data/datasources/auth_remote_datasource.dart';
-import '../../../data/datasources/user_remote_datasource.dart';
-import '../../../data/repositories/auth_repository_impl.dart';
-import 'user_info_screen.dart';
 import 'sign_up_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'user_info_screen.dart';
+
+// Import service locator
+import '../../../injection_container.dart';
 
 class SignInScreen extends StatelessWidget {
   SignInScreen({Key? key}) : super(key: key);
@@ -18,25 +17,16 @@ class SignInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController emailController = TextEditingController();
-
   final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    // Khởi tạo các phụ thuộc
-    final authRemoteDataSource = AuthRemoteDataSource(firebaseAuth: FirebaseAuth.instance);
-    final userRemoteDataSource = UserRemoteDataSource(firestore: FirebaseFirestore.instance);
-    final authRepository = AuthRepositoryImpl(
-      authRemoteDataSource: authRemoteDataSource,
-      userRemoteDataSource: userRemoteDataSource,
-    );
-    final signInUseCase = SignInUseCase(authRepository);
-
     return BlocProvider(
-      create: (_) => SignInCubit(signInUseCase: signInUseCase),
+      // Lấy SignInCubit từ service locator
+      create: (_) => sl<SignInCubit>(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Đăng Nhập'),
+          title: const Text('Đăng Nhập'),
         ),
         body: BlocListener<SignInCubit, SignInState>(
           listener: (context, state) {
@@ -52,31 +42,31 @@ class SignInScreen extends StatelessWidget {
             }
           },
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
               child: ListView(
                 children: [
                   TextFormField(
                     controller: emailController,
-                    decoration: InputDecoration(labelText: 'Email'),
+                    decoration: const InputDecoration(labelText: 'Email'),
                     validator: (value) => (value == null || value.isEmpty)
                         ? 'Vui lòng nhập email'
                         : null,
                   ),
                   TextFormField(
                     controller: passwordController,
-                    decoration: InputDecoration(labelText: 'Mật khẩu'),
+                    decoration: const InputDecoration(labelText: 'Mật khẩu'),
                     obscureText: true,
                     validator: (value) => (value == null || value.isEmpty)
                         ? 'Vui lòng nhập mật khẩu'
                         : null,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   BlocBuilder<SignInCubit, SignInState>(
                     builder: (context, state) {
                       if (state is SignInLoading) {
-                        return Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       }
                       return ElevatedButton(
                         onPressed: () {
@@ -87,7 +77,7 @@ class SignInScreen extends StatelessWidget {
                             );
                           }
                         },
-                        child: Text('Đăng Nhập'),
+                        child: const Text('Đăng Nhập'),
                       );
                     },
                   ),
@@ -98,7 +88,7 @@ class SignInScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (_) => SignUpScreen()),
                       );
                     },
-                    child: Text('Chưa có tài khoản? Đăng Ký'),
+                    child: const Text('Chưa có tài khoản? Đăng Ký'),
                   ),
                 ],
               ),
