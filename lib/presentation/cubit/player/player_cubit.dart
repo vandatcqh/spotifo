@@ -13,60 +13,69 @@ class PlayerCubit extends Cubit<AppPlayerState> {
   final PauseSongUseCase pauseSongUseCase;
   final ResumeSongUseCase resumeSongUseCase;
   final SeekSongUseCase seekSongUseCase;
-
+  final AudioPlayer audioPlayer;
+  SongEntity? _currentSong;
   PlayerCubit({
+    required this.audioPlayer,
     required this.playSongUseCase,
     required this.pauseSongUseCase,
     required this.resumeSongUseCase,
     required this.seekSongUseCase,
   }) : super(PlayerInitial());
 
-  Future<void> playSong(SongEntity song) async {
+  Future<void> togglePlayPause(SongEntity song) async {
     try {
-      emit(PlayerLoading());
-      await playSongUseCase.call(song.audioUrl);
-      emit(PlayerPlaying(song, const Duration()));
+      // Nếu đang phát một bài hát khác, dừng và phát bài mới
+      if (_currentSong?.id != song.id) {
+        await audioPlayer.stop();
+        await audioPlayer.setUrl(song.audioUrl);
+        await audioPlayer.play();
+        _currentSong = song;
+        emit(PlayerPlaying(song, Duration.zero));
+        return;
+      }
+
+      // Nếu đang pause, thực hiện resume
+      if (state is PlayerPaused) {
+        await audioPlayer.play();
+        emit(PlayerPlaying(song, await audioPlayer.position));
+        return;
+      }
+
+      // Nếu đang play, thực hiện pause
+      if (state is PlayerPlaying) {
+        await audioPlayer.pause();
+        emit(PlayerPaused(song, await audioPlayer.position));
+        return;
+      }
+
+      // Trường hợp còn lại (initial hoặc error), bắt đầu phát
+      await audioPlayer.setUrl(song.audioUrl);
+      await audioPlayer.play();
+      _currentSong = song;
+      emit(PlayerPlaying(song, Duration.zero));
     } catch (e) {
-      emit(PlayerError("Cannot play song: $e"));
+      emit(PlayerError(e.toString()));
     }
   }
 
   Future<void> pauseSong() async {
-    try {
-      if (state is PlayerPlaying) {
-        final currentState = state as PlayerPlaying;
-        await pauseSongUseCase.call();
-        emit(PlayerPaused(currentState.currentSong, currentState.position));
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot pause song: $e"));
+    if (state is PlayerPlaying && _currentSong != null) {
+      await audioPlayer.pause();
+      emit(PlayerPaused(_currentSong!, await audioPlayer.position));
     }
   }
 
   Future<void> resumeSong() async {
-    try {
-      if (state is PlayerPaused) {
-        final currentState = state as PlayerPaused;
-        await resumeSongUseCase.call();
-        emit(PlayerPlaying(currentState.currentSong, currentState.position));
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot resume song: $e"));
+    if (state is PlayerPaused && _currentSong != null) {
+      await audioPlayer.play();
+      emit(PlayerPlaying(_currentSong!, await audioPlayer.position));
     }
   }
 
-  Future<void> seekSong(Duration position) async {
-    try {
-      await seekSongUseCase.call(position);
-      if (state is PlayerPlaying) {
-        final currentState = state as PlayerPlaying;
-        emit(PlayerPlaying(currentState.currentSong, position));
-      } else if (state is PlayerPaused) {
-        final currentState = state as PlayerPaused;
-        emit(PlayerPaused(currentState.currentSong, position));
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot seek song: $e"));
-    }
+  @override
+  Future<void> close() {
+    audioPlayer.dispose();
+    return super.close();
   }
 }

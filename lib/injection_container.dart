@@ -167,6 +167,7 @@ Future<void> init() async {
     ),
   );
   sl.registerFactory(() => PlayerCubit(
+    audioPlayer: AudioPlayer(),
     playSongUseCase: sl(),
     pauseSongUseCase: sl(),
     resumeSongUseCase: sl(),
