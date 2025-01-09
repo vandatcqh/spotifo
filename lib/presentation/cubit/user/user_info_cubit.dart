@@ -46,22 +46,14 @@ class UserInfoCubit extends Cubit<UserInfoState> {
     }
   }
 
-  /// Toggles a genre in the user's favorite genres
-  Future<void> toggleFavoriteGenre(String genre) async {
+  Future<void> updateFavoriteGenres(List<String> genres) async {
     if (state is UserInfoLoaded) {
       final currentState = state as UserInfoLoaded;
       final user = currentState.user;
-      final favoriteGenres = List<String>.from(user.favoriteGenres);
 
-      if (favoriteGenres.contains(genre)) {
-        favoriteGenres.remove(genre);
-      } else {
-        favoriteGenres.add(genre);
-      }
+      final updatedUser = user.copyWith(favoriteGenres: genres);
 
-      final updatedUser = user.copyWith(favoriteGenres: favoriteGenres);
-
-      emit(UserInfoUpdating()); // Optional: You can create a separate state for updating
+      emit(UserInfoUpdating()); // Bạn có thể tạo thêm trạng thái UserInfoUpdating nếu muốn
 
       try {
         final updated = await updateUserProfileUseCase.call(updatedUser);

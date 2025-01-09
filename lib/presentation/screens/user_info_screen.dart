@@ -10,8 +10,15 @@ import 'sign_in_screen.dart';
 
 import '../../../injection_container.dart';
 
-class UserInfoScreen extends StatelessWidget {
+class UserInfoScreen extends StatefulWidget {
   UserInfoScreen({Key? key}) : super(key: key);
+
+  @override
+  _UserInfoScreenState createState() => _UserInfoScreenState();
+}
+
+class _UserInfoScreenState extends State<UserInfoScreen> {
+  List<String> tempFavoriteGenres = [];
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +41,20 @@ class UserInfoScreen extends StatelessWidget {
                 context.read<UserInfoCubit>().signOut();
               },
             ),
+            // Thêm nút Save
+            BlocBuilder<UserInfoCubit, UserInfoState>(
+              builder: (context, state) {
+                if (state is UserInfoLoaded) {
+                  return IconButton(
+                    icon: const Icon(Icons.save),
+                    onPressed: () {
+                      context.read<UserInfoCubit>().updateFavoriteGenres(tempFavoriteGenres);
+                    },
+                  );
+                }
+                return SizedBox.shrink();
+              },
+            ),
           ],
         ),
         body: BlocConsumer<UserInfoCubit, UserInfoState>(
@@ -46,6 +67,9 @@ class UserInfoScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.error)),
               );
+            } else if (state is UserInfoLoaded) {
+              // Khi dữ liệu người dùng được tải, khởi tạo tempFavoriteGenres
+              tempFavoriteGenres = List<String>.from(state.user.favoriteGenres);
             }
           },
           builder: (context, state) {
@@ -53,7 +77,6 @@ class UserInfoScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is UserInfoLoaded) {
               final user = state.user;
-              final favoriteGenres = user.favoriteGenres;
 
               return Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -86,7 +109,7 @@ class UserInfoScreen extends StatelessWidget {
                               itemCount: genres.length,
                               itemBuilder: (context, index) {
                                 final genre = genres[index];
-                                final isSelected = favoriteGenres.contains(genre);
+                                final isSelected = tempFavoriteGenres.contains(genre);
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                                   child: ElevatedButton(
@@ -95,7 +118,13 @@ class UserInfoScreen extends StatelessWidget {
                                       isSelected ? Colors.blue : Colors.grey,
                                     ),
                                     onPressed: () {
-                                      context.read<UserInfoCubit>().toggleFavoriteGenre(genre);
+                                      setState(() {
+                                        if (isSelected) {
+                                          tempFavoriteGenres.remove(genre);
+                                        } else {
+                                          tempFavoriteGenres.add(genre);
+                                        }
+                                      });
                                     },
                                     child: Text(
                                       genre,
