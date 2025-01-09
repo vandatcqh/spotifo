@@ -129,70 +129,74 @@ class UserInfoScreen extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-            BlocBuilder<SongInfoCubit, SongInfoState>(
-            builder: (context, songState) {
-            if (songState is SongHotSongsLoaded) {
-            return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: songState.songs.length,
-            itemBuilder: (context, index) {
-            final song = songState.songs[index];
-            return BlocBuilder<PlayerCubit, AppPlayerState>(
-            builder: (context, playerState) {
-            final isPlaying = playerState is PlayerPlaying &&
-            playerState.currentSong.id == song.id;
-            final isPaused = playerState is PlayerPaused &&
-            playerState.currentSong.id == song.id;
+                      BlocBuilder<SongInfoCubit, SongInfoState>(
+                        builder: (context, songState) {
+                          if (songState is SongHotSongsLoaded) {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: songState.songs.length,
+                              itemBuilder: (context, index) {
+                                final song = songState.songs[index];
+                                return BlocBuilder<PlayerCubit, AppPlayerState>(
+                                  builder: (context, playerState) {
+                                    final isPlaying = playerState is PlayerPlaying &&
+                                        playerState.currentSong.id == song.id;
+                                    final isPaused = playerState is PlayerPaused &&
+                                        playerState.currentSong.id == song.id;
 
-            return ListTile(
-            leading: song.songImageUrl != null
-            ? ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-            song.songImageUrl!,
-            width: 50,
-            height: 50,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-            const Icon(Icons.broken_image, size: 50),
-            loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return const SizedBox(
-            width: 50,
-            height: 50,
-            child: Center(child: CircularProgressIndicator()),
-            );
-            },
-            ),
-            )
-                : const Icon(Icons.music_note, size: 50),
-            title: Text(
-            song.songName,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(song.artistId),
-            trailing: IconButton(
-            icon: Icon(
-            isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-            size: 40,
-            color: Colors.blue,
-            ),
-            onPressed: () {
-            context.read<PlayerCubit>().togglePlayPause(song);
-            },
-            ),
-            );
-            },
-            );
-            },
-            );
-            } else if (songState is SongError) {
-            return Center(child: Text(songState.error));
-            }
-            return const Center(child: CircularProgressIndicator());
-            },
-            ),
+                                    return ListTile(
+                                      leading: song.songImageUrl != null
+                                          ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.network(
+                                          song.songImageUrl!,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) =>
+                                          const Icon(Icons.broken_image, size: 50),
+                                          loadingBuilder: (context, child, loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return const SizedBox(
+                                              width: 50,
+                                              height: 50,
+                                              child: Center(child: CircularProgressIndicator()),
+                                            );
+                                          },
+                                        ),
+                                      )
+                                          : const Icon(Icons.music_note, size: 50),
+                                      title: Text(
+                                        song.songName,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      subtitle: Text(song.artistId),
+                                      trailing: IconButton(
+                                        icon: Icon(
+                                          isPlaying
+                                              ? Icons.pause_circle_filled
+                                              : Icons.play_circle_filled,
+                                          size: 40,
+                                          color: Colors.blue,
+                                        ),
+                                        onPressed: () {
+                                          context.read<PlayerCubit>().togglePlayPause(song);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          } else if (songState is SongError) {
+                            return Center(child: Text(songState.error));
+                          }
+                          return const Center(child: CircularProgressIndicator());
+                        },
+                      ),
+
+
                     ],
                   ),
                 ),
