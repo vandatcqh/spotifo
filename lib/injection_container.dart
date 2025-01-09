@@ -3,7 +3,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:just_audio/just_audio.dart';
 // ------------------- //
 //  Import Cubits     //
 // ------------------- //
@@ -12,6 +12,8 @@ import 'presentation/cubit/auth/sign_up_cubit.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/genre/genre_cubit.dart';
 import 'presentation/cubit/artist/artist_cubit.dart';
+import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
+import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 
 // ------------------- //
 //    Import Domain    //
@@ -27,6 +29,13 @@ import 'domain/repositories/auth_repository.dart';
 import 'domain/repositories/genre_repository.dart';
 import 'domain/usecases/get_hot_artists.dart';
 import 'domain/repositories/artist_repository.dart';
+import 'domain/usecases/pause_song.dart';
+import 'domain/usecases/play_song.dart';
+import 'domain/usecases/resume_song.dart';
+import 'domain/usecases/seek_song.dart';
+import 'domain/usecases/get_hot_songs.dart';
+import 'domain/repositories/music_repository.dart';
+import 'domain/repositories/player_repository.dart';
 
 // ------------------- //
 //    Import Data      //
@@ -38,13 +47,17 @@ import 'data/datasources/artist_remote_datasource.dart';
 import 'data/repositories/auth_repository_impl.dart';
 import 'data/repositories/genre_repository_impl.dart';
 import 'data/repositories/artist_repository_impl.dart';
+import 'data/datasources/song_remote_datasource.dart';
+import 'data/repositories/music_repository_impl.dart';
+import 'data/repositories/player_repository_impl.dart';
+
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
   final firebaseAuth = FirebaseAuth.instance;
   final firebaseFirestore = FirebaseFirestore.instance;
-
+  sl.registerLazySingleton(() => AudioPlayer());
   // --- Data Sources ---
   sl.registerLazySingleton<AuthRemoteDataSource>(
         () => AuthRemoteDataSource(firebaseAuth: firebaseAuth),
@@ -58,6 +71,10 @@ Future<void> init() async {
   sl.registerLazySingleton<ArtistRemoteDataSource>(
         () => ArtistRemoteDataSource(firestore: firebaseFirestore),
   );
+  sl.registerLazySingleton<SongRemoteDataSource>(
+        () => SongRemoteDataSource(firestore: firebaseFirestore),
+  );
+
   // --- Repositories ---
   sl.registerLazySingleton<AuthRepository>(
         () => AuthRepositoryImpl(
@@ -71,7 +88,15 @@ Future<void> init() async {
   sl.registerLazySingleton<ArtistRepository>(
         () => ArtistRepositoryImpl(sl()),
   );
-
+  sl.registerLazySingleton<MusicRepository>(
+        () => MusicRepositoryImpl(
+      firebaseFirestore,
+      songRemoteDataSource: sl(),
+    ),
+  );
+  sl.registerLazySingleton<PlayerRepository>(
+        () => PlayerRepositoryImpl(sl()),
+  );
 
   // --- UseCases ---
   sl.registerLazySingleton<SignInUseCase>(
@@ -97,8 +122,14 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<ArtistFollowUseCase>(
         () => ArtistFollowUseCase(sl()),
-
   );
+  sl.registerLazySingleton<GetHotSongsUseCase>(
+        () => GetHotSongsUseCase(sl()),
+  );
+  sl.registerLazySingleton(() => PlaySongUseCase(sl<PlayerRepository>()));
+  sl.registerLazySingleton(() => PauseSongUseCase(sl<PlayerRepository>()));
+  sl.registerLazySingleton(() => ResumeSongUseCase(sl<PlayerRepository>()));
+  sl.registerLazySingleton(() => SeekSongUseCase(sl<PlayerRepository>()));
 
   // --- Cubits ---
   // Note:
@@ -125,4 +156,16 @@ Future<void> init() async {
   sl.registerFactory<ArtistCubit>(
         () => ArtistCubit(sl()),
   );
+  sl.registerFactory<SongInfoCubit>(
+        () => SongInfoCubit(
+      getHotSongsUseCase: sl(),
+    ),
+  );
+  sl.registerFactory(() => PlayerCubit(
+    playSongUseCase: sl(),
+    pauseSongUseCase: sl(),
+    resumeSongUseCase: sl(),
+    seekSongUseCase: sl(),
+  ));
+
 }
