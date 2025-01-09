@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../cubit/song/song_cubit.dart';
 import '../cubit/song/song_state.dart';
+import '../cubit/player/player_cubit.dart';
+import '../cubit/player/player_state.dart';
 import '../cubit/user/user_info_cubit.dart';
 import '../cubit/genre/genre_cubit.dart';
 import '../cubit/genre/genre_state.dart';
@@ -25,6 +27,9 @@ class UserInfoScreen extends StatelessWidget {
         ),
         BlocProvider<SongInfoCubit>(
           create: (_) => sl<SongInfoCubit>()..fetchHotSongs(),
+        ),
+        BlocProvider<PlayerCubit>(
+          create: (_) => sl<PlayerCubit>(),
         ),
       ],
       child: Scaffold(
@@ -78,12 +83,11 @@ class UserInfoScreen extends StatelessWidget {
                         builder: (context, genreState) {
                           if (genreState is GenreLoaded) {
                             return ListView.builder(
-                              shrinkWrap: true, // Đảm bảo ListView không chiếm toàn bộ không gian
+                              shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: genreState.selectedGenres.length,
                               itemBuilder: (context, index) {
-                                final genre =
-                                genreState.selectedGenres[index];
+                                final genre = genreState.selectedGenres[index];
                                 final isSelected =
                                 genreState.selectedGenres.contains(genre);
                                 return Padding(
@@ -129,14 +133,41 @@ class UserInfoScreen extends StatelessWidget {
                         builder: (context, songState) {
                           if (songState is SongHotSongsLoaded) {
                             return ListView.builder(
-                              shrinkWrap: true, // Đảm bảo ListView không chiếm toàn bộ không gian
+                              shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: songState.songs.length,
                               itemBuilder: (context, index) {
                                 final song = songState.songs[index];
-                                return ListTile(
-                                  title: Text(song.songName),
-                                  subtitle: Text(song.artistId),
+                                return BlocBuilder<PlayerCubit, AppPlayerState>(
+                                  builder: (context, playerState) {
+                                    final isPlaying = playerState is PlayerPlaying &&
+                                        playerState.currentSong.id == song.id;
+                                    return ListTile(
+                                      leading: song.songImageUrl != null
+                                          ? Image.network(song.songImageUrl!)
+                                          : const Icon(Icons.music_note),
+                                      title: Text(song.songName),
+                                      subtitle: Text(song.artistId),
+                                      trailing: IconButton(
+                                        icon: Icon(
+                                            isPlaying
+                                                ? Icons.pause
+                                                : Icons.play_arrow,
+                                            color: Colors.blue),
+                                        onPressed: () {
+                                          if (isPlaying) {
+                                            context
+                                                .read<PlayerCubit>()
+                                                .pauseSong();
+                                          } else {
+                                            context
+                                                .read<PlayerCubit>()
+                                                .playSong(song);
+                                          }
+                                        },
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             );

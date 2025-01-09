@@ -2,21 +2,29 @@
 import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:spotifo/data/datasources/album_remote_datasource.dart';
 import 'package:spotifo/data/datasources/artist_remote_datasource.dart';
 import 'package:spotifo/data/datasources/song_remote_datasource.dart';
+import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 
 // ------------------- //
 //  Chỉ import Cubit  //
 // ------------------- //
 import 'data/repositories/music_repository_impl.dart';
+import 'data/repositories/player_repository_impl.dart';
 import 'domain/repositories/music_repository.dart';
+import 'domain/repositories/player_repository.dart';
 import 'domain/usecases/get_hot_albums.dart';
 import 'domain/usecases/get_hot_artists.dart';
 import 'domain/usecases/get_hot_songs.dart';
 import 'domain/usecases/like_song.dart';
+import 'domain/usecases/pause_song.dart';
+import 'domain/usecases/play_song.dart';
+import 'domain/usecases/resume_song.dart';
 import 'domain/usecases/search_songs_by_name.dart';
+import 'domain/usecases/seek_song.dart';
 import 'domain/usecases/unlike_song.dart';
 import 'presentation/cubit/auth/sign_in_cubit.dart';
 import 'presentation/cubit/auth/sign_up_cubit.dart';
@@ -49,6 +57,8 @@ Future<void> init() async {
   final firebaseAuth = FirebaseAuth.instance;
   final firebaseFirestore = FirebaseFirestore.instance;
 
+  // --- Player ---
+  sl.registerLazySingleton(() => AudioPlayer());
   // --- Data Sources ---
   sl.registerLazySingleton<AuthRemoteDataSource>(
         () => AuthRemoteDataSource(firebaseAuth: firebaseAuth),
@@ -86,7 +96,9 @@ Future<void> init() async {
       artistRemoteDataSource: sl(),
     ),
   );
-
+  sl.registerLazySingleton<PlayerRepository>(
+        () => PlayerRepositoryImpl(sl()),
+  );
   // --- UseCases ---
   sl.registerLazySingleton<SignInUseCase>(
         () => SignInUseCase(sl()),
@@ -121,6 +133,10 @@ Future<void> init() async {
   sl.registerLazySingleton<UnlikeSongUseCase>(
         () => UnlikeSongUseCase(sl()),
   );
+  sl.registerLazySingleton(() => PlaySongUseCase(sl()));
+  sl.registerLazySingleton(() => PauseSongUseCase(sl()));
+  sl.registerLazySingleton(() => ResumeSongUseCase(sl()));
+  sl.registerLazySingleton(() => SeekSongUseCase(sl()));
   // --- Cubits ---
   // Lưu ý: Dùng registerFactory nếu mỗi lần tạo mới Cubit
   //        Dùng registerLazySingleton nếu chỉ muốn một instance duy nhất
@@ -150,4 +166,10 @@ Future<void> init() async {
       getCurrentUserUseCase: sl(),
     ),
   );
+  sl.registerFactory(() => PlayerCubit(
+    playSongUseCase: sl(),
+    pauseSongUseCase: sl(),
+    resumeSongUseCase: sl(),
+    seekSongUseCase: sl(),
+  ));
 }
