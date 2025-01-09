@@ -11,6 +11,7 @@ import 'presentation/cubit/auth/sign_in_cubit.dart';
 import 'presentation/cubit/auth/sign_up_cubit.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/genre/genre_cubit.dart';
+import 'presentation/cubit/artist/artist_cubit.dart';
 
 // ------------------- //
 //    Import Domain    //
@@ -21,8 +22,11 @@ import 'domain/usecases/get_current_user.dart';
 import 'domain/usecases/sign_out.dart';
 import 'domain/usecases/get_all_genre.dart';
 import 'domain/usecases/update_user_profile.dart';
+import 'domain/usecases/artist_follow_usecase.dart';
 import 'domain/repositories/auth_repository.dart';
 import 'domain/repositories/genre_repository.dart';
+import 'domain/usecases/get_hot_artists.dart';
+import 'domain/repositories/artist_repository.dart';
 
 // ------------------- //
 //    Import Data      //
@@ -30,8 +34,10 @@ import 'domain/repositories/genre_repository.dart';
 import 'data/datasources/auth_remote_datasource.dart';
 import 'data/datasources/user_remote_datasource.dart';
 import 'data/datasources/genre_remote_datasource.dart';
+import 'data/datasources/artist_remote_datasource.dart';
 import 'data/repositories/auth_repository_impl.dart';
 import 'data/repositories/genre_repository_impl.dart';
+import 'data/repositories/artist_repository_impl.dart';
 
 final sl = GetIt.instance;
 
@@ -49,7 +55,9 @@ Future<void> init() async {
   sl.registerLazySingleton<GenreRemoteDataSource>(
         () => GenreRemoteDataSource(firestore: firebaseFirestore),
   );
-
+  sl.registerLazySingleton<ArtistRemoteDataSource>(
+        () => ArtistRemoteDataSource(firestore: firebaseFirestore),
+  );
   // --- Repositories ---
   sl.registerLazySingleton<AuthRepository>(
         () => AuthRepositoryImpl(
@@ -60,6 +68,10 @@ Future<void> init() async {
   sl.registerLazySingleton<GenreRepository>(
         () => GenreRepositoryImpl(sl()),
   );
+  sl.registerLazySingleton<ArtistRepository>(
+        () => ArtistRepositoryImpl(sl()),
+  );
+
 
   // --- UseCases ---
   sl.registerLazySingleton<SignInUseCase>(
@@ -77,8 +89,15 @@ Future<void> init() async {
   sl.registerLazySingleton<GetAllGenresUseCase>(
         () => GetAllGenresUseCase(sl()),
   );
-  sl.registerLazySingleton<UpdateUserProfileUseCase>( // **Added Registration**
-        () => UpdateUserProfileUseCase(sl()),       // **Ensure this use case is correctly implemented**
+  sl.registerLazySingleton<GetAllArtistsUseCase>(
+        () => GetAllArtistsUseCase(sl()),
+  );
+  sl.registerLazySingleton<UpdateUserProfileUseCase>(
+        () => UpdateUserProfileUseCase(sl()),
+  );
+  sl.registerLazySingleton<ArtistFollowUseCase>(
+        () => ArtistFollowUseCase(sl()),
+
   );
 
   // --- Cubits ---
@@ -97,9 +116,13 @@ Future<void> init() async {
       getCurrentUserUseCase: sl(),
       signOutUseCase: sl(),
       updateUserProfileUseCase: sl(),
+      artistFollowUseCase: sl(),
     ),
   );
   sl.registerFactory<GenreCubit>(
         () => GenreCubit(sl()),
+  );
+  sl.registerFactory<ArtistCubit>(
+        () => ArtistCubit(sl()),
   );
 }

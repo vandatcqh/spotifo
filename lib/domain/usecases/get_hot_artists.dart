@@ -1,14 +1,14 @@
-// domain/usecases/music/get_hot_artists.dart
+// domain/usecases/get_all_artists.dart
 
 import '../entities/artist_entity.dart';
-import '../repositories/music_repository.dart';
+import '../repositories/artist_repository.dart';
 
-class GetHotArtistsUseCase {
-  final MusicRepository musicRepository;
+class GetAllArtistsUseCase {
+  final ArtistRepository repository;
 
-  GetHotArtistsUseCase(this.musicRepository);
+  GetAllArtistsUseCase(this.repository);
 
-  Future<List<ArtistEntity>> call() {
-    return musicRepository.getHotArtists();
+  Future<List<ArtistEntity>> call() async {
+    return await repository.getAllArtists();
   }
 }
