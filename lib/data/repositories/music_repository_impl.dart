@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:spotifo/data/datasources/album_remote_datasource.dart';
 import 'package:spotifo/data/datasources/artist_remote_datasource.dart';
 import 'package:spotifo/data/datasources/song_remote_datasource.dart';
+import 'package:spotifo/domain/entities/artist_entity.dart';
+import 'package:spotifo/domain/entities/playlist_entity.dart';
+import 'package:spotifo/domain/entities/song_entity.dart';
 
 import '../../domain/repositories/music_repository.dart';
 import '../models/album_model.dart';
@@ -154,5 +157,59 @@ class MusicRepositoryImpl implements MusicRepository {
   @override
   Future<ArtistModel> getArtistById(String artistId) async{
     return artistRemoteDataSource.getArtist(artistId);
+  }
+
+  @override
+  Future<PlaylistEntity> createPlaylist({required String userId, required String playlistName}) {
+    // TODO: implement createPlaylist
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deletePlaylist(String playlistId) {
+    // TODO: implement deletePlaylist
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> getSongLyric(String songId) {
+    // TODO: implement getSongLyric
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<PlaylistEntity>> getUserPlaylists(String userId) {
+    // TODO: implement getUserPlaylists
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> likeSong(String userId, String songId) {
+    // TODO: implement likeSong
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<ArtistEntity>> searchArtistsByName(String keyword) {
+    // TODO: implement searchArtistsByName
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<SongEntity>> searchSongsByName(String keyword) {
+    // TODO: implement searchSongsByName
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> unlikeSong(String userId, String songId) {
+    // TODO: implement unlikeSong
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<PlaylistEntity> updatePlaylist(PlaylistEntity playlist) {
+    // TODO: implement updatePlaylist
+    throw UnimplementedError();
   }
 }

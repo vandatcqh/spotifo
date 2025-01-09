@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../cubit/song/song_cubit.dart';
+import '../cubit/song/song_state.dart';
 import '../cubit/user/user_info_cubit.dart';
 import '../cubit/genre/genre_cubit.dart';
 import '../cubit/genre/genre_state.dart';
@@ -20,6 +22,9 @@ class UserInfoScreen extends StatelessWidget {
         ),
         BlocProvider<GenreCubit>(
           create: (_) => sl<GenreCubit>()..fetchGenres(),
+        ),
+        BlocProvider<SongInfoCubit>(
+          create: (_) => sl<SongInfoCubit>()..fetchHotSongs(),
         ),
       ],
       child: Scaffold(
@@ -53,36 +58,42 @@ class UserInfoScreen extends StatelessWidget {
               final user = state.user;
               return Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Họ và Tên: ${user.fullName}',
-                        style: const TextStyle(fontSize: 18)),
-                    Text('Email: ${user.username}',
-                        style: const TextStyle(fontSize: 18)),
-                    if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
-                      Image.network(user.avatarUrl!),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Thể loại yêu thích:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    BlocBuilder<GenreCubit, GenreState>(
-                      builder: (context, genreState) {
-                        if (genreState is GenreLoaded) {
-                          return Expanded(
-                            child: ListView.builder(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Họ và Tên: ${user.fullName}',
+                          style: const TextStyle(fontSize: 18)),
+                      Text('Email: ${user.username}',
+                          style: const TextStyle(fontSize: 18)),
+                      if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
+                        Image.network(user.avatarUrl!),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Thể loại yêu thích:',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      BlocBuilder<GenreCubit, GenreState>(
+                        builder: (context, genreState) {
+                          if (genreState is GenreLoaded) {
+                            return ListView.builder(
+                              shrinkWrap: true, // Đảm bảo ListView không chiếm toàn bộ không gian
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: genreState.selectedGenres.length,
                               itemBuilder: (context, index) {
-                                final genre = genreState.selectedGenres[index];
+                                final genre =
+                                genreState.selectedGenres[index];
                                 final isSelected =
                                 genreState.selectedGenres.contains(genre);
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4.0),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                      isSelected ? Colors.blue : Colors.grey,
+                                      backgroundColor: isSelected
+                                          ? Colors.blue
+                                          : Colors.grey,
                                     ),
                                     onPressed: () {
                                       context
@@ -100,21 +111,51 @@ class UserInfoScreen extends StatelessWidget {
                                   ),
                                 );
                               },
-                            ),
-                          );
-                        } else if (genreState is GenreError) {
-                          return Center(child: Text(genreState.message));
-                        }
-                        return const Center(child: CircularProgressIndicator());
-                      },
-                    ),
-                  ],
+                            );
+                          } else if (genreState is GenreError) {
+                            return Center(child: Text(genreState.message));
+                          }
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Bài hát nổi bật:',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      BlocBuilder<SongInfoCubit, SongInfoState>(
+                        builder: (context, songState) {
+                          if (songState is SongHotSongsLoaded) {
+                            return ListView.builder(
+                              shrinkWrap: true, // Đảm bảo ListView không chiếm toàn bộ không gian
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: songState.songs.length,
+                              itemBuilder: (context, index) {
+                                final song = songState.songs[index];
+                                return ListTile(
+                                  title: Text(song.songName),
+                                  subtitle: Text(song.artistId),
+                                );
+                              },
+                            );
+                          } else if (songState is SongError) {
+                            return Center(child: Text(songState.error));
+                          }
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               );
             } else if (state is UserInfoNotAuthenticated) {
               return const Center(child: Text('Chưa đăng nhập'));
             } else if (state is UserInfoFailure) {
-              return const Center(child: Text('Không thể tải thông tin người dùng'));
+              return const Center(
+                  child: Text('Không thể tải thông tin người dùng'));
             }
             return const SizedBox.shrink();
           },
