@@ -1,10 +1,11 @@
 // injection_container.dart
+
 import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // ------------------- //
-//  Chỉ import Cubit  //
+//  Import Cubits     //
 // ------------------- //
 import 'presentation/cubit/auth/sign_in_cubit.dart';
 import 'presentation/cubit/auth/sign_up_cubit.dart';
@@ -12,18 +13,19 @@ import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/genre/genre_cubit.dart';
 
 // ------------------- //
-//    Import domain    //
+//    Import Domain    //
 // ------------------- //
 import 'domain/usecases/sign_in.dart';
 import 'domain/usecases/sign_up.dart';
 import 'domain/usecases/get_current_user.dart';
 import 'domain/usecases/sign_out.dart';
 import 'domain/usecases/get_all_genre.dart';
+import 'domain/usecases/update_user_profile.dart';
 import 'domain/repositories/auth_repository.dart';
 import 'domain/repositories/genre_repository.dart';
 
 // ------------------- //
-//    Import data      //
+//    Import Data      //
 // ------------------- //
 import 'data/datasources/auth_remote_datasource.dart';
 import 'data/datasources/user_remote_datasource.dart';
@@ -45,7 +47,7 @@ Future<void> init() async {
         () => UserRemoteDataSource(firestore: firebaseFirestore),
   );
   sl.registerLazySingleton<GenreRemoteDataSource>(
-      () => GenreRemoteDataSource(firestore: firebaseFirestore),
+        () => GenreRemoteDataSource(firestore: firebaseFirestore),
   );
 
   // --- Repositories ---
@@ -56,7 +58,7 @@ Future<void> init() async {
     ),
   );
   sl.registerLazySingleton<GenreRepository>(
-      () => GenreRepositoryImpl(sl()),
+        () => GenreRepositoryImpl(sl()),
   );
 
   // --- UseCases ---
@@ -73,12 +75,17 @@ Future<void> init() async {
         () => SignOutUseCase(sl()),
   );
   sl.registerLazySingleton<GetAllGenresUseCase>(
-      () => GetAllGenresUseCase(sl()),
+        () => GetAllGenresUseCase(sl()),
+  );
+  sl.registerLazySingleton<UpdateUserProfileUseCase>( // **Added Registration**
+        () => UpdateUserProfileUseCase(sl()),       // **Ensure this use case is correctly implemented**
   );
 
   // --- Cubits ---
-  // Lưu ý: Dùng registerFactory nếu mỗi lần tạo mới Cubit
-  //        Dùng registerLazySingleton nếu chỉ muốn một instance duy nhất
+  // Note:
+  // - Use `registerFactory` for Cubits to ensure a new instance is created each time.
+  // - Use `registerLazySingleton` if you prefer a single instance throughout the app.
+
   sl.registerFactory<SignInCubit>(
         () => SignInCubit(signInUseCase: sl()),
   );
@@ -89,9 +96,10 @@ Future<void> init() async {
         () => UserInfoCubit(
       getCurrentUserUseCase: sl(),
       signOutUseCase: sl(),
+      updateUserProfileUseCase: sl(),
     ),
   );
   sl.registerFactory<GenreCubit>(
-      () => GenreCubit(sl()),
+        () => GenreCubit(sl()),
   );
 }

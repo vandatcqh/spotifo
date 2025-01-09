@@ -1,3 +1,5 @@
+// presentation/screens/user_info_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -51,6 +53,8 @@ class UserInfoScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is UserInfoLoaded) {
               final user = state.user;
+              final favoriteGenres = user.favoriteGenres;
+
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -67,16 +71,22 @@ class UserInfoScreen extends StatelessWidget {
                       'Thể loại yêu thích:',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    BlocBuilder<GenreCubit, GenreState>(
-                      builder: (context, genreState) {
-                        if (genreState is GenreLoaded) {
-                          return Expanded(
-                            child: ListView.builder(
-                              itemCount: genreState.selectedGenres.length,
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: BlocBuilder<GenreCubit, GenreState>(
+                        builder: (context, genreState) {
+                          if (genreState is GenreLoading || genreState is GenreInitial) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (genreState is GenreLoaded) {
+                            final genres = genreState.genres;
+                            if (genres.isEmpty) {
+                              return const Center(child: Text('Không có thể loại nào.'));
+                            }
+                            return ListView.builder(
+                              itemCount: genres.length,
                               itemBuilder: (context, index) {
-                                final genre = genreState.selectedGenres[index];
-                                final isSelected =
-                                genreState.selectedGenres.contains(genre);
+                                final genre = genres[index];
+                                final isSelected = favoriteGenres.contains(genre);
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                                   child: ElevatedButton(
@@ -85,28 +95,25 @@ class UserInfoScreen extends StatelessWidget {
                                       isSelected ? Colors.blue : Colors.grey,
                                     ),
                                     onPressed: () {
-                                      context
-                                          .read<GenreCubit>()
-                                          .toggleFavoriteGenre(genre);
+                                      context.read<UserInfoCubit>().toggleFavoriteGenre(genre);
                                     },
                                     child: Text(
                                       genre,
                                       style: TextStyle(
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Colors.black,
+                                        color:
+                                        isSelected ? Colors.white : Colors.black,
                                       ),
                                     ),
                                   ),
                                 );
                               },
-                            ),
-                          );
-                        } else if (genreState is GenreError) {
-                          return Center(child: Text(genreState.message));
-                        }
-                        return const Center(child: CircularProgressIndicator());
-                      },
+                            );
+                          } else if (genreState is GenreError) {
+                            return Center(child: Text(genreState.message));
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
                     ),
                   ],
                 ),
