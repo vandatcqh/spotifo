@@ -1,46 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:spotifo/data/datasources/album_remote_datasource.dart';
-import 'package:spotifo/data/datasources/artist_remote_datasource.dart';
 import 'package:spotifo/data/datasources/song_remote_datasource.dart';
-import 'package:spotifo/domain/entities/artist_entity.dart';
-import 'package:spotifo/domain/entities/playlist_entity.dart';
-import 'package:spotifo/domain/entities/song_entity.dart';
-
 import '../../domain/repositories/music_repository.dart';
-import '../models/album_model.dart';
 import '../models/artist_model.dart';
 import '../models/song_model.dart';
-class AlbumWithPlayCount {
-  final AlbumModel album;
-  final int totalPlayCount;
 
-  AlbumWithPlayCount({
-    required this.album,
-    required this.totalPlayCount,
-  });
-}
-class ArtistWithPlayCount {
-  final ArtistModel artist;
-  final int totalPlayCount;
-
-  ArtistWithPlayCount({
-    required this.artist,
-    required this.totalPlayCount,
-  });
-}
 class MusicRepositoryImpl implements MusicRepository {
   final SongRemoteDataSource songRemoteDataSource;
-  final AlbumRemoteDataSource albumRemoteDataSource;
-  final ArtistRemoteDataSource artistRemoteDataSource;
   final FirebaseFirestore firestore;
 
   MusicRepositoryImpl(this.firestore, {
     required this.songRemoteDataSource,
-    required this.artistRemoteDataSource,
-    required this.albumRemoteDataSource
   });
-
-
   @override
   Future<List<SongModel>> getHotSongs({int limit = 5}) async {
     try {
@@ -53,163 +23,5 @@ class MusicRepositoryImpl implements MusicRepository {
     } catch (e) {
       throw Exception("Get Hot Songs Failed: $e");
     }
-  }
-  @override
-  Future<List<AlbumModel>> getHotAlbums({int limit = 5}) async {
-    try {
-      // Bước 1: Lấy tất cả các album
-      List<AlbumModel> allAlbums = await albumRemoteDataSource.getAllAlbums();
-
-      // Bước 2: Lấy tất cả các bài hát
-      QuerySnapshot songsSnapshot = await firestore.collection('Songs').get();
-      List<SongModel> allSongs = songsSnapshot.docs.map((doc) => SongModel.fromDocument(doc)).toList();
-
-      // Bước 3: Tính tổng playCount cho từng album
-      Map<String, int> albumPlayCounts = {};
-      for (var album in allAlbums) {
-        albumPlayCounts[album.id] = 0;
-      }
-
-      for (var song in allSongs) {
-        if (albumPlayCounts.containsKey(song.albumId)) {
-          albumPlayCounts[song.albumId] = albumPlayCounts[song.albumId]! + song.playCount;
-        }
-      }
-
-      // Bước 4: Gán tổng playCount vào AlbumModel
-      List<AlbumWithPlayCount> albumsWithPlayCount = allAlbums.map((album) {
-        return AlbumWithPlayCount(
-          album: album,
-          totalPlayCount: albumPlayCounts[album.id] ?? 0,
-        );
-      }).toList();
-
-      // Bước 5: Sắp xếp các album theo tổng playCount giảm dần
-      albumsWithPlayCount.sort((a, b) => b.totalPlayCount.compareTo(a.totalPlayCount));
-
-      // Bước 6: Lấy top 'limit' album
-      List<AlbumModel> hotAlbums = albumsWithPlayCount
-          .take(limit)
-          .map((item) => item.album)
-          .toList();
-
-      return hotAlbums;
-    } catch (e) {
-      throw Exception("Get Hot Albums Failed: $e");
-    }
-  }
-  /// Lấy Top 5 Hot Artists (tổng playCount nhiều nhất)
-  @override
-  Future<List<ArtistModel>> getHotArtists({int limit = 5}) async {
-    try {
-      // Bước 1: Lấy tất cả các nghệ sĩ
-      List<ArtistModel> allArtists = await artistRemoteDataSource.getAllArtists();
-
-      // Bước 2: Lấy tất cả các bài hát
-      QuerySnapshot songsSnapshot = await firestore.collection('Songs').get();
-      List<SongModel> allSongs = songsSnapshot.docs.map((doc) => SongModel.fromDocument(doc)).toList();
-
-      // Bước 3: Tính tổng playCount cho từng nghệ sĩ
-      Map<String, int> artistPlayCounts = {};
-      for (var artist in allArtists) {
-        artistPlayCounts[artist.id] = 0;
-      }
-
-      for (var song in allSongs) {
-        if (artistPlayCounts.containsKey(song.artistId)) {
-          artistPlayCounts[song.artistId] = artistPlayCounts[song.artistId]! + song.playCount;
-        }
-      }
-
-      // Bước 4: Gán tổng playCount vào ArtistModel
-      List<ArtistWithPlayCount> artistsWithPlayCount = allArtists.map((artist) {
-        return ArtistWithPlayCount(
-          artist: artist,
-          totalPlayCount: artistPlayCounts[artist.id] ?? 0,
-        );
-      }).toList();
-
-      // Bước 5: Sắp xếp các nghệ sĩ theo tổng playCount giảm dần
-      artistsWithPlayCount.sort((a, b) => b.totalPlayCount.compareTo(a.totalPlayCount));
-
-      // Bước 6: Lấy top 'limit' nghệ sĩ
-      List<ArtistModel> hotArtists = artistsWithPlayCount
-          .take(limit)
-          .map((item) => item.artist)
-          .toList();
-
-      return hotArtists;
-    } catch (e) {
-      throw Exception("Get Hot Artists Failed: $e");
-    }
-  }
-
-  @override
-  Future<SongModel> getSongById(String songId) async {
-    return songRemoteDataSource.getSong(songId);
-  }
-
-  @override
-  Future<AlbumModel> getAlbumById(String albumId) async{
-    return albumRemoteDataSource.getAlbum(albumId);
-  }
-
-  @override
-  Future<ArtistModel> getArtistById(String artistId) async{
-    return artistRemoteDataSource.getArtist(artistId);
-  }
-
-  @override
-  Future<PlaylistEntity> createPlaylist({required String userId, required String playlistName}) {
-    // TODO: implement createPlaylist
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deletePlaylist(String playlistId) {
-    // TODO: implement deletePlaylist
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String?> getSongLyric(String songId) {
-    // TODO: implement getSongLyric
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<PlaylistEntity>> getUserPlaylists(String userId) {
-    // TODO: implement getUserPlaylists
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> likeSong(String userId, String songId) {
-    // TODO: implement likeSong
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<ArtistEntity>> searchArtistsByName(String keyword) {
-    // TODO: implement searchArtistsByName
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<SongEntity>> searchSongsByName(String keyword) {
-    // TODO: implement searchSongsByName
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> unlikeSong(String userId, String songId) {
-    // TODO: implement unlikeSong
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<PlaylistEntity> updatePlaylist(PlaylistEntity playlist) {
-    // TODO: implement updatePlaylist
-    throw UnimplementedError();
   }
 }

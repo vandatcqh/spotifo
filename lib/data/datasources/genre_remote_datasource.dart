@@ -15,13 +15,8 @@ class GenreRemoteDataSource {
       final genres = querySnapshot.docs
           .map((doc) => GenreModel.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
-
-      // In danh sách genres ra console
-      genres.forEach((genre) => print('Genre: ${genre.toString()}'));
-
       return genres;
     } catch (e) {
-      print("Get All Genres Failed: $e");
       throw Exception("Get All Genres Failed: $e");
     }
   }

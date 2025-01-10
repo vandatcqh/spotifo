@@ -1,5 +1,4 @@
 // data/models/artist_model.dart
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../domain/entities/artist_entity.dart';
 
@@ -38,5 +37,22 @@ class ArtistModel extends ArtistEntity {
       'followers': followers,
       'description': description,
     };
+  }
+
+  // Hàm copyWith để tạo bản sao với các thuộc tính có thể được cập nhật
+  ArtistModel copyWith({
+    String? id,
+    String? artistName,
+    String? artistImageUrl,
+    int? followers,
+    String? description,
+  }) {
+    return ArtistModel(
+      id: id ?? this.id,
+      artistName: artistName ?? this.artistName,
+      artistImageUrl: artistImageUrl ?? this.artistImageUrl,
+      followers: followers ?? this.followers,
+      description: description ?? this.description,
+    );
   }
 }

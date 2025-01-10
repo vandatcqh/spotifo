@@ -31,5 +31,4 @@ class UserEntity {
 
 // Nếu cần, có thể thêm copyWith, toJson, fromJson...
 // NHƯNG nên để ở tầng data.
-  String get userId => id;
 }
