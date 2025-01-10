@@ -1,5 +1,6 @@
+// lib/presentation/cubit/player/player_cubit.dart
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
 
@@ -20,74 +21,42 @@ class PlayerCubit extends Cubit<AppPlayerState> {
     required this.resumeSongUseCase,
     required this.seekSongUseCase,
   }) : super(PlayerInitial());
+
   SongEntity? _currentSong;
+
   Future<void> togglePlayPause(SongEntity song) async {
     try {
+      print('Toggle Play/Pause pressed. Current state: $state');
+
       if (state is PlayerInitial || _currentSong?.id != song.id) {
-        // Bắt đầu phát bài hát mới
-        emit(PlayerLoading());
-        await playSongUseCase.call(song.audioUrl);
+        // Phát bài hát mới
         _currentSong = song;
         emit(PlayerPlaying(song, const Duration()));
+        await playSongUseCase.call(song.audioUrl);
+        print('Emitted PlayerPlaying for song: ${song.songName}');
         return;
       }
 
       if (state is PlayerPlaying) {
-        // Pause bài hát hiện tại
+        // Tạm dừng bài hát
         final currentState = state as PlayerPlaying;
-        await pauseSongUseCase.call();
         emit(PlayerPaused(currentState.currentSong, currentState.position));
+        await pauseSongUseCase.call();
+        print('Emitted PlayerPaused for song: ${currentState.currentSong.songName}');
         return;
       }
 
       if (state is PlayerPaused) {
-        // Resume bài hát hiện tại
+        // Tiếp tục bài hát
         final currentState = state as PlayerPaused;
-        await resumeSongUseCase.call();
         emit(PlayerPlaying(currentState.currentSong, currentState.position));
+        await resumeSongUseCase.call();
+        print('Emitted PlayerPlaying after resuming song: ${currentState.currentSong.songName}');
         return;
       }
     } catch (e) {
       emit(PlayerError("Cannot toggle play/pause: $e"));
-    }
-  }
-
-  Future<void> pauseSong() async {
-    try {
-      if (state is PlayerPlaying) {
-        final currentState = state as PlayerPlaying;
-        await pauseSongUseCase.call();
-        emit(PlayerPaused(currentState.currentSong, currentState.position));
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot pause song: $e"));
-    }
-  }
-
-  Future<void> resumeSong() async {
-    try {
-      if (state is PlayerPaused) {
-        final currentState = state as PlayerPaused;
-        await resumeSongUseCase.call();
-        emit(PlayerPlaying(currentState.currentSong, currentState.position));
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot resume song: $e"));
-    }
-  }
-
-  Future<void> seekSong(Duration position) async {
-    try {
-      await seekSongUseCase.call(position);
-      if (state is PlayerPlaying) {
-        final currentState = state as PlayerPlaying;
-        emit(PlayerPlaying(currentState.currentSong, position));
-      } else if (state is PlayerPaused) {
-        final currentState = state as PlayerPaused;
-        emit(PlayerPaused(currentState.currentSong, position));
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot seek song: $e"));
+      print('PlayerError: $e');
     }
   }
 }
