@@ -1,13 +1,14 @@
-import 'package:spotifo/domain/entities/song_entity.dart';
-
 import '../repositories/player_repository.dart';
 
 class PlaySongUseCase {
-  final PlayerRepository repository;
+  final PlayerRepository playerRepository;
 
-  PlaySongUseCase(this.repository);
+  PlaySongUseCase(this.playerRepository);
+
+  Stream<Duration> get positionStream => playerRepository.getPositionStream();
+  Stream<Duration?> get durationStream => playerRepository.getDurationStream();
 
   Future<void> call(String audioUrl) async {
-    return await repository.play(audioUrl);
+    await playerRepository.play(audioUrl);
   }
 }

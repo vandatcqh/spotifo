@@ -29,7 +29,16 @@ class PlayerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PlayerCubit, AppPlayerState>(
       builder: (context, state) {
+        // Kiểm tra trạng thái phát nhạc
         bool isPlaying = state is PlayerPlaying && state.currentSong.id == song.id;
+
+        // Lấy vị trí hiện tại và tổng thời lượng
+        Duration currentPosition = (state is PlayerPlaying || state is PlayerPaused)
+            ? state.position
+            : Duration.zero;
+        Duration totalDuration = (state is PlayerPlaying || state is PlayerPaused)
+            ? state.totalDuration
+            : Duration.zero;
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -63,19 +72,36 @@ class PlayerView extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
+              // Thanh kéo (Seek Bar)
+              Slider(
+                value: currentPosition.inSeconds.toDouble(),
+                max: totalDuration.inSeconds.toDouble(),
+                onChanged: (value) {
+                  final newPosition = Duration(seconds: value.toInt());
+                  context.read<PlayerCubit>().seekTo(newPosition);
+                },
+              ),
+              // Hiển thị thời gian
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(_formatDuration(currentPosition)),
+                  Text(_formatDuration(totalDuration)),
+                ],
+              ),
+              const SizedBox(height: 20),
               // Nút Play/Pause
               IconButton(
                 iconSize: 64,
                 icon: Icon(
-                  isPlaying
-                      ? Icons.pause_circle_filled
-                      : Icons.play_circle_filled,
+                  isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
                 ),
                 onPressed: () {
                   context.read<PlayerCubit>().togglePlayPause(song);
                 },
               ),
               const SizedBox(height: 20),
+              // Hiển thị lỗi (nếu có)
               if (state is PlayerError)
                 Text(
                   'Lỗi: ${state.error}',
@@ -86,5 +112,13 @@ class PlayerView extends StatelessWidget {
         );
       },
     );
+  }
+
+  // Hàm định dạng thời gian (mm:ss)
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$minutes:$seconds";
   }
 }

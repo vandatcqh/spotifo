@@ -95,7 +95,7 @@ Future<void> init() async {
     ),
   );
   sl.registerLazySingleton<PlayerRepository>(
-        () => PlayerRepositoryImpl(sl()),
+        () => PlayerRepositoryImpl(sl<AudioPlayer>()),
   );
 
   // --- UseCases ---
@@ -161,7 +161,7 @@ Future<void> init() async {
       getHotSongsUseCase: sl(),
     ),
   );
-  sl.registerLazySingleton<PlayerCubit>(() => PlayerCubit(
+  sl.registerFactory(() => PlayerCubit(
     playSongUseCase: sl(),
     pauseSongUseCase: sl(),
     resumeSongUseCase: sl(),

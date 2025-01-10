@@ -1,6 +1,8 @@
-import 'package:spotifo/domain/entities/song_entity.dart';
+import 'dart:async';
 
 abstract class PlayerRepository {
+  Stream<Duration> getPositionStream();
+  Stream<Duration?> getDurationStream();
   Future<void> play(String audioUrl);
   Future<void> pause();
   Future<void> resume();
