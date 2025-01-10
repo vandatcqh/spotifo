@@ -161,11 +161,12 @@ Future<void> init() async {
       getHotSongsUseCase: sl(),
     ),
   );
-  sl.registerFactory(() => PlayerCubit(
+  sl.registerLazySingleton(() => PlayerCubit(
     playSongUseCase: sl(),
     pauseSongUseCase: sl(),
     resumeSongUseCase: sl(),
     seekSongUseCase: sl(),
   ));
+
 
 }

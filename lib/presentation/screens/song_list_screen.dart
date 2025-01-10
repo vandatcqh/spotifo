@@ -1,5 +1,3 @@
-// lib/presentation/screens/song_list_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
@@ -15,9 +13,15 @@ class SongListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Cung cấp SongInfoCubit cho màn hình này
-    return BlocProvider<SongInfoCubit>(
-      create: (_) => sl<SongInfoCubit>()..fetchHotSongs(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SongInfoCubit>(
+          create: (_) => sl<SongInfoCubit>()..fetchHotSongs(),
+        ),
+        BlocProvider<PlayerCubit>.value(
+          value: sl<PlayerCubit>(),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Bài Hát Nổi Bật'),
@@ -34,18 +38,8 @@ class SongListScreen extends StatelessWidget {
                     itemCount: songs.length,
                     itemBuilder: (context, index) {
                       final song = songs[index];
-                      bool isCurrentSong = false;
-                      bool isPlaying = false;
-
-                      if (playerState is PlayerPlaying &&
-                          playerState.currentSong.id == song.id) {
-                        isCurrentSong = true;
-                        isPlaying = true;
-                      } else if (playerState is PlayerPaused &&
-                          playerState.currentSong.id == song.id) {
-                        isCurrentSong = true;
-                        isPlaying = false;
-                      }
+                      bool isPlaying = playerState is PlayerPlaying &&
+                          playerState.currentSong.id == song.id;
 
                       return ListTile(
                         leading: song.songImageUrl != null
@@ -56,18 +50,6 @@ class SongListScreen extends StatelessWidget {
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.broken_image, size: 50),
-                            loadingBuilder:
-                                (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const SizedBox(
-                                width: 50,
-                                height: 50,
-                                child:
-                                Center(child: CircularProgressIndicator()),
-                              );
-                            },
                           ),
                         )
                             : const Icon(Icons.music_note, size: 50),
@@ -75,19 +57,21 @@ class SongListScreen extends StatelessWidget {
                           song.songName,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle:
-                        Text(song.artistId), // Thay bằng tên nghệ sĩ nếu có
-                        trailing: isCurrentSong
-                            ? Icon(
-                          isPlaying
-                              ? Icons.pause_circle_filled
-                              : Icons.play_circle_filled,
-                          size: 40,
-                          color: Colors.blue,
-                        )
-                            : null, // Không hiển thị nút Play/Pause nếu không phải bài hát hiện tại
+                        subtitle: Text(song.artistId),
+                        trailing: IconButton(
+                          icon: Icon(
+                            isPlaying
+                                ? Icons.pause_circle_filled
+                                : Icons.play_circle_filled,
+                            size: 40,
+                            color: isPlaying ? Colors.blue : Colors.grey,
+                          ),
+                          onPressed: () {
+                            context.read<PlayerCubit>().togglePlayPause(song);
+                          },
+                        ),
                         onTap: () {
-                          // Điều hướng đến SongPlayerScreen khi nhấn vào toàn bộ ListTile
+                          context.read<PlayerCubit>().listenToPositionStream();
                           Navigator.push(
                             context,
                             MaterialPageRoute(

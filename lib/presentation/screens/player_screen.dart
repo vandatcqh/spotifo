@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
+import '../../../injection_container.dart';
 
 class SongPlayerScreen extends StatelessWidget {
   final SongEntity song;
@@ -11,11 +12,19 @@ class SongPlayerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(song.songName),
+    final playerCubit = context.read<PlayerCubit>();
+
+    // Gọi _listenToPositionStream để đảm bảo trạng thái được cập nhật
+    playerCubit.listenToPositionStream();
+
+    return BlocProvider<PlayerCubit>.value(
+      value: sl<PlayerCubit>(), // Sử dụng PlayerCubit singleton
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(song.songName),
+        ),
+        body: PlayerView(song: song),
       ),
-      body: PlayerView(song: song),
     );
   }
 }
@@ -29,10 +38,8 @@ class PlayerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PlayerCubit, AppPlayerState>(
       builder: (context, state) {
-        // Kiểm tra trạng thái phát nhạc
         bool isPlaying = state is PlayerPlaying && state.currentSong.id == song.id;
 
-        // Lấy vị trí hiện tại và tổng thời lượng
         Duration currentPosition = (state is PlayerPlaying || state is PlayerPaused)
             ? state.position
             : Duration.zero;
@@ -72,7 +79,7 @@ class PlayerView extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
-              // Thanh kéo (Seek Bar)
+              // Thanh kéo
               Slider(
                 value: currentPosition.inSeconds.toDouble(),
                 max: totalDuration.inSeconds.toDouble(),
@@ -101,7 +108,7 @@ class PlayerView extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 20),
-              // Hiển thị lỗi (nếu có)
+              // Hiển thị lỗi
               if (state is PlayerError)
                 Text(
                   'Lỗi: ${state.error}',
@@ -114,7 +121,6 @@ class PlayerView extends StatelessWidget {
     );
   }
 
-  // Hàm định dạng thời gian (mm:ss)
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes = twoDigits(duration.inMinutes.remainder(60));
