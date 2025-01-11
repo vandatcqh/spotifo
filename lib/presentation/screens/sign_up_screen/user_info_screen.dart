@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../cubit/user/user_info_cubit.dart';
-import '../cubit/genre/genre_cubit.dart';
-import '../cubit/genre/genre_state.dart';
-import 'sign_in_screen.dart';
+import '../../cubit/user/user_info_cubit.dart';
+import '../../cubit/genre/genre_cubit.dart';
+import '../../cubit/genre/genre_state.dart';
+import '../sign_in_screen.dart';
 
-import '../../../injection_container.dart';
+import '../../../../injection_container.dart';
 
 class UserInfoScreen extends StatefulWidget {
   UserInfoScreen({Key? key}) : super(key: key);

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Chỉ import Cubit và các screen cần thiết
-import '../cubit/auth/sign_up_cubit.dart';
+import '../../cubit/auth/sign_up_cubit.dart';
 import 'user_info_screen.dart';
 
 // Import service locator
-import '../../../injection_container.dart';
+import '../../../../injection_container.dart';
 
 class SignUpScreen extends StatelessWidget {
   SignUpScreen({Key? key}) : super(key: key);
