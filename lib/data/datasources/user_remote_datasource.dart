@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
+import '../models/song_model.dart';
 
 class UserRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -66,4 +67,41 @@ class UserRemoteDataSource {
       throw Exception("Update FullName Failed: $e");
     }
   }
+  Future<List<SongModel>> getFavoriteSongs() async {
+    try {
+      // Lấy thông tin người dùng hiện tại từ FirebaseAuth
+      User? user = firebaseAuth.currentUser;
+      if (user != null) {
+        // Lấy document tương ứng trong Firestore
+        DocumentSnapshot userDoc = await firestore.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          final userData = userDoc.data() as Map<String, dynamic>;
+          // Lấy danh sách ID của favoriteSongs
+          List<String> favoriteSongIds = List<String>.from(userData['favoriteSongs'] ?? []);
+
+          // Truy vấn thông tin chi tiết từ collection 'songs'
+          if (favoriteSongIds.isNotEmpty) {
+            QuerySnapshot songDocs = await firestore
+                .collection('Songs')
+                .where(FieldPath.documentId, whereIn: favoriteSongIds)
+                .get();
+
+            // Map các document sang SongModel
+            return songDocs.docs.map((doc) => SongModel.fromDocument(doc)).toList();
+          } else {
+            // Nếu không có bài hát yêu thích, trả về danh sách rỗng
+            return [];
+          }
+        } else {
+          throw Exception("User document does not exist");
+        }
+      } else {
+        throw Exception("No user is currently signed in");
+      }
+    } catch (e) {
+      throw Exception("Get Current User Favorite Songs Failed: $e");
+    }
+  }
+
+
 }

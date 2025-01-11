@@ -1,6 +1,7 @@
 // domain/repositories/user_repository.dart
 
 import '../entities/user_entity.dart';
+import '../entities/song_entity.dart';
 
 abstract class UserRepository {
   /// Đăng ký tài khoản
@@ -29,4 +30,5 @@ abstract class UserRepository {
   /// Cập nhật thông tin user
   Future<UserEntity> updateUserProfile(UserEntity updatedUser);
   Future<void> updateFullName(String fullName);
+  Future<List<SongEntity>> GetFavoriteSongs();
 }

@@ -12,6 +12,7 @@ import 'presentation/cubit/auth/sign_up_cubit.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/genre/genre_cubit.dart';
 import 'presentation/cubit/artist/artist_cubit.dart';
+import 'presentation/cubit/favoriteSongs/favorite_songs_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 
@@ -25,6 +26,7 @@ import 'domain/usecases/sign_out.dart';
 import 'domain/usecases/get_all_genre.dart';
 import 'domain/usecases/update_user_profile.dart';
 import 'domain/usecases/artist_follow_usecase.dart';
+import 'domain/usecases/get_favorite_songs.dart';
 import 'domain/repositories/user_repository.dart';
 import 'domain/repositories/genre_repository.dart';
 import 'domain/usecases/get_hot_artists.dart';
@@ -130,7 +132,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PauseSongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => ResumeSongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => SeekSongUseCase(sl<PlayerRepository>()));
-
+  sl.registerLazySingleton<GetFavoriteSongsUseCase>(
+        () => GetFavoriteSongsUseCase(sl()),
+  );
   // --- Cubits ---
   // Note:
   // - Use `registerFactory` for Cubits to ensure a new instance is created each time.
@@ -160,6 +164,9 @@ Future<void> init() async {
         () => SongInfoCubit(
       getHotSongsUseCase: sl(),
     ),
+  );
+  sl.registerFactory<FavoriteSongsCubit>(
+        () => FavoriteSongsCubit(sl()),
   );
   sl.registerLazySingleton(() => PlayerCubit(
     playSongUseCase: sl(),

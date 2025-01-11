@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:spotifo/data/datasources/song_remote_datasource.dart';
 import '../../domain/repositories/music_repository.dart';
-import '../models/artist_model.dart';
 import '../models/song_model.dart';
 
 class MusicRepositoryImpl implements MusicRepository {

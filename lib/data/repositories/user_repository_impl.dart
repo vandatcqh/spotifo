@@ -1,10 +1,14 @@
 // data/repositories/user_repository_impl.dart
 
+import 'package:spotifo/domain/entities/song_entity.dart';
+
 import '../../domain/entities/user_entity.dart';
+import '../../domain/entities/song_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../datasources/user_remote_datasource.dart';
 import '../models/user_model.dart';
+import '../models/song_model.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final AuthRemoteDataSource authRemoteDataSource;
@@ -157,6 +161,30 @@ class UserRepositoryImpl implements UserRepository {
       await userRemoteDataSource.updateFullName(fullName);
     } catch (e) {
       throw Exception("UserRepositoryImpl updateFullName Failed: $e");
+    }
+  }
+  @override
+  Future<List<SongEntity>> GetFavoriteSongs() async {
+    try {
+      // Gọi hàm lấy danh sách bài hát yêu thích dưới dạng SongModel
+      List<SongModel> favoriteSongModels = await userRemoteDataSource.getFavoriteSongs();
+      print("dududu $favoriteSongModels.length");
+      // Chuyển đổi từ SongModel sang SongEntity
+      return favoriteSongModels.map((songModel) {
+        return SongEntity(
+          id: songModel.id,
+          songName: songModel.songName,
+          songImageUrl: songModel.songImageUrl,
+          artistId: songModel.artistId,
+          albumId: songModel.albumId,
+          genre: songModel.genre,
+          releaseDate: songModel.releaseDate,
+          lyric: songModel.lyric,
+          audioUrl: songModel.audioUrl,
+        );
+      }).toList();
+    } catch (e) {
+      throw Exception("UserRepositoryImpl GetFavoriteSongs Failed: $e");
     }
   }
 }

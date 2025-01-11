@@ -9,6 +9,7 @@ import 'sign_up_screen.dart';
 import 'user_info_screen.dart';
 import 'list_artist_screen.dart';
 import 'song_list_screen.dart';
+import 'favorite_songs_screen.dart';
 
 // Import service locator
 import '../../../injection_container.dart';
@@ -35,7 +36,7 @@ class SignInScreen extends StatelessWidget {
             if (state is SignInSuccess) {
               // Điều hướng đến màn hình thông tin user
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => UserInfoScreen()),
+                MaterialPageRoute(builder: (_) => FavoriteSongsPage()),
               );
             } else if (state is SignInFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
