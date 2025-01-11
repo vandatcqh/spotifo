@@ -95,6 +95,15 @@ class PlayerCubit extends Cubit<AppPlayerState> {
     }
   }
 
+  Future<void> pauseSong() async {
+    if (state is PlayerPlaying) {
+      final currentState = state as PlayerPlaying;
+      emit(PlayerPaused(currentState.currentSong, currentState.position, currentState.totalDuration));
+      await pauseSongUseCase.call();
+      print("Player paused.");
+    }
+  }
+
   void listenToPositionStream() {
     // Lắng nghe vị trí hiện tại từ use case
     playSongUseCase.positionStream.listen((position) {
