@@ -22,23 +22,14 @@ class UserInfoLoaded extends UserInfoState {
   List<Object?> get props => [user];
 }
 
+class UserInfoUpdating extends UserInfoState {}
+
 class UserInfoNotAuthenticated extends UserInfoState {}
 
 class UserInfoFailure extends UserInfoState {
   final String error;
 
   const UserInfoFailure(this.error);
-
-  @override
-  List<Object?> get props => [error];
-}
-
-class UserInfoUpdating extends UserInfoState {}
-
-class UserInfoUpdateFailure extends UserInfoState {
-  final String error;
-
-  const UserInfoUpdateFailure(this.error);
 
   @override
   List<Object?> get props => [error];

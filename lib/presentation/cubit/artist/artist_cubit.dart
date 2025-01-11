@@ -1,44 +1,23 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'artist_state.dart';
+// presentation/cubit/artist/artist_cubit.dart
 
-/// Ví dụ:
-/// - GetHotArtistsUseCase getHotArtistsUseCase
-/// - SearchArtistsByNameUseCase searchArtistsByNameUseCase
+import 'package:bloc/bloc.dart';
+import 'artist_state.dart';
+import '../../../domain/entities/artist_entity.dart';
+import '../../../domain/usecases/get_hot_artists.dart';
 
 class ArtistCubit extends Cubit<ArtistState> {
-  // final GetHotArtistsUseCase getHotArtistsUseCase;
-  // final SearchArtistsByNameUseCase searchArtistsByNameUseCase;
+  final GetAllArtistsUseCase getAllArtistsUseCase;
 
-  ArtistCubit(
-      // this.getHotArtistsUseCase,
-      // this.searchArtistsByNameUseCase
-      ) : super(ArtistInitial());
+  ArtistCubit(this.getAllArtistsUseCase) : super(ArtistInitial());
 
-  /// Lấy danh sách nghệ sĩ hot
-  Future<void> fetchHotArtists() async {
+  /// Lấy tất cả nghệ sĩ
+  Future<void> fetchArtists() async {
     emit(ArtistLoading());
     try {
-      // final artists = await getHotArtistsUseCase();
-      // emit(ArtistHotLoaded(artists));
-      // Giả lập
-      await Future.delayed(const Duration(seconds: 1));
-      emit(ArtistHotLoaded([]));
+      final artists = await getAllArtistsUseCase();
+      emit(ArtistLoaded(artists));
     } catch (e) {
-      emit(ArtistError(e.toString()));
-    }
-  }
-
-  /// Tìm kiếm nghệ sĩ theo keyword
-  Future<void> searchArtists(String keyword) async {
-    emit(ArtistLoading());
-    try {
-      // final artists = await searchArtistsByNameUseCase(keyword);
-      // emit(ArtistSearchResultsLoaded(artists));
-      // Giả lập
-      await Future.delayed(const Duration(seconds: 1));
-      emit(ArtistSearchResultsLoaded([]));
-    } catch (e) {
-      emit(ArtistError(e.toString()));
+      emit(ArtistError("Không thể tải danh sách nghệ sĩ."));
     }
   }
 }

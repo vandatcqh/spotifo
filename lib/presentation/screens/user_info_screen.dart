@@ -1,3 +1,5 @@
+// presentation/screens/user_info_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,8 +10,15 @@ import 'sign_in_screen.dart';
 
 import '../../../injection_container.dart';
 
-class UserInfoScreen extends StatelessWidget {
+class UserInfoScreen extends StatefulWidget {
   UserInfoScreen({Key? key}) : super(key: key);
+
+  @override
+  _UserInfoScreenState createState() => _UserInfoScreenState();
+}
+
+class _UserInfoScreenState extends State<UserInfoScreen> {
+  List<String> tempFavoriteGenres = [];
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +41,20 @@ class UserInfoScreen extends StatelessWidget {
                 context.read<UserInfoCubit>().signOut();
               },
             ),
+            // Thêm nút Save
+            BlocBuilder<UserInfoCubit, UserInfoState>(
+              builder: (context, state) {
+                if (state is UserInfoLoaded) {
+                  return IconButton(
+                    icon: const Icon(Icons.save),
+                    onPressed: () {
+                      context.read<UserInfoCubit>().updateFavoriteGenres(tempFavoriteGenres);
+                    },
+                  );
+                }
+                return SizedBox.shrink();
+              },
+            ),
           ],
         ),
         body: BlocConsumer<UserInfoCubit, UserInfoState>(
@@ -44,6 +67,9 @@ class UserInfoScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.error)),
               );
+            } else if (state is UserInfoLoaded) {
+              // Khi dữ liệu người dùng được tải, khởi tạo tempFavoriteGenres
+              tempFavoriteGenres = List<String>.from(state.user.favoriteGenres);
             }
           },
           builder: (context, state) {
@@ -51,6 +77,7 @@ class UserInfoScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is UserInfoLoaded) {
               final user = state.user;
+
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -67,16 +94,22 @@ class UserInfoScreen extends StatelessWidget {
                       'Thể loại yêu thích:',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    BlocBuilder<GenreCubit, GenreState>(
-                      builder: (context, genreState) {
-                        if (genreState is GenreLoaded) {
-                          return Expanded(
-                            child: ListView.builder(
-                              itemCount: genreState.selectedGenres.length,
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: BlocBuilder<GenreCubit, GenreState>(
+                        builder: (context, genreState) {
+                          if (genreState is GenreLoading || genreState is GenreInitial) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (genreState is GenreLoaded) {
+                            final genres = genreState.genres;
+                            if (genres.isEmpty) {
+                              return const Center(child: Text('Không có thể loại nào.'));
+                            }
+                            return ListView.builder(
+                              itemCount: genres.length,
                               itemBuilder: (context, index) {
-                                final genre = genreState.selectedGenres[index];
-                                final isSelected =
-                                genreState.selectedGenres.contains(genre);
+                                final genre = genres[index];
+                                final isSelected = tempFavoriteGenres.contains(genre);
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                                   child: ElevatedButton(
@@ -85,28 +118,31 @@ class UserInfoScreen extends StatelessWidget {
                                       isSelected ? Colors.blue : Colors.grey,
                                     ),
                                     onPressed: () {
-                                      context
-                                          .read<GenreCubit>()
-                                          .toggleFavoriteGenre(genre);
+                                      setState(() {
+                                        if (isSelected) {
+                                          tempFavoriteGenres.remove(genre);
+                                        } else {
+                                          tempFavoriteGenres.add(genre);
+                                        }
+                                      });
                                     },
                                     child: Text(
                                       genre,
                                       style: TextStyle(
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Colors.black,
+                                        color:
+                                        isSelected ? Colors.white : Colors.black,
                                       ),
                                     ),
                                   ),
                                 );
                               },
-                            ),
-                          );
-                        } else if (genreState is GenreError) {
-                          return Center(child: Text(genreState.message));
-                        }
-                        return const Center(child: CircularProgressIndicator());
-                      },
+                            );
+                          } else if (genreState is GenreError) {
+                            return Center(child: Text(genreState.message));
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
                     ),
                   ],
                 ),
