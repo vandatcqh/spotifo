@@ -1,5 +1,4 @@
 import 'package:just_audio/just_audio.dart';
-import 'package:spotifo/domain/entities/song_entity.dart';
 import '../../domain/repositories/player_repository.dart';
 
 class PlayerRepositoryImpl implements PlayerRepository {
@@ -41,6 +40,24 @@ class PlayerRepositoryImpl implements PlayerRepository {
       await _audioPlayer.seek(position);
     } catch (e) {
       throw Exception("Error while seeking: $e");
+    }
+  }
+
+  @override
+  Stream<Duration> getPositionStream() {
+    try {
+      return _audioPlayer.positionStream;
+    } catch (e) {
+      throw Exception("Error while fetching position stream: $e");
+    }
+  }
+
+  @override
+  Stream<Duration?> getDurationStream() {
+    try {
+      return _audioPlayer.durationStream;
+    } catch (e) {
+      throw Exception("Error while fetching duration stream: $e");
     }
   }
 }

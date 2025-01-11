@@ -1,8 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
-
 import '../../../domain/usecases/pause_song.dart';
 import '../../../domain/usecases/play_song.dart';
 import '../../../domain/usecases/resume_song.dart';
@@ -20,74 +18,73 @@ class PlayerCubit extends Cubit<AppPlayerState> {
     required this.resumeSongUseCase,
     required this.seekSongUseCase,
   }) : super(PlayerInitial());
+
   SongEntity? _currentSong;
+  Duration _currentPosition = Duration.zero;
+  Duration _totalDuration = Duration.zero;
+
   Future<void> togglePlayPause(SongEntity song) async {
     try {
       if (state is PlayerInitial || _currentSong?.id != song.id) {
-        // Bắt đầu phát bài hát mới
-        emit(PlayerLoading());
-        await playSongUseCase.call(song.audioUrl);
+        // Khi bài hát mới được phát
+        listenToPositionStream();
         _currentSong = song;
-        emit(PlayerPlaying(song, const Duration()));
-        return;
-      }
+        _currentPosition = Duration.zero;
+        _totalDuration = Duration.zero;
+        emit(PlayerPlaying(song, _currentPosition, _totalDuration));
+        await playSongUseCase.call(song.audioUrl);
 
-      if (state is PlayerPlaying) {
-        // Pause bài hát hiện tại
-        final currentState = state as PlayerPlaying;
+        // Đảm bảo lắng nghe lại trạng thái luồng
+        listenToPositionStream();
+      } else if (state is PlayerPlaying) {
+        // Tạm dừng bài hát
+        emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
         await pauseSongUseCase.call();
-        emit(PlayerPaused(currentState.currentSong, currentState.position));
-        return;
-      }
-
-      if (state is PlayerPaused) {
-        // Resume bài hát hiện tại
-        final currentState = state as PlayerPaused;
-        await resumeSongUseCase.call();
-        emit(PlayerPlaying(currentState.currentSong, currentState.position));
-        return;
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot toggle play/pause: $e"));
-    }
-  }
-
-  Future<void> pauseSong() async {
-    try {
-      if (state is PlayerPlaying) {
-        final currentState = state as PlayerPlaying;
-        await pauseSongUseCase.call();
-        emit(PlayerPaused(currentState.currentSong, currentState.position));
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot pause song: $e"));
-    }
-  }
-
-  Future<void> resumeSong() async {
-    try {
-      if (state is PlayerPaused) {
-        final currentState = state as PlayerPaused;
-        await resumeSongUseCase.call();
-        emit(PlayerPlaying(currentState.currentSong, currentState.position));
-      }
-    } catch (e) {
-      emit(PlayerError("Cannot resume song: $e"));
-    }
-  }
-
-  Future<void> seekSong(Duration position) async {
-    try {
-      await seekSongUseCase.call(position);
-      if (state is PlayerPlaying) {
-        final currentState = state as PlayerPlaying;
-        emit(PlayerPlaying(currentState.currentSong, position));
       } else if (state is PlayerPaused) {
-        final currentState = state as PlayerPaused;
-        emit(PlayerPaused(currentState.currentSong, position));
+        // Tiếp tục phát
+        emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+        await resumeSongUseCase.call();
       }
     } catch (e) {
-      emit(PlayerError("Cannot seek song: $e"));
+      emit(PlayerError("Error toggling play/pause: $e"));
     }
+  }
+
+  Future<void> seekTo(Duration position) async {
+    try {
+      if (_currentSong != null) {
+        await seekSongUseCase.call(position);
+        _currentPosition = position;
+        if (state is PlayerPlaying) {
+          emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+        }
+      }
+    } catch (e) {
+      emit(PlayerError("Cannot seek: $e"));
+    }
+  }
+
+  void listenToPositionStream() {
+    // Lắng nghe vị trí hiện tại từ use case
+    playSongUseCase.positionStream.listen((position) {
+      _currentPosition = position;
+      if (state is PlayerPlaying) {
+        emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+      } else if (state is PlayerPaused) {
+        emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
+      }
+    });
+
+    // Lắng nghe tổng thời gian từ use case
+    playSongUseCase.durationStream.listen((duration) {
+      if (duration != null) {
+        _totalDuration = duration;
+        if (state is PlayerPlaying) {
+          emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+        } else if (state is PlayerPaused) {
+          emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
+        }
+      }
+    });
   }
 }
