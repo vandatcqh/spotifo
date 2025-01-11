@@ -4,9 +4,11 @@ import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:spotifo/domain/usecases/set_volume.dart';
 // ------------------- //
 //  Import Cubits     //
 // ------------------- //
+import 'domain/usecases/set_speed.dart';
 import 'presentation/cubit/auth/sign_in_cubit.dart';
 import 'presentation/cubit/auth/sign_up_cubit.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
@@ -130,7 +132,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PauseSongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => ResumeSongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => SeekSongUseCase(sl<PlayerRepository>()));
-
+  sl.registerLazySingleton(() => SetVolumeUseCase(sl<PlayerRepository>()));
+  sl.registerLazySingleton(() => SetSongSpeedUseCase(sl<PlayerRepository>()));
   // --- Cubits ---
   // Note:
   // - Use `registerFactory` for Cubits to ensure a new instance is created each time.
@@ -166,6 +169,8 @@ Future<void> init() async {
     pauseSongUseCase: sl(),
     resumeSongUseCase: sl(),
     seekSongUseCase: sl(),
+    setVolumeUseCase: sl(),
+    setSongSpeedUseCase: sl(),
   ));
 
 

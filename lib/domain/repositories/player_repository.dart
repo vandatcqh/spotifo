@@ -7,4 +7,6 @@ abstract class PlayerRepository {
   Future<void> pause();
   Future<void> resume();
   Future<void> seek(Duration position);
+  Future<void> setVolume(double volume);
+  Future<void> setPlaybackSpeed(double speed);
 }

@@ -14,7 +14,7 @@ class SongPlayerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final playerCubit = context.read<PlayerCubit>();
 
-    // Gọi _listenToPositionStream để đảm bảo trạng thái được cập nhật
+    // Gọi listenToPositionStream để đảm bảo trạng thái được cập nhật
     playerCubit.listenToPositionStream();
 
     return BlocProvider<PlayerCubit>.value(
@@ -46,6 +46,10 @@ class PlayerView extends StatelessWidget {
         Duration totalDuration = (state is PlayerPlaying || state is PlayerPaused)
             ? state.totalDuration
             : Duration.zero;
+
+        // Lấy giá trị âm lượng và tốc độ hiện tại từ cubit
+        double currentVolume = context.read<PlayerCubit>().currentVolume;
+        double currentSpeed = context.read<PlayerCubit>().playbackSpeed;
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -94,6 +98,44 @@ class PlayerView extends StatelessWidget {
                 children: [
                   Text(_formatDuration(currentPosition)),
                   Text(_formatDuration(totalDuration)),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Thanh kéo âm lượng
+              Row(
+                children: [
+                  const Icon(Icons.volume_down),
+                  Expanded(
+                    child: Slider(
+                      value: currentVolume,
+                      min: 0.0,
+                      max: 1.0,
+                      onChanged: (value) {
+                        context.read<PlayerCubit>().setVolume(value);
+                      },
+                    ),
+                  ),
+                  const Icon(Icons.volume_up),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Thanh kéo tốc độ
+              Row(
+                children: [
+                  const Icon(Icons.speed),
+                  Expanded(
+                    child: Slider(
+                      value: currentSpeed,
+                      min: 0.5,
+                      max: 2.0,
+                      divisions: 6,
+                      label: "${currentSpeed.toStringAsFixed(1)}x",
+                      onChanged: (value) {
+                        context.read<PlayerCubit>().setPlaybackSpeed(value);
+                      },
+                    ),
+                  ),
+                  const Text("2x"),
                 ],
               ),
               const SizedBox(height: 20),
