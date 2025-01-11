@@ -4,17 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Import necessary Cubit and screens
 import '../cubit/auth/sign_in_cubit.dart';
 import 'sign_up_screen/sign_up_screen.dart';
-import 'song_list_screen.dart';
+import 'home_screen/home_screen.dart';
 
 // Import service locator
 import '../../../injection_container.dart';
-import '../../../theme/custom_button_style.dart';
 import '../../../core/app_export.dart';
 import '../common_widgets/custom_elevated_button.dart';
 import '../common_widgets/custom_text_form_field.dart';
 
 class SignInScreen extends StatelessWidget {
-  SignInScreen({Key? key}) : super(key: key);
+  SignInScreen({super.key});
 
   final _formKey = GlobalKey<FormState>();
 
@@ -117,7 +116,7 @@ class SignInScreen extends StatelessWidget {
                                 if (state is SignInSuccess) {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (_) => SongListScreen(),
+                                      builder: (_) => HomeScreen(),
                                     ),
                                   );
                                 } else if (state is SignInFailure) {

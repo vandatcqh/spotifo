@@ -7,6 +7,8 @@ import '../../../injection_container.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
 
+import '../player/mini_player.dart';
+import '../player/player_screen.dart';
 import '../song_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -38,287 +40,254 @@ class HomeScreen extends StatelessWidget {
           ),
           centerTitle: true,
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Suggested for You Section
-                _buildBoxedSection(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SectionHeader(
-                        title: "Suggested For You",
-                        onIconPressed: () {
-                          // Add navigation logic for Suggested For You
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => SongListScreen(), // Replace with the correct screen
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      BlocBuilder<SongInfoCubit, SongInfoState>(
-                        builder: (context, state) {
-                          if (state is SongHotSongsLoaded) {
-                            final songs = state.songs;
-                            return SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: songs.map((song) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(right: 3.w),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                          BorderRadius.circular(12),
-                                          child: Image.network(
-                                            song.songImageUrl ?? '',
-                                            width: 20.w,
-                                            height: 20.w,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error,
-                                                stackTrace) {
-                                              return Container(
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Suggested for You Section
+                    _buildBoxedSection(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionHeader(
+                            title: "Suggested For You",
+                            onIconPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => SongListScreen(), // Replace with the correct screen
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 2.h),
+                          BlocBuilder<SongInfoCubit, SongInfoState>(
+                            builder: (context, state) {
+                              if (state is SongHotSongsLoaded) {
+                                final songs = state.songs;
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: songs.map((song) {
+                                      return Padding(
+                                        padding: EdgeInsets.only(right: 3.w),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                              child: Image.network(
+                                                song.songImageUrl ?? '',
                                                 width: 20.w,
                                                 height: 20.w,
-                                                color: Colors.grey.shade300,
-                                                child: const Icon(
-                                                  Icons.music_note,
-                                                  size: 40,
-                                                  color: Colors.grey,
-                                                ),
-                                              );
-                                            },
-                                          ),
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  return Container(
+                                                    width: 20.w,
+                                                    height: 20.w,
+                                                    color: Colors.grey.shade300,
+                                                    child: const Icon(
+                                                      Icons.music_note,
+                                                      size: 40,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            SizedBox(height: 1.h),
+                                            Text(
+                                              song.songName,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 10.sp,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              song.artistId,
+                                              style: TextStyle(
+                                                fontSize: 9.sp,
+                                                color: Colors.grey,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
                                         ),
-                                        SizedBox(height: 1.h),
-                                        Text(
-                                          song.songName,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 10.sp,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Text(
-                                          song.artistId,
-                                          style: TextStyle(
-                                            fontSize: 9.sp,
-                                            color: Colors.grey,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            );
-                          }
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 4.h),
-
-                // By Genre Section
-                _buildBoxedSection(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SectionHeader(
-                        title: "By Genre",
-                        onIconPressed: () {
-                          // Add navigation logic for Suggested For You
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => SongListScreen(), // Replace with the correct screen
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      Wrap(
-                        spacing: 4.w,
-                        runSpacing: 2.h,
-                        children: [
-                          _buildGenreChip(context, "Pop", Colors.purple),
-                          _buildGenreChip(context, "Blue", Colors.blue),
-                          _buildGenreChip(context, "Rock", Colors.red),
-                          _buildGenreChip(context, "Jazz", Colors.orange),
-                          _buildGenreChip(context, "Romance", Colors.pink),
-                          _buildGenreChip(context, "Indie", Colors.green),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 4.h),
-
-                // Top Charts Section
-                _buildBoxedSection(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SectionHeader(
-                        title: "Top Charts",
-                        onIconPressed: () {
-                          // Add navigation logic for Suggested For You
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => SongListScreen(), // Replace with the correct screen
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 2.h),
-                      BlocBuilder<SongInfoCubit, SongInfoState>(
-                        builder: (context, state) {
-                          if (state is SongHotSongsLoaded) {
-                            final songs = state.songs.take(5).toList();
-                            return Column(
-                              children: songs.map((song) {
-                                return ListTile(
-                                  leading: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                      song.songImageUrl ?? '',
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Container(
-                                          width: 50,
-                                          height: 50,
-                                          color: Colors.grey.shade300,
-                                          child: const Icon(
-                                            Icons.music_note,
-                                            size: 40,
-                                            color: Colors.grey,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  title: Text(
-                                    song.songName,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  subtitle: Text(song.artistId),
-                                  trailing: IconButton(
-                                    icon: const Icon(
-                                      Icons.play_circle_filled,
-                                      size: 40,
-                                      color: Colors.orange,
-                                    ),
-                                    onPressed: () {
-                                      context
-                                          .read<PlayerCubit>()
-                                          .togglePlayPause(song);
-                                    },
+                                      );
+                                    }).toList(),
                                   ),
                                 );
-                              }).toList(),
-                            );
-                          }
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        },
+                              }
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 4.h),
+                    ),
+                    SizedBox(height: 4.h),
 
-                // Mini Player
-                BlocBuilder<PlayerCubit, AppPlayerState>(
-                  builder: (context, state) {
-                    if (state is PlayerPlaying) {
-                      final song = state.currentSong;
-                      return _buildBoxedSection(
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                song.songImageUrl ?? '',
-                                width: 10.w,
-                                height: 10.w,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 10.w,
-                                    height: 10.w,
-                                    color: Colors.grey.shade300,
-                                    child: const Icon(
-                                      Icons.music_note,
-                                      size: 40,
-                                      color: Colors.grey,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 4.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    song.songName,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    song.artistId,
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.pause,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                context
-                                    .read<PlayerCubit>()
-                                    .togglePlayPause(song);
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
+                    // By Genre Section
+                    _buildBoxedSection(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionHeader(
+                            title: "By Genre",
+                            onIconPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => SongListScreen(), // Replace with the correct screen
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 2.h),
+                          Wrap(
+                            spacing: 4.w,
+                            runSpacing: 2.h,
+                            children: [
+                              _buildGenreChip(context, "Pop", Colors.purple),
+                              _buildGenreChip(context, "Blue", Colors.blue),
+                              _buildGenreChip(context, "Rock", Colors.red),
+                              _buildGenreChip(context, "Jazz", Colors.orange),
+                              _buildGenreChip(context, "Romance", Colors.pink),
+                              _buildGenreChip(context, "Indie", Colors.green),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+
+                    // Top Charts Section
+                    _buildBoxedSection(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionHeader(
+                            title: "Top Charts",
+                            onIconPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => SongListScreen(), // Replace with the correct screen
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 2.h),
+                          BlocBuilder<SongInfoCubit, SongInfoState>(
+                            builder: (context, state) {
+                              if (state is SongInfoLoading) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (state is SongHotSongsLoaded) {
+                                final songs = state.songs.take(5).toList(); // Display only 5 songs
+                                return BlocBuilder<PlayerCubit, AppPlayerState>(
+                                  builder: (context, playerState) {
+                                    return Column(
+                                      children: songs.map((song) {
+                                        bool isPlaying = playerState is PlayerPlaying &&
+                                            playerState.currentSong.id == song.id;
+
+                                        return ListTile(
+                                          leading: ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(
+                                              song.songImageUrl ?? '',
+                                              width: 50,
+                                              height: 50,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  color: Colors.grey.shade300,
+                                                  child: const Icon(
+                                                    Icons.music_note,
+                                                    size: 40,
+                                                    color: Colors.grey,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          title: Text(
+                                            song.songName,
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          subtitle: Text(song.artistId),
+                                          trailing: IconButton(
+                                            icon: Icon(
+                                              isPlaying
+                                                  ? Icons.pause_circle_filled
+                                                  : Icons.play_circle_filled,
+                                              size: 40,
+                                              color: isPlaying ? Colors.orange : Colors.grey,
+                                            ),
+                                            onPressed: () {
+                                              context.read<PlayerCubit>().togglePlayPause(song);
+                                            },
+                                          ),
+                                          onTap: () {
+                                            context.read<PlayerCubit>().listenToPositionStream();
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => SongPlayerScreen(song: song),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      }).toList(),
+                                    );
+                                  },
+                                );
+                              } else if (state is SongError) {
+                                return Center(child: Text('Error: \${state.error}'));
+                              }
+                              return const Center(child: Text('No songs available.'));
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+
+            // Mini Player
+            BlocBuilder<PlayerCubit, AppPlayerState>(
+              builder: (context, state) {
+                if (state is PlayerPlaying) {
+                  final song = state.currentSong;
+                  final isPlaying = true;
+                  return MiniPlayer(
+                    currentSong: song,
+                    isPlaying: isPlaying,
+                  );
+                } else if (state is PlayerPaused) {
+                  final song = state.currentSong;
+                  final isPlaying = false;
+                  return MiniPlayer(
+                    currentSong: song,
+                    isPlaying: isPlaying,
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const [
@@ -400,4 +369,3 @@ class SectionHeader extends StatelessWidget {
     );
   }
 }
-

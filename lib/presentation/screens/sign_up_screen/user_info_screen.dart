@@ -6,12 +6,12 @@ import '../../../theme/theme_helper.dart';
 import '../../cubit/user/user_info_cubit.dart';
 import '../../cubit/genre/genre_cubit.dart';
 import '../../cubit/genre/genre_state.dart';
-import '../song_list_screen.dart';
+import '../home_screen/home_screen.dart';
 import '../../common_widgets/custom_elevated_button.dart';
 import '../../../../injection_container.dart';
 
 class UserInfoScreen extends StatefulWidget {
-  UserInfoScreen({Key? key}) : super(key: key);
+  const UserInfoScreen({super.key});
 
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
@@ -220,7 +220,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                                 : () {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (_) => SongListScreen(),
+                                  builder: (_) => HomeScreen(),
                                 ),
                               );
                             },

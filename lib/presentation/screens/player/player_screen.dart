@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
-import '../../../injection_container.dart';
+import '../../../../injection_container.dart';
 
 class SongPlayerScreen extends StatelessWidget {
   final SongEntity song;
 
-  const SongPlayerScreen({Key? key, required this.song}) : super(key: key);
+  const SongPlayerScreen({super.key, required this.song});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class SongPlayerScreen extends StatelessWidget {
 class PlayerView extends StatelessWidget {
   final SongEntity song;
 
-  const PlayerView({Key? key, required this.song}) : super(key: key);
+  const PlayerView({super.key, required this.song});
 
   @override
   Widget build(BuildContext context) {
