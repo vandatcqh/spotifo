@@ -62,7 +62,7 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRemoteDataSource>(
         () => AuthRemoteDataSource(firebaseAuth: firebaseAuth),
   );
-  sl.registerLazySingleton<UserRemoteDataSource>(
+    sl.registerLazySingleton<UserRemoteDataSource>(
         () => UserRemoteDataSource(firestore: firebaseFirestore),
   );
   sl.registerLazySingleton<GenreRemoteDataSource>(
