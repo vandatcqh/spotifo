@@ -117,4 +117,28 @@ class UserInfoCubit extends Cubit<UserInfoState> {
       }
     }
   }
+  Future<void> updateFullName(String fullName) async {
+    if (state is UserInfoLoaded) {
+      final currentState = state as UserInfoLoaded;
+      final user = currentState.user;
+
+      // Tạo một bản sao mới của user với fullName được cập nhật
+      final updatedUser = user.copyWith(fullName: fullName);
+
+      emit(UserInfoUpdating()); // Emit trạng thái đang cập nhật
+
+      try {
+        // Gửi yêu cầu cập nhật thông tin người dùng
+        await updateUserProfileUseCase.updateFullName(fullName);
+
+        // Cập nhật thành công, emit trạng thái mới với user đã cập nhật
+        emit(UserInfoLoaded(updatedUser));
+      } catch (e) {
+        // Nếu lỗi xảy ra, emit trạng thái lỗi
+        emit(UserInfoFailure("Không thể cập nhật tên đầy đủ."));
+      }
+    }
+  }
+
+
 }

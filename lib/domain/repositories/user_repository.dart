@@ -1,8 +1,8 @@
-// domain/repositories/auth_repository.dart
+// domain/repositories/user_repository.dart
 
 import '../entities/user_entity.dart';
 
-abstract class AuthRepository {
+abstract class UserRepository {
   /// Đăng ký tài khoản
   Future<UserEntity> signUp({
     required String email,
@@ -28,4 +28,5 @@ abstract class AuthRepository {
 
   /// Cập nhật thông tin user
   Future<UserEntity> updateUserProfile(UserEntity updatedUser);
+  Future<void> updateFullName(String fullName);
 }

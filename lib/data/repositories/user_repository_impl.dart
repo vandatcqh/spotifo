@@ -1,16 +1,16 @@
-// data/repositories/auth_repository_impl.dart
+// data/repositories/user_repository_impl.dart
 
 import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/user_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../datasources/user_remote_datasource.dart';
 import '../models/user_model.dart';
 
-class AuthRepositoryImpl implements AuthRepository {
+class UserRepositoryImpl implements UserRepository {
   final AuthRemoteDataSource authRemoteDataSource;
   final UserRemoteDataSource userRemoteDataSource;
 
-  AuthRepositoryImpl({
+  UserRepositoryImpl({
     required this.authRemoteDataSource,
     required this.userRemoteDataSource,
   });
@@ -103,7 +103,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserEntity?> getCurrentUser() async {
     try {
-      UserEntity? userEntity = await authRemoteDataSource.getCurrentUser();
+      UserEntity? userEntity = await userRemoteDataSource.getCurrentUser();
       if (userEntity != null) {
         // Lấy dữ liệu user từ Firestore
         UserModel userModel = await userRemoteDataSource.getUser(userEntity.id);
@@ -149,6 +149,14 @@ class AuthRepositoryImpl implements AuthRepository {
       return updatedUser;
     } catch (e) {
       throw Exception("AuthRepositoryImpl updateUserProfile Failed: $e");
+    }
+  }
+  @override
+  Future<void> updateFullName(String fullName) async {
+    try {
+      await userRemoteDataSource.updateFullName(fullName);
+    } catch (e) {
+      throw Exception("UserRepositoryImpl updateFullName Failed: $e");
     }
   }
 }

@@ -25,7 +25,7 @@ import 'domain/usecases/sign_out.dart';
 import 'domain/usecases/get_all_genre.dart';
 import 'domain/usecases/update_user_profile.dart';
 import 'domain/usecases/artist_follow_usecase.dart';
-import 'domain/repositories/auth_repository.dart';
+import 'domain/repositories/user_repository.dart';
 import 'domain/repositories/genre_repository.dart';
 import 'domain/usecases/get_hot_artists.dart';
 import 'domain/repositories/artist_repository.dart';
@@ -44,7 +44,7 @@ import 'data/datasources/auth_remote_datasource.dart';
 import 'data/datasources/user_remote_datasource.dart';
 import 'data/datasources/genre_remote_datasource.dart';
 import 'data/datasources/artist_remote_datasource.dart';
-import 'data/repositories/auth_repository_impl.dart';
+import 'data/repositories/user_repository_impl.dart';
 import 'data/repositories/genre_repository_impl.dart';
 import 'data/repositories/artist_repository_impl.dart';
 import 'data/datasources/song_remote_datasource.dart';
@@ -62,8 +62,8 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRemoteDataSource>(
         () => AuthRemoteDataSource(firebaseAuth: firebaseAuth),
   );
-    sl.registerLazySingleton<UserRemoteDataSource>(
-        () => UserRemoteDataSource(firestore: firebaseFirestore),
+  sl.registerLazySingleton<UserRemoteDataSource>(
+        () => UserRemoteDataSource(firestore: firebaseFirestore, firebaseAuth: firebaseAuth),
   );
   sl.registerLazySingleton<GenreRemoteDataSource>(
         () => GenreRemoteDataSource(firestore: firebaseFirestore),
@@ -76,8 +76,8 @@ Future<void> init() async {
   );
 
   // --- Repositories ---
-  sl.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(
+  sl.registerLazySingleton<UserRepository>(
+        () => UserRepositoryImpl(
       authRemoteDataSource: sl(),
       userRemoteDataSource: sl(),
     ),

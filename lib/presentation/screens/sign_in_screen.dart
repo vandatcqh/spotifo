@@ -35,7 +35,7 @@ class SignInScreen extends StatelessWidget {
             if (state is SignInSuccess) {
               // Điều hướng đến màn hình thông tin user
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => SongListScreen()),
+                MaterialPageRoute(builder: (_) => UserInfoScreen()),
               );
             } else if (state is SignInFailure) {
               ScaffoldMessenger.of(context).showSnackBar(

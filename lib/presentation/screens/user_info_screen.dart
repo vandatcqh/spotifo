@@ -41,7 +41,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 context.read<UserInfoCubit>().signOut();
               },
             ),
-            // Thêm nút Save
+            // Nút Save
             BlocBuilder<UserInfoCubit, UserInfoState>(
               builder: (context, state) {
                 if (state is UserInfoLoaded) {
@@ -49,6 +49,48 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     icon: const Icon(Icons.save),
                     onPressed: () {
                       context.read<UserInfoCubit>().updateFavoriteGenres(tempFavoriteGenres);
+                    },
+                  );
+                }
+                return SizedBox.shrink();
+              },
+            ),
+            // Nút Đổi Tên
+            BlocBuilder<UserInfoCubit, UserInfoState>(
+              builder: (context, state) {
+                if (state is UserInfoLoaded) {
+                  return IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () async {
+                      final newName = await showDialog<String>(
+                        context: context,
+                        builder: (context) {
+                          String? tempName = state.user.fullName;
+                          return AlertDialog(
+                            title: const Text('Đổi tên'),
+                            content: TextField(
+                              onChanged: (value) {
+                                tempName = value;
+                              },
+                              decoration: const InputDecoration(hintText: 'Nhập tên mới'),
+                              controller: TextEditingController(text: state.user.fullName),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Hủy'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(tempName),
+                                child: const Text('Lưu'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      if (newName != null && newName.trim().isNotEmpty) {
+                        context.read<UserInfoCubit>().updateFullName(newName.trim());
+                      }
                     },
                   );
                 }
