@@ -5,8 +5,7 @@ import 'package:sizer/sizer.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
-import 'presentation/screens/sign_in_screen.dart';
-import 'presentation/screens/sign_up_screen/user_info_screen.dart';
+import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/list_artist_screen.dart';
 import 'injection_container.dart' as di;
 
@@ -39,7 +38,7 @@ class MyApp extends StatelessWidget {
               title: 'Flutter Clean Architecture với Firebase',
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
-              home: SignInScreen(),
+              home: SplashScreen(),
               routes: {
                 '/artists': (context) => const ListArtistScreen(),
                 // Thêm các route khác nếu cần
