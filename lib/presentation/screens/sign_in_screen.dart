@@ -111,46 +111,45 @@ class SignInScreen extends StatelessWidget {
                               thickness: 0.1.h,
                               color: appTheme.blueGray800,
                             ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 5.h),
-                      BlocListener<SignInCubit, SignInState>(
-                        listener: (context, state) {
-                          if (state is SignInSuccess) {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (_) => SongListScreen(),
-                              ),
-                            );
-                          } else if (state is SignInFailure) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(state.error)),
-                            );
-                          }
-                        },
-                        child: BlocBuilder<SignInCubit, SignInState>(
-                          builder: (context, state) {
-                            if (state is SignInLoading) {
-                              return const CircularProgressIndicator();
-                            }
-                            return CustomElevatedButton(
-                              height: 6.h,
-                              width: 80.w,
-                              text: "Sign in",
-                              buttonStyle: CustomButtonStyles.fillPrimary,
-                              buttonTextStyle:
-                              CustomTextStyles.titleMediumSemiBold,
-                              onPressed: () {
-                                if (_formKey.currentState?.validate() ?? false) {
-                                  context.read<SignInCubit>().signIn(
-                                    email: emailController.text,
-                                    password: passwordController.text,
+                            SizedBox(height: 5.h),
+                            BlocListener<SignInCubit, SignInState>(
+                              listener: (context, state) {
+                                if (state is SignInSuccess) {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (_) => SongListScreen(),
+                                    ),
+                                  );
+                                } else if (state is SignInFailure) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(state.error)),
                                   );
                                 }
                               },
-                            );
-                          },
+                              child: BlocBuilder<SignInCubit, SignInState>(
+                                builder: (context, state) {
+                                  if (state is SignInLoading) {
+                                    return const CircularProgressIndicator();
+                                  }
+                                  return CustomElevatedButton(
+                                    height: 6.h,
+                                    width: 80.w,
+                                    text: "Sign in",
+                                    buttonTextStyle:
+                                    CustomTextStyles.titleMediumSemiBold,
+                                    onPressed: () {
+                                      if (_formKey.currentState?.validate() ?? false) {
+                                        context.read<SignInCubit>().signIn(
+                                          email: emailController.text,
+                                          password: passwordController.text,
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(height: 3.h),
