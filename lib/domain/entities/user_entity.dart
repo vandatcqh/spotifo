@@ -29,6 +29,33 @@ class UserEntity {
     this.favoriteGenres = const [],
   });
 
-// Nếu cần, có thể thêm copyWith, toJson, fromJson...
-// NHƯNG nên để ở tầng data.
+  UserEntity copyWith({
+    String? id,
+    String? username,
+    String? password,
+    String? fullName,
+    DateTime? dateOfBirth,
+    String? gender,
+    String? avatarUrl,
+    List<String>? favoriteArtists,
+    List<String>? favoriteSongs,
+    List<String>? favoriteAlbums,
+    List<String>? favoriteGenres,
+  }) {
+    return UserEntity(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      password: password ?? this.password,
+      fullName: fullName ?? this.fullName,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      gender: gender ?? this.gender,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      favoriteArtists: favoriteArtists ?? this.favoriteArtists,
+      favoriteSongs: favoriteSongs ?? this.favoriteSongs,
+      favoriteAlbums: favoriteAlbums ?? this.favoriteAlbums,
+      favoriteGenres: favoriteGenres ?? this.favoriteGenres,
+    );
+  }
+
+// Implement toJson and fromJson if needed
 }

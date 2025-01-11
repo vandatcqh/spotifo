@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/auth/sign_in_cubit.dart';
 import 'sign_up_screen.dart';
 import 'user_info_screen.dart';
+import 'list_artist_screen.dart';
+import 'song_list_screen.dart';
 
 // Import service locator
 import '../../../injection_container.dart';
