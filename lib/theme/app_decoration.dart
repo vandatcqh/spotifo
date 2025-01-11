@@ -185,6 +185,19 @@ class AppDecoration {
       BoxDecoration(
         color: appTheme.lightGreen50.withOpacity(0.4),
       );
+
+  static final BoxDecoration fillLightOrange = BoxDecoration(
+    color: Colors.orange.shade100, // Light orange shade
+    borderRadius: BorderRadius.circular(12), // Rounded corners
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha : 0.1), // Subtle shadow
+        spreadRadius: 1,
+        blurRadius: 5,
+        offset: Offset(0, 2), // Shadow position
+      ),
+    ],
+  );
 }
 
 class BorderRadiusStyle {

@@ -161,4 +161,10 @@ class CustomTextStyles {
       theme.textTheme.titleSmall!.copyWith(
         color: appTheme.teal900,
       );
+
+  static const TextStyle bodySmall = TextStyle(
+    fontSize: 12, // Adjust as needed
+    fontWeight: FontWeight.w400, // Regular weight
+    color: Colors.grey, // Default color, can be overridden
+  );
 }

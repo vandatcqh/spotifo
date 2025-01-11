@@ -23,7 +23,7 @@ class SignInScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Sizer(builder: (context, orientation, deviceType) {
+
       return BlocProvider(
         create: (_) => sl<SignInCubit>(),
         child: Scaffold(
@@ -171,6 +171,6 @@ class SignInScreen extends StatelessWidget {
           ),
         ),
       );
-    });
+
   }
 }
