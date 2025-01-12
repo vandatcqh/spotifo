@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotifo/presentation/screens/queue_screen.dart';
+import 'package:spotifo/presentation/screens/search_screen.dart';
 
 // Chỉ import Cubit và các screen cần thiết
 import '../cubit/auth/sign_in_cubit.dart';
@@ -36,7 +37,7 @@ class SignInScreen extends StatelessWidget {
             if (state is SignInSuccess) {
               // Điều hướng đến màn hình thông tin user
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => QueueScreen()),
+                MaterialPageRoute(builder: (_) => CloudFunctionTestScreen()),
               );
             } else if (state is SignInFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
