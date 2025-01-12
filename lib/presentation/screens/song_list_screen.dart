@@ -78,7 +78,7 @@ class SongListScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SongPlayerScreen(song: song),
+                                  builder: (context) => PlayerView(song: song),
                                 ),
                               );
                             },

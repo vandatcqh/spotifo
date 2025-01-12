@@ -12,6 +12,8 @@ class PlayerCubit extends Cubit<AppPlayerState> {
   final ResumeSongUseCase resumeSongUseCase;
   final SeekSongUseCase seekSongUseCase;
 
+  bool _isFirstLoad = true; // Track if the song is on its first load
+
   PlayerCubit({
     required this.playSongUseCase,
     required this.pauseSongUseCase,
@@ -26,22 +28,24 @@ class PlayerCubit extends Cubit<AppPlayerState> {
   Future<void> togglePlayPause(SongEntity song) async {
     try {
       if (state is PlayerInitial || _currentSong?.id != song.id) {
-        // Khi bài hát mới được phát
+        // New song is being loaded
         listenToPositionStream();
         _currentSong = song;
         _currentPosition = Duration.zero;
         _totalDuration = Duration.zero;
+
         emit(PlayerPlaying(song, _currentPosition, _totalDuration));
         await playSongUseCase.call(song.audioUrl);
-
-        // Đảm bảo lắng nghe lại trạng thái luồng
+        _isFirstLoad = false; // Set first load flag
+        // Ensure the streams are listened to again
         listenToPositionStream();
       } else if (state is PlayerPlaying) {
-        // Tạm dừng bài hát
+        // Pause the song
         emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
         await pauseSongUseCase.call();
       } else if (state is PlayerPaused) {
-        // Tiếp tục phát
+        // Resume playback
+        _isFirstLoad = false; // Reset first load flag
         emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
         await resumeSongUseCase.call();
       }
@@ -53,11 +57,20 @@ class PlayerCubit extends Cubit<AppPlayerState> {
   Future<void> seekTo(Duration position) async {
     try {
       if (_currentSong != null) {
+        // Update the current position
         await seekSongUseCase.call(position);
         _currentPosition = position;
-        if (state is PlayerPlaying) {
+
+        // Emit updated state if already playing
+
+        emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+
+        if(state is PlayerPaused)
+        {
           emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+          await resumeSongUseCase.call();
         }
+
       }
     } catch (e) {
       emit(PlayerError("Cannot seek: $e"));
@@ -65,19 +78,24 @@ class PlayerCubit extends Cubit<AppPlayerState> {
   }
 
   void listenToPositionStream() {
-    // Lắng nghe vị trí hiện tại từ use case
-    playSongUseCase.positionStream.listen((position) {
+    playSongUseCase.positionStream.listen((position) async {
       _currentPosition = position;
       if (state is PlayerPlaying) {
         emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
       } else if (state is PlayerPaused) {
         emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
       }
+
+      if(!isFirstLoad && _currentPosition >= _totalDuration)
+      {
+        emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
+        await pauseSongUseCase.call();
+      }
+
     });
 
-    // Lắng nghe tổng thời gian từ use case
     playSongUseCase.durationStream.listen((duration) {
-      if (duration != null) {
+      if (duration != null && duration != Duration.zero) {
         _totalDuration = duration;
         if (state is PlayerPlaying) {
           emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
@@ -87,4 +105,25 @@ class PlayerCubit extends Cubit<AppPlayerState> {
       }
     });
   }
+
+  Future<void> replay() async {
+    try {
+      if (_currentSong != null) {
+        // Stop and reset the audio player if necessary
+        await playSongUseCase.call(_currentSong!.audioUrl); // Reset the audio stream
+
+        // Seek to the beginning of the song
+        await seekSongUseCase.call(Duration.zero);
+        _currentPosition = Duration.zero;
+
+        // Replay the song
+        emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+      }
+    } catch (e) {
+      emit(PlayerError("Cannot replay: $e"));
+    }
+  }
+
+
+  bool get isFirstLoad => _isFirstLoad; // Expose first load status to the UI
 }

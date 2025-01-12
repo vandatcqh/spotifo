@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubit/player/player_cubit.dart';
-import '../../cubit/player/player_state.dart';
 import '../../../domain/entities/song_entity.dart';
 import 'player_screen.dart';
 
@@ -12,10 +11,10 @@ class MiniPlayer extends StatelessWidget {
   final bool isPlaying;
 
   const MiniPlayer({
-    Key? key,
+    super.key,
     required this.currentSong,
     required this.isPlaying,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,7 @@ class MiniPlayer extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => SongPlayerScreen(song: currentSong),
+              builder: (_) => PlayerView(song: currentSong),
             ),
           );
         },
