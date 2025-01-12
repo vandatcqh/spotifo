@@ -17,10 +17,10 @@ class QueueScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<QueueCubit>.value(
-          value: sl<QueueCubit>(), // Sử dụng Singleton QueueCubit từ Service Locator
+          value: sl<QueueCubit>(),
         ),
         BlocProvider<PlayerCubit>.value(
-          value: sl<PlayerCubit>(), // Sử dụng Singleton PlayerCubit
+          value: sl<PlayerCubit>(),
         ),
         BlocProvider<SongInfoCubit>(
           create: (_) => sl<SongInfoCubit>()..fetchHotSongs(),
@@ -39,102 +39,108 @@ class QueueScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.play_arrow),
               onPressed: () {
-                context.read<QueueCubit>().playNextInQueue(context.read<PlayerCubit>());
+                context
+                    .read<QueueCubit>()
+                    .playNextInQueue(context.read<PlayerCubit>());
               },
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Hiển thị bài hát đang phát
-              BlocBuilder<PlayerCubit, AppPlayerState>(
-                builder: (context, state) {
-                  if (state is PlayerPlaying || state is PlayerPaused) {
-                    final currentSong = (state as dynamic).currentSong;
-                    if (currentSong != null) {
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Now Playing",
-                              style: Theme.of(context).textTheme.titleLarge,
+        body: Column(
+          children: [
+            // Hiển thị bài hát đang phát
+            BlocBuilder<PlayerCubit, AppPlayerState>(
+              builder: (context, state) {
+                if (state is PlayerPlaying || state is PlayerPaused) {
+                  final currentSong = (state as dynamic).currentSong;
+                  if (currentSong != null) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Now Playing",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 16),
+                          currentSong.songImageUrl != null
+                              ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              currentSong.songImageUrl!,
+                              width: 180,
+                              height: 180,
+                              fit: BoxFit.cover,
                             ),
-                            const SizedBox(height: 16),
-                            currentSong.songImageUrl != null
-                                ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                currentSong.songImageUrl!,
-                                width: 180,
-                                height: 180,
-                                fit: BoxFit.cover,
+                          )
+                              : const Icon(Icons.music_note, size: 180),
+                          const SizedBox(height: 16),
+                          Text(
+                            currentSong.songName,
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          Text(
+                            currentSong.artistId,
+                            style: const TextStyle(color: Colors.grey),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.skip_previous),
+                                iconSize: 48,
+                                onPressed: () {
+                                  context
+                                      .read<QueueCubit>()
+                                      .playPreviousInQueue(
+                                      context.read<PlayerCubit>());
+                                },
                               ),
-                            )
-                                : const Icon(Icons.music_note, size: 180),
-                            const SizedBox(height: 16),
-                            Text(
-                              currentSong.songName,
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                            Text(
-                              currentSong.artistId,
-                              style: const TextStyle(color: Colors.grey),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.skip_previous),
-                                  iconSize: 48,
-                                  onPressed: () {
-                                    context
-                                        .read<QueueCubit>()
-                                        .playPreviousInQueue(context.read<PlayerCubit>());
-                                  },
+                              IconButton(
+                                icon: Icon(
+                                  state is PlayerPlaying
+                                      ? Icons.pause_circle_filled
+                                      : Icons.play_circle_filled,
                                 ),
-                                IconButton(
-                                  icon: Icon(
-                                    state is PlayerPlaying
-                                        ? Icons.pause_circle_filled
-                                        : Icons.play_circle_filled,
-                                  ),
-                                  iconSize: 64,
-                                  onPressed: () {
-                                    context.read<PlayerCubit>().togglePlayPause(currentSong);
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.skip_next),
-                                  iconSize: 48,
-                                  onPressed: () {
-                                    context
-                                        .read<QueueCubit>()
-                                        .playNextInQueue(context.read<PlayerCubit>());
-                                  },
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      );
-                    }
+                                iconSize: 64,
+                                onPressed: () {
+                                  context
+                                      .read<PlayerCubit>()
+                                      .togglePlayPause(currentSong);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.skip_next),
+                                iconSize: 48,
+                                onPressed: () {
+                                  context
+                                      .read<QueueCubit>()
+                                      .playNextInQueue(
+                                      context.read<PlayerCubit>());
+                                },
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    );
                   }
-                  return const Center(child: Text("No song playing"));
-                },
-              ),
-              // Hiển thị danh sách queue
-              BlocBuilder<SongInfoCubit, SongInfoState>(
+                }
+                return const Center(child: Text("No song playing"));
+              },
+            ),
+            // Hiển thị danh sách queue
+            Expanded(
+              child: BlocBuilder<SongInfoCubit, SongInfoState>(
                 builder: (context, songState) {
                   if (songState is SongHotSongsLoaded) {
                     final songs = songState.songs;
@@ -150,62 +156,68 @@ class QueueScreen extends StatelessWidget {
                         if (queueState is QueueLoaded) {
                           final queue = queueState.queue;
 
-                          return ReorderableListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
+                          return ReorderableListView(
                             onReorder: (oldIndex, newIndex) {
                               if (newIndex > oldIndex) newIndex--;
-                              final updatedQueue = List<SongEntity>.from(queue);
+                              final updatedQueue =
+                              List<SongEntity>.from(queue);
                               final song = updatedQueue.removeAt(oldIndex);
                               updatedQueue.insert(newIndex, song);
-                              context.read<QueueCubit>().updateQueueSongs(updatedQueue);
+
+                              // Cập nhật trạng thái hàng đợi trong QueueCubit
+                              context
+                                  .read<QueueCubit>()
+                                  .updateQueueSongs(updatedQueue);
+
+                              // Kiểm tra bài hát hiện tại và cập nhật index
+                              final currentSong =
+                                  (context.read<PlayerCubit>().state
+                                  as PlayerPlaying)
+                                      .currentSong;
+                              if (currentSong != null &&
+                                  updatedQueue.contains(currentSong)) {
+                                final currentIndex =
+                                updatedQueue.indexOf(currentSong);
+                                context
+                                    .read<QueueCubit>()
+                                    .updateCurrentIndex(currentIndex);
+                              }
                             },
-                            itemCount: queue.length,
-                            itemBuilder: (context, index) {
-                              final song = queue[index];
-                              return Dismissible(
-                                key: ValueKey(song.id),
-                                background: Container(
-                                  color: Colors.red,
-                                  alignment: Alignment.centerLeft,
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                                  child:
-                                  const Icon(Icons.delete, color: Colors.white),
+                            children: queue
+                                .map((song) => ListTile(
+                              key: ValueKey(song.id),
+                              leading: song.songImageUrl != null
+                                  ? ClipRRect(
+                                borderRadius:
+                                BorderRadius.circular(8),
+                                child: Image.network(
+                                  song.songImageUrl!,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
                                 ),
-                                onDismissed: (direction) {
-                                  context.read<QueueCubit>().removeSongFromQueue(song);
-                                },
-                                child: ListTile(
-                                  key: ValueKey(song.id),
-                                  leading: song.songImageUrl != null
-                                      ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                      song.songImageUrl!,
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                      : const Icon(Icons.music_note, size: 50),
-                                  title: Text(
-                                    song.songName,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                  subtitle: Text(
-                                    song.artistId,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                  trailing: const Icon(Icons.drag_handle),
-                                  onTap: () {
-                                    context.read<PlayerCubit>().togglePlayPause(song);
-                                  },
-                                ),
-                              );
-                            },
+                              )
+                                  : const Icon(Icons.music_note,
+                                  size: 50),
+                              title: Text(
+                                song.songName,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              subtitle: Text(
+                                song.artistId,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              trailing: const Icon(Icons.drag_handle),
+                              onTap: () {
+                                context
+                                    .read<QueueCubit>()
+                                    .selectAndPlaySong(song,
+                                    context.read<PlayerCubit>());
+                              },
+                            ))
+                                .toList(),
                           );
                         }
                         return const Center(child: Text("Queue is empty"));
@@ -218,8 +230,8 @@ class QueueScreen extends StatelessWidget {
                   }
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

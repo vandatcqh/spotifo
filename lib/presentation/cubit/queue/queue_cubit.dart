@@ -86,20 +86,6 @@ class QueueCubit extends Cubit<QueueState> {
     }
   }
 
-  Future<void> updateQueueSongs(List<SongEntity> newQueue) async {
-    try {
-      print("Updating queue...");
-      await updateQueue(newQueue);
-      final updatedQueue = await fetchQueue(); // Fetch lại để đảm bảo đồng bộ
-      _queue = List.from(updatedQueue);
-      print("Queue updated successfully. Current queue length: ${_queue.length}");
-      emit(QueueLoaded(queue: _queue, currentSong: _currentSong));
-    } catch (e) {
-      print("Error updating queue: $e");
-      emit(QueueError('Failed to update queue: $e'));
-    }
-  }
-
   SongEntity? get _currentSong {
     if (_currentIndex >= 0 && _currentIndex < _queue.length) {
       return _queue[_currentIndex];
@@ -185,6 +171,30 @@ class QueueCubit extends Cubit<QueueState> {
     } catch (e) {
       print("Error adding songs to queue: $e");
       emit(QueueError("Failed to add songs to queue: $e"));
+    }
+  }
+
+  void updateCurrentIndex(int newIndex) {
+    _currentIndex = newIndex;
+    emit(QueueLoaded(queue: List.from(_queue), currentSong: _currentSong));
+  }
+
+  Future<void> updateQueueSongs(List<SongEntity> newQueue) async {
+    try {
+      print("Updating queue...");
+      await updateQueue(newQueue);
+      _queue = List.from(newQueue);
+
+      // Kiểm tra nếu bài hát hiện tại thay đổi vị trí
+      if (_currentSong != null && _queue.contains(_currentSong)) {
+        _currentIndex = _queue.indexOf(_currentSong!);
+      }
+
+      print("Queue updated successfully. Current queue length: ${_queue.length}");
+      emit(QueueLoaded(queue: _queue, currentSong: _currentSong));
+    } catch (e) {
+      print("Error updating queue: $e");
+      emit(QueueError('Failed to update queue: $e'));
     }
   }
 }
