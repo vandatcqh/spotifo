@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sizer/sizer.dart';
+import 'package:spotifo/presentation/cubit/favoriteSongs/favorite_songs_cubit.dart';
+import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
+import 'package:spotifo/presentation/screens/favorite_songs_screen.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
@@ -37,6 +40,8 @@ class MyApp extends StatelessWidget {
               BlocProvider(create: (_) => di.sl<PlayerCubit>()),
               BlocProvider<FavoriteArtistsCubit>(create: (_) => di.sl<FavoriteArtistsCubit>()..fetchFavoriteArtists()),
               BlocProvider<ArtistCubit>(create: (_) => di.sl<ArtistCubit>()..fetchArtists()),
+              BlocProvider<FavoriteSongsCubit>(create: (_) => di.sl<FavoriteSongsCubit>()..fetchFavoriteSongs()),
+              BlocProvider<SongInfoCubit>(create: (_) => di.sl<SongInfoCubit>()..fetchHotSongs()),
               // Thêm các Cubit khác nếu cần
             ],
             child: MaterialApp(
@@ -46,6 +51,7 @@ class MyApp extends StatelessWidget {
               home: SplashScreen(),
               routes: {
                 '/favorite_artists': (context) => const FavoriteArtistScreen(),
+                '/favorite_songs': (context) => const FavoriteSongsScreen(),
                 '/libra': (context) => const LibraryScreen(),
                 // Thêm các route khác nếu cần
               },
