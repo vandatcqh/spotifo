@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:spotifo/presentation/cubit/queue/queue_cubit.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
           create: (_) => di.sl<UserInfoCubit>(),
         ),
         BlocProvider(create: (_) => di.sl<PlayerCubit>()),
+        BlocProvider(create: (_) => di.sl<QueueCubit>()),
         // Thêm các Cubit khác nếu cần
       ],
       child: MaterialApp(

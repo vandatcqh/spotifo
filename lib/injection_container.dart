@@ -189,7 +189,7 @@ Future<void> init() async {
     setSongSpeedUseCase: sl(),
   ));
 
-  sl.registerFactory(() => QueueCubit(
+  sl.registerLazySingleton(() => QueueCubit(
     fetchQueue: sl(),
     addToQueue: sl(),
     removeFromQueue: sl(),

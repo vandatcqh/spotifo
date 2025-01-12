@@ -16,11 +16,11 @@ class QueueScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<QueueCubit>(
-          create: (_) => sl<QueueCubit>(),
+        BlocProvider<QueueCubit>.value(
+          value: sl<QueueCubit>(), // Sử dụng Singleton QueueCubit từ Service Locator
         ),
         BlocProvider<PlayerCubit>.value(
-          value: sl<PlayerCubit>(),
+          value: sl<PlayerCubit>(), // Sử dụng Singleton PlayerCubit
         ),
         BlocProvider<SongInfoCubit>(
           create: (_) => sl<SongInfoCubit>()..fetchHotSongs(),
@@ -168,8 +168,10 @@ class QueueScreen extends StatelessWidget {
                                 background: Container(
                                   color: Colors.red,
                                   alignment: Alignment.centerLeft,
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                                  child: const Icon(Icons.delete, color: Colors.white),
+                                  padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                                  child:
+                                  const Icon(Icons.delete, color: Colors.white),
                                 ),
                                 onDismissed: (direction) {
                                   context.read<QueueCubit>().removeSongFromQueue(song);
@@ -199,9 +201,7 @@ class QueueScreen extends StatelessWidget {
                                   ),
                                   trailing: const Icon(Icons.drag_handle),
                                   onTap: () {
-                                    context
-                                        .read<QueueCubit>()
-                                        .selectAndPlaySong(song, context.read<PlayerCubit>());
+                                    context.read<PlayerCubit>().togglePlayPause(song);
                                   },
                                 ),
                               );
