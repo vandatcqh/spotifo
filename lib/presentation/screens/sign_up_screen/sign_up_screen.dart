@@ -13,9 +13,8 @@ import '../../../../injection_container.dart';
 import '../../../theme/custom_button_style.dart';
 import '../../../core/app_export.dart';
 
-
 class SignUpScreen extends StatelessWidget {
-  SignUpScreen({Key? key}) : super(key: key);
+  SignUpScreen({super.key});
 
   final _formKey = GlobalKey<FormState>();
 
@@ -28,7 +27,7 @@ class SignUpScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<SignUpCubit>(),
       child: Scaffold(
-        backgroundColor: appTheme.lightGreen50,
+        backgroundColor: colorTheme.surface,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -43,9 +42,9 @@ class SignUpScreen extends StatelessWidget {
                         horizontal: 5.w,
                         vertical: 5.h,
                       ),
-                      decoration: AppDecoration.gradientPrimaryToLightGreen
-                          .copyWith(
-                        borderRadius: BorderRadiusStyle.roundedBorder10,
+                      decoration:
+                          AppDecoration.gradientC.copyWith(
+                        borderRadius: BorderRadius.circular(10.h),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,13 +52,13 @@ class SignUpScreen extends StatelessWidget {
                           Center(
                             child: Text(
                               "Create an Account",
-                              style: CustomTextStyles.headlineMediumBold,
+                              style: textTheme.headlineMedium?.withBold(),
                             ),
                           ),
                           SizedBox(height: 2.h),
                           Text(
                             "Full Name",
-                            style: CustomTextStyles.titleMediumSemiBold,
+                            style: textTheme.titleMedium,
                           ),
                           CustomTextFormField(
                             controller: fullNameController,
@@ -78,7 +77,7 @@ class SignUpScreen extends StatelessWidget {
                           SizedBox(height: 2.h),
                           Text(
                             "Email",
-                            style: CustomTextStyles.titleMediumSemiBold,
+                            style: textTheme.titleMedium,
                           ),
                           CustomTextFormField(
                             controller: emailController,
@@ -91,7 +90,7 @@ class SignUpScreen extends StatelessWidget {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
                               } else if (!RegExp(
-                                  r"^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$")
+                                      r"^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$")
                                   .hasMatch(value)) {
                                 return 'Invalid email format';
                               }
@@ -101,7 +100,7 @@ class SignUpScreen extends StatelessWidget {
                           SizedBox(height: 2.h),
                           Text(
                             "Password",
-                            style: CustomTextStyles.titleMediumSemiBold,
+                            style: textTheme.titleMedium,
                           ),
                           CustomTextFormField(
                             controller: passwordController,
@@ -122,7 +121,7 @@ class SignUpScreen extends StatelessWidget {
                           SizedBox(height: 5.h),
                           Divider(
                             thickness: 0.1.h,
-                            color: appTheme.blueGray800,
+                            color: colorTheme.onSurface.withAlphaD(0.4),
                           ),
                           SizedBox(height: 5.h),
                           BlocListener<SignUpCubit, SignUpState>(
@@ -149,16 +148,16 @@ class SignUpScreen extends StatelessWidget {
                                   height: 6.h,
                                   width: 80.w,
                                   text: "Sign Up",
-                                  buttonTextStyle: CustomTextStyles.titleMediumSemiBold,
+                                  buttonTextStyle:
+                                      textTheme.titleMedium,
                                   onPressed: () {
                                     if (_formKey.currentState?.validate() ??
                                         false) {
                                       context.read<SignUpCubit>().signUp(
-                                        email: emailController.text,
-                                        password: passwordController.text,
-                                        fullName:
-                                        fullNameController.text,
-                                      );
+                                            email: emailController.text,
+                                            password: passwordController.text,
+                                            fullName: fullNameController.text,
+                                          );
                                     }
                                   },
                                 );

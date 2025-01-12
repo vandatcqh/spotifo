@@ -1,52 +1,51 @@
 import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 
-String _appTheme = "lightCode";
-LightCodeColors get appTheme => ThemeHelper().themeColor();
+String _appTheme = "lightMode";
+ColorScheme get colorTheme => ThemeHelper().themeColor();
+TextTheme get textTheme => TextThemes.textTheme();
 ThemeData get theme => ThemeHelper().themeData();
+
 /// Helper class for managing themes and colors.
 // ignore_for_file: must_be_immutable
 class ThemeHelper {
 // A map of custom color themes supported by the app
-  Map<String, LightCodeColors> _supportedCustomColor = {
-    'lightCode': LightCodeColors()
+  final Map<String, ColorScheme> _supportedCustomColor = {
+    'lightMode': ColorSchemes.lightModeScheme,
+    'darkMode': ColorSchemes.darkModeScheme,
   };
 
 // A map of color schemes supported by the app
-  Map<String, ColorScheme> _supportedColorScheme = {
-    'lightCode': ColorSchemes.lightCodeColorScheme
+  final Map<String, ColorScheme> _supportedScheme = {
+    'lightMode': ColorSchemes.lightModeScheme,
+    'darkMode': ColorSchemes.darkModeScheme,
   };
 
-  /// Changes the app theme to [_newTheme].
-  void changeTheme(String _newTheme) {
-    _appTheme = _newTheme;
+  /// Changes the app theme to [newTheme].
+  void changeTheme(String newTheme) {
+    _appTheme = newTheme;
   }
 
   /// Returns the lightCode colors for the current theme.
-  LightCodeColors getThemeColors() {
-    return _supportedCustomColor[_appTheme] ?? LightCodeColors();
+  ColorScheme getThemeColors() {
+    return _supportedCustomColor[_appTheme] ?? ColorSchemes.lightModeScheme;
   }
-
 
   /// Returns the current theme data.
   ThemeData getThemeData() {
-    var colorScheme = _supportedColorScheme[_appTheme] ??
-        ColorSchemes.lightCodeColorScheme;
+    var colorScheme =
+        _supportedScheme[_appTheme] ?? ColorSchemes.lightModeScheme;
     return ThemeData(
       visualDensity: VisualDensity.standard,
       colorScheme: colorScheme,
-      textTheme: TextThemes.textTheme(colorScheme),
+      textTheme: TextThemes.textTheme(),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: appTheme.lightGreen100,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.h),
-          ),
+          backgroundColor: colorTheme.primary,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
           elevation: 0,
-          visualDensity: const VisualDensity(
-            vertical: -4,
-            horizontal: -4,
-          ),
+          visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
           padding: EdgeInsets.zero,
         ),
       ),
@@ -57,213 +56,114 @@ class ThemeHelper {
           }
           return Colors.transparent;
         }),
-        visualDensity: const VisualDensity(
-            vertical: -4,
-            horizontal: -4
-        ),
+        visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
       ),
       dividerTheme: DividerThemeData(
         thickness: 1,
         space: 1,
-        color: appTheme.blueGray800.withOpacity(0.6),
+        color: colorTheme.onSurface.withValues(alpha: 0.6),
       ),
     );
   }
 
   /// Returns the lightCode colors for the current theme.
-  LightCodeColors themeColor() => getThemeColors();
+  ColorScheme themeColor() => getThemeColors();
 
   /// Returns the current theme data.
   ThemeData themeData() => getThemeData();
 }
 
-
-
 /// Class containing the supported text theme styles.
-
 class TextThemes {
+  static TextStyle defaultStyle = TextStyle(
+    color: Colors.black,
+    fontFamily: 'Roboto',
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+  );
 
-  static TextTheme textTheme(ColorScheme colorScheme) =>
-      TextTheme(
-        bodyLarge: TextStyle(
-          color: appTheme.blueGray800,
-          fontSize: 16,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w400,
-        ),
-        bodyMedium: TextStyle(
-          color: appTheme.blueGray800,
-          fontSize: 14,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w400,
-        ),
-        bodySmall: TextStyle(
-          color: appTheme.blueGray800,
-          fontSize: 10,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w400,
-        ),
-        headlineLarge: TextStyle(
-          color: appTheme.lightGreen50,
-          fontSize: 32,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w400,
-        ),
-        headlineMedium: TextStyle(
-          color: appTheme.blueGray800,
-          fontSize: 28,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w400,
-        ),
-        headlineSmall: TextStyle(
-          color: appTheme.blueGray800,
-          fontSize: 24,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w700,
-        ),
-        labelLarge: TextStyle(
-          color: appTheme.blueGray800,
-          fontSize: 12,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w500,
-        ),
-        labelMedium: TextStyle(
-          color: appTheme.blueGray800.withOpacity(0.6),
-          fontSize: 11,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w500,
-        ),
-        titleLarge: TextStyle(
-          color: appTheme.blueGray800,
-          fontSize: 22,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w400,
-        ),
-        titleMedium: TextStyle(
-          color: appTheme.blueGray800,
-          fontSize: 16,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w500,
-        ),
-        titleSmall: TextStyle(
-          color: appTheme.lightGreen50,
-          fontSize: 14,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w500,
-        ),
+  static TextTheme textTheme() => TextTheme(
+        displayLarge: defaultStyle.copyWith(fontSize: 57, letterSpacing: -0.25),
+        displayMedium: defaultStyle.copyWith(fontSize: 45, letterSpacing: 0.0),
+        displaySmall: defaultStyle.copyWith(fontSize: 36, letterSpacing: 0.0),
+        headlineLarge: defaultStyle.copyWith(fontSize: 32, letterSpacing: 0.0),
+        headlineMedium: defaultStyle.copyWith(fontSize: 28, letterSpacing: 0.0),
+        headlineSmall: defaultStyle.copyWith(fontSize: 24, letterSpacing: 0.0),
+        titleLarge: defaultStyle.copyWith(fontSize: 22, letterSpacing: 0.0),
+        titleMedium: defaultStyle.copyWith(fontSize: 16, letterSpacing: 0.15),
+        titleSmall: defaultStyle.copyWith(fontSize: 14, letterSpacing: 0.1),
+        bodyLarge: defaultStyle.copyWith(fontSize: 16, letterSpacing: 0.5),
+        bodyMedium: defaultStyle.copyWith(fontSize: 14, letterSpacing: 0.25),
+        bodySmall: defaultStyle.copyWith(fontSize: 12, letterSpacing: 0.4),
+        labelLarge: defaultStyle.copyWith(
+            fontSize: 14, letterSpacing: 0.1, fontWeight: FontWeight.w500),
+        labelMedium: defaultStyle.copyWith(
+            fontSize: 12, letterSpacing: 0.5, fontWeight: FontWeight.w500),
+        labelSmall: defaultStyle.copyWith(
+            fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w500),
       );
+}
+
+extension CustomColor on Color {
+  Color withAlphaD(double alpha) {
+    return withValues(alpha: alpha);
+  }
+}
+
+extension CustomTextStyle on TextStyle {
+  TextStyle withColor(Color color) {
+    return copyWith(color: color);
+  }
+
+  TextStyle withSize(double size) {
+    return copyWith(fontSize: size);
+  }
+
+  TextStyle withWeight(FontWeight weight) {
+    return copyWith(fontWeight: weight);
+  }
+
+  TextStyle withNormal() {
+    return copyWith(fontWeight: FontWeight.w400);
+  }
+
+  TextStyle withBold() {
+    return copyWith(fontWeight: FontWeight.w700);
+  }
+
+  TextStyle withFamily(String family) {
+    return copyWith(fontFamily: family);
+  }
+
+  TextStyle withSpacing(double spacing) {
+    return copyWith(letterSpacing: spacing);
+  }
+
+  TextStyle withItalic() {
+    return copyWith(fontStyle: FontStyle.italic);
+  }
 }
 
 /// Class containing the supported color schemes.
 class ColorSchemes {
-  static final lightCodeColorScheme = ColorScheme.light(
-    primary: Color(0XFFE88B6C),
-    primaryContainer: Color(0XFF8C325F),
-    secondaryContainer: Color(0XFF4BBCAF),
-    errorContainer: Color(0XFF2967EE),
-    onErrorContainer: Color(0XFF8E1629),
-    onPrimary: Color(0XFF011C39),
-    onPrimaryContainer: Color(0XFF000000),
+  static final lightModeScheme = ColorScheme.light(
+    primary: Color(0xFF324A59).withAlphaD(0.0),
+    onPrimary: Color(0xFFFFBB55),
+    secondary: Color(0xFF143D5D),
+    onSecondary: Color(0xFFE7D6C6),
+    surface: Color(0xFFF6F4E7),
+    onSurface: Color(0xFF173A5B),
+    error: Color(0xFFC44D4F),
+    onError: Color(0xFFF6F4E7),
   );
-}
-
-
-
-/// class containing custom colors for a lightCode theme.
-
-class LightCodeColors {
-
-// Blue
-  Color get blue500 => Color(0XFF348BEF);
-
-// BlueGray
-  Color get blueGray1007f => Color(0X7FD9D9D9);
-
-  Color get blueGray800 => Color(0XFF173A5B);
-
-// DeepPurple
-  Color get deepPurple700 => Color(0XFF5822BB);
-
-  Color get deepPurple70001 => Color(0XFF5244A3);
-
-  Color get deepPurple800 => Color(0XFF3D31AB);
-
-// Gray
-  Color get gray50 => Color(0XFFFFFAF6);
-
-  Color get gray600 => Color(0XFF6A7481);
-
-// Green
-  Color get green500 => Color(0XFF57AE5A);
-
-  Color get greenA200 => Color(0XFF45E299);
-
-// Indigo
-  Color get indigo300 => Color(0XFF6D76DE);
-
-  Color get indigo30001 => Color(0XFF6E89E4);
-
-  Color get indigo400 => Color(0XFF486DA7);
-
-  Color get indigo500 => Color(0XFF544DB9);
-
-  Color get indigo900 => Color(0XFF0F3468);
-
-// LightGreen
-  Color get lightGreen100 => Color(0XFFE7D6C6);
-
-  Color get lightGreen50 => Color(0xFFF6F4E7);
-
-  Color get lightGreenA400 => Color(0XFF78FF18);
-
-// Lime
-  Color get lime700 => Color(0XFFC9BCBF);
-
-// Orange
-  Color get orange200 => Color(0XFFE4C46E);
-
-  Color get orange20001 => Color(0XFFFFC673);
-
-  Color get orange300 => Color(0XFFFFBB55);
-
-// Pink
-  Color get pink400 => Color(0XFFD6409F);
-
-  Color get pink500 => Color(0XFFE52874);
-
-// Purple
-  Color get purple500 => Color(0XFFB2308B);
-
-  Color get purpleA100 => Color(0XFFE573E1);
-
-  Color get purpleA10001 => Color(0XFFDE6DDE);
-
-
-// Red
-  Color get red200 => Color(0XFFE78898);
-
-  Color get red20001 => Color(0XFFE7AD95);
-
-  Color get red300 => Color(0XFFB96466);
-
-  Color get red400 => Color(0XFFC44D4F);
-
-  Color get red500 => Color(0XFFFF3C3C);
-
-  Color get red600 => Color(0XFFDD3D3D);
-
-  Color get redA200 => Color(0XFFF75659);
-
-  // Teal
-  Color get teal300 => Color(0XFF4ED8AD);
-
-  Color get teal400 => Color(0XFF278585);
-
-  Color get teal900 => Color(0XFF143D5D);
-
-  Color get tealA400 => Color(0XFF2BDD8A);
-
-  // White
-  Color get whiteA700 => Color(0XFFFFFFFF);
-
+  static final darkModeScheme = ColorScheme.dark(
+    primary: Color(0xFFE7D6C6),
+    onPrimary: Color(0xFF0E3A60),
+    secondary: Color(0xFFF6F4E7),
+    onSecondary: Color(0xFF173A5B),
+    surface: Color(0xFF143D5D),
+    onSurface: Color(0xFFF6F4E7),
+    error: Color(0xFFC44D4F),
+    onError: Color(0xFFF6F4E7),
+  );
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
 class CustomDropDown extends StatelessWidget {
-  CustomDropDown({Key? key,
+  const CustomDropDown({super.key,
     this.alignment,
     this.width,
     this.boxDecoration,
@@ -21,10 +21,7 @@ class CustomDropDown extends StatelessWidget {
     this.fillColor,
     this.filled = true,
     this.validator,
-    this.onChanged})
-      : super(
-    key: key,
-  );
+    this.onChanged});
 
   final Alignment? alignment;
   final double? width;
@@ -92,7 +89,7 @@ class CustomDropDown extends StatelessWidget {
         prefixIconConstraints: prefixConstraints,
         isDense: true,
         contentPadding: contentPadding ?? EdgeInsets.all(8.h),
-        fillColor: fillColor ?? appTheme.lightGreen100,
+        fillColor: fillColor ?? colorTheme.surface,
         filled: filled,
         border: borderDecoration ??
             OutlineInputBorder(

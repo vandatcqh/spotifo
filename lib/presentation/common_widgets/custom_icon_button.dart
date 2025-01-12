@@ -9,13 +9,13 @@ extension IconButtonStyleHelper on CustomIconButton {
 
   static BoxDecoration get fillTeal =>
       BoxDecoration(
-        color: appTheme.teal900,
+        color: colorTheme.secondary,
         borderRadius: BorderRadius.circular(4.h),
       );
 
   static BoxDecoration get fillLightGreen =>
       BoxDecoration(
-        color: appTheme.lightGreen50.withOpacity(0.4),
+        color: colorTheme.surface.withAlphaD(0.4),
         borderRadius: BorderRadius.circular(4.h),
       );
   static BoxDecoration get none => BoxDecoration();
@@ -24,17 +24,14 @@ extension IconButtonStyleHelper on CustomIconButton {
 
 
 class CustomIconButton extends StatelessWidget {
-  CustomIconButton({Key? key,
+  const CustomIconButton({super.key,
     this.alignment,
     this.height,
     this.width,
     this.decoration,
     this.padding,
     this.onTap,
-    this.child})
-      : super(
-    key: key,
-  );
+    this.child});
 
   final Alignment? alignment;
   final double? height;
@@ -59,7 +56,7 @@ class CustomIconButton extends StatelessWidget {
         child: DecoratedBox(
           decoration: decoration ??
               BoxDecoration(
-                color: appTheme.lightGreen50.withOpacity(0.4),
+                color: colorTheme.surface.withAlphaD(0.4),
                 borderRadius: BorderRadius.circular(14.h),
                 boxShadow: [
                   BoxShadow(

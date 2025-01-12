@@ -11,7 +11,7 @@ enum BottomBarEnum {
 
 // ignore_for_file: must_be_immutable
 class CustomBottomBar extends StatefulWidget {
-  CustomBottomBar({this.onChanged});
+  CustomBottomBar({super.key, this.onChanged});
 
   Function(BottomBarEnum)? onChanged;
 
@@ -50,7 +50,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: appTheme.lightGreen50,
+        color: colorTheme.surface,
       ),
       child: BottomNavigationBar(
         backgroundColor: Colors.transparent,
@@ -66,14 +66,14 @@ class CustomBottomBarState extends State<CustomBottomBar> {
               imagePath: bottomMenuList[index].icon,
               height: 32.h,
               width: 34.h,
-              color: appTheme.lightGreen100,
+              color: colorTheme.surface,
             ),
 
             activeIcon: CustomImageView(
               imagePath: bottomMenuList[index].activeIcon,
               height: 32.h,
               width: 34.h,
-              color: appTheme.blueGray800,
+              color: colorTheme.surface,
             ),
             label: '',
           );

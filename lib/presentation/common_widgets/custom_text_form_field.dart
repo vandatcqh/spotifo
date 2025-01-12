@@ -4,14 +4,14 @@ import '../../core/app_export.dart';
 extension TextFormFieldStyleHelper on CustomTextFormField {
   static UnderlineInputBorder get underlineBlueGray => UnderlineInputBorder(
     borderSide: BorderSide(
-      color: appTheme.blueGray800.withOpacity(0.6),
+      color: colorTheme.onSurface.withAlphaD(0.6),
     ),
   );
 }
 
 class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField(
-      {Key? key,
+  const CustomTextFormField(
+      {super.key,
         this.alignment, this.width,
         this.boxDecoration,
         this.scrollPadding,
@@ -35,10 +35,7 @@ class CustomTextFormField extends StatelessWidget {
         this.borderDecoration,
         this.fillColor,
         this.filled = true,
-        this.validator})
-      : super(
-    key: key,
-  );
+        this.validator});
 
 
   final Alignment? alignment;
@@ -113,7 +110,7 @@ class CustomTextFormField extends StatelessWidget {
     suffixIconConstraints: suffixConstraints,
     isDense: true,
     contentPadding: contentPadding ?? EdgeInsets.fromLTRB(10.h, 12.h, 10.h, 10.h),
-    fillColor: fillColor ?? appTheme.lightGreen100,
+    fillColor: fillColor ?? colorTheme.surface,
     filled: filled,
     border: borderDecoration ??
         OutlineInputBorder(
