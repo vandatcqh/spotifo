@@ -2,6 +2,7 @@
 
 import '../entities/user_entity.dart';
 import '../entities/song_entity.dart';
+import '../entities/artist_entity.dart';
 
 abstract class UserRepository {
   /// Đăng ký tài khoản
@@ -31,4 +32,10 @@ abstract class UserRepository {
   Future<UserEntity> updateUserProfile(UserEntity updatedUser);
   Future<void> updateFullName(String fullName);
   Future<List<SongEntity>> GetFavoriteSongs();
+  Future<void> addFavoriteSong(String SongId);
+  Future<void> removeFavoriteSong(String SongId);
+
+  Future<List<ArtistEntity>> GetFavoriteArtists();
+  Future<void> addFavoriteArtist(String artistId);
+  Future<void> removeFavoriteArtist(String artistId);
 }

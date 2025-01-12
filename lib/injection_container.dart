@@ -15,6 +15,7 @@ import 'presentation/cubit/artist/artist_cubit.dart';
 import 'presentation/cubit/favoriteSongs/favorite_songs_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
+import 'presentation/cubit/favoriteArtists/favorite_artists_cubit.dart';
 
 // ------------------- //
 //    Import Domain    //
@@ -25,7 +26,7 @@ import 'domain/usecases/get_current_user.dart';
 import 'domain/usecases/sign_out.dart';
 import 'domain/usecases/get_all_genre.dart';
 import 'domain/usecases/update_user_profile.dart';
-import 'domain/usecases/artist_follow_usecase.dart';
+import 'domain/usecases/get_favorite_artists.dart';
 import 'domain/usecases/get_favorite_songs.dart';
 import 'domain/repositories/user_repository.dart';
 import 'domain/repositories/genre_repository.dart';
@@ -122,8 +123,8 @@ Future<void> init() async {
   sl.registerLazySingleton<UpdateUserProfileUseCase>(
         () => UpdateUserProfileUseCase(sl()),
   );
-  sl.registerLazySingleton<ArtistFollowUseCase>(
-        () => ArtistFollowUseCase(sl()),
+  sl.registerLazySingleton<GetFavoriteArtistsUseCase>(
+        () => GetFavoriteArtistsUseCase(sl(), sl()),
   );
   sl.registerLazySingleton<GetHotSongsUseCase>(
         () => GetHotSongsUseCase(sl()),
@@ -151,7 +152,6 @@ Future<void> init() async {
       getCurrentUserUseCase: sl(),
       signOutUseCase: sl(),
       updateUserProfileUseCase: sl(),
-      artistFollowUseCase: sl(),
     ),
   );
   sl.registerFactory<GenreCubit>(
@@ -167,6 +167,9 @@ Future<void> init() async {
   );
   sl.registerFactory<FavoriteSongsCubit>(
         () => FavoriteSongsCubit(sl()),
+  );
+  sl.registerFactory<FavoriteArtistsCubit>(
+        () => FavoriteArtistsCubit(sl()),
   );
   sl.registerLazySingleton(() => PlayerCubit(
     playSongUseCase: sl(),

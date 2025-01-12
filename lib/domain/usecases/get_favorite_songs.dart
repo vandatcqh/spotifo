@@ -8,7 +8,18 @@ class GetFavoriteSongsUseCase {
 
   GetFavoriteSongsUseCase(this.userRepository);
 
+  /// Lấy danh sách bài hát yêu thích
   Future<List<SongEntity>> call() {
     return userRepository.GetFavoriteSongs();
+  }
+
+  /// Thêm bài hát vào danh sách yêu thích
+  Future<void> addFavoriteSong(String songId) {
+    return userRepository.addFavoriteSong(songId);
+  }
+
+  /// Xóa bài hát khỏi danh sách yêu thích
+  Future<void> removeFavoriteSong(String songId) {
+    return userRepository.removeFavoriteSong(songId);
   }
 }

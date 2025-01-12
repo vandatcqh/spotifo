@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotifo/presentation/screens/favorite_artist_screen.dart';
 
 // Import necessary Cubit and screens
 import '../cubit/auth/sign_in_cubit.dart';
@@ -114,11 +115,7 @@ class SignInScreen extends StatelessWidget {
                             BlocListener<SignInCubit, SignInState>(
                               listener: (context, state) {
                                 if (state is SignInSuccess) {
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (_) => HomeScreen(),
-                                    ),
-                                  );
+                                  Navigator.pushNamed(context, '/libra');
                                 } else if (state is SignInFailure) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text(state.error)),

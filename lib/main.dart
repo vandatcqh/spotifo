@@ -5,9 +5,14 @@ import 'package:sizer/sizer.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
+import 'presentation/cubit/favoriteArtists/favorite_artists_cubit.dart';
+import 'presentation/cubit/artist/artist_cubit.dart';
 import 'presentation/screens/splash_screen.dart';
-import 'presentation/screens/list_artist_screen.dart';
+import 'presentation/screens/favorite_artist_screen.dart';
+import 'presentation/screens/libra.dart';
+
 import 'injection_container.dart' as di;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +33,10 @@ class MyApp extends StatelessWidget {
 
           return MultiBlocProvider(
             providers: [
-              BlocProvider<UserInfoCubit>(
-                create: (_) => di.sl<UserInfoCubit>(),
-              ),
+              BlocProvider<UserInfoCubit>(create: (_) => di.sl<UserInfoCubit>()),
               BlocProvider(create: (_) => di.sl<PlayerCubit>()),
+              BlocProvider<FavoriteArtistsCubit>(create: (_) => di.sl<FavoriteArtistsCubit>()..fetchFavoriteArtists()),
+              BlocProvider<ArtistCubit>(create: (_) => di.sl<ArtistCubit>()..fetchArtists()),
               // Thêm các Cubit khác nếu cần
             ],
             child: MaterialApp(
@@ -40,7 +45,8 @@ class MyApp extends StatelessWidget {
               darkTheme: _darkTheme(),
               home: SplashScreen(),
               routes: {
-                '/artists': (context) => const ListArtistScreen(),
+                '/favorite_artists': (context) => const FavoriteArtistScreen(),
+                '/libra': (context) => const LibraryScreen(),
                 // Thêm các route khác nếu cần
               },
             ),
