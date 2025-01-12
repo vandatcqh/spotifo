@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sizer/sizer.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
-import 'presentation/screens/sign_in_screen.dart';
+import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/list_artist_screen.dart';
 import 'injection_container.dart' as di;
 
@@ -23,25 +24,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<UserInfoCubit>(
-          create: (_) => di.sl<UserInfoCubit>(),
-        ),
-        BlocProvider(create: (_) => di.sl<PlayerCubit>()),
-        // Thêm các Cubit khác nếu cần
-      ],
-      child: MaterialApp(
-        title: 'Flutter Clean Architecture với Firebase',
-        theme: _lightTheme(),
-        darkTheme: _darkTheme(),
-        home: SignInScreen(),
-        routes: {
-          '/artists': (context) => const ListArtistScreen(),
-          // Thêm các route khác nếu cần
-        },
-      ),
-    );
+    return Sizer(builder: (context, orientation, deviceType) {
+
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<UserInfoCubit>(
+                create: (_) => di.sl<UserInfoCubit>(),
+              ),
+              BlocProvider(create: (_) => di.sl<PlayerCubit>()),
+              // Thêm các Cubit khác nếu cần
+            ],
+            child: MaterialApp(
+              title: 'Flutter Clean Architecture với Firebase',
+              theme: _lightTheme(),
+              darkTheme: _darkTheme(),
+              home: SplashScreen(),
+              routes: {
+                '/artists': (context) => const ListArtistScreen(),
+                // Thêm các route khác nếu cần
+              },
+            ),
+          );
+    });
+
   }
 
   ThemeData _lightTheme() {
