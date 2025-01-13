@@ -7,45 +7,21 @@ const db = admin.firestore();
 
 // 1. Tìm kiếm bài hát theo songName và genre
 exports.searchSongs = functions.https.onRequest(async (req, res) => {
+  // Get parameters from URL
+  const songName = decodeURIComponent(req.query.songName || "").trim();
+  const genre = decodeURIComponent(req.query.genre || "").trim().toLowerCase();
+
+  console.log("Search Songs Params:", {songName, genre});
+
+  // Check if there are no search parameters
+  if (!songName && !genre) {
+    res.status(400).send({error: "Missing query parameters"});
+    return;
+  }
+
   try {
-    // Giải mã songName và genres
-    const songName = decodeURIComponent(req.query.songName || "").trim();
-    const genresQuery = decodeURIComponent(req.query.genre || "").trim();
-    const genres = genresQuery
-      ? genresQuery.split(",").map((g) => g.trim().toLowerCase())
-      : [];
-
-    console.log("Search Songs Params:", {songName, genres});
-
-    if (!songName && genres.length === 0) {
-      res.status(400).send({
-        error: "Missing query parameters: songName or genre",
-      });
-      return;
-    }
-
-    let query = db.collection("Songs");
-
-    // Thêm điều kiện tìm kiếm theo songName nếu có
-    if (songName) {
-      // Sử dụng trường phụ songName_lowercase để tìm kiếm không phân biệt chữ hoa chữ thường
-      query = query.where(
-        "songName_lowercase",
-        "==",
-        songName.toLowerCase(),
-      );
-    }
-
-    // Thêm điều kiện tìm kiếm theo genres nếu có
-    if (genres.length > 0) {
-      // Sử dụng array-contains-any để tìm kiếm bất kỳ thể loại nào trong danh sách
-      query = query.where(
-        "genre_lowercase",
-        "array-contains-any",
-        genres,
-      );
-    }
-
+    // Start with base query
+    const query = db.collection("Songs");
     const songsSnapshot = await query.get();
     const results = [];
 
@@ -53,18 +29,45 @@ exports.searchSongs = functions.https.onRequest(async (req, res) => {
 
     songsSnapshot.forEach((doc) => {
       const song = doc.data();
-      results.push({id: doc.id, ...song});
+      let matches = true;
+
+      try {
+        // Check song name if provided
+        if (songName) {
+          if (
+            !song.songName ||
+            !song.songName.toLowerCase().includes(songName.toLowerCase())
+          ) {
+            matches = false;
+          }
+        }
+
+        // Check for exact genre match if genre is provided
+        if (genre && matches) {
+          if (!song.genre || song.genre.toLowerCase() !== genre) {
+            matches = false;
+          }
+        }
+
+        if (matches) {
+          results.push({
+            id: doc.id,
+            ...song,
+          });
+        }
+      } catch (docError) {
+        console.error("Error processing document:", doc.id, docError);
+        // Continue processing other documents
+      }
     });
 
     console.log("Final Filtered Songs Count:", results.length);
-
     res.status(200).send(results);
   } catch (error) {
-    console.error("Error in searchSongs:", error);
+    console.error("Error searching songs:", error);
     res.status(500).send({error: "Internal Server Error"});
   }
 });
-
 // 2. Tìm kiếm album theo albumName
 exports.searchAlbums = functions.https.onRequest(async (req, res) => {
   try {

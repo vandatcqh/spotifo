@@ -11,15 +11,18 @@ class CloudFunctionTestScreen extends StatefulWidget {
 class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedFunction = "songs"; // Loại hàm: songs, artists, albums
-  List<String> _selectedGenres = []; // Danh sách thể loại được chọn (dùng cho songs)
+  String? _selectedGenre; // Thể loại được chọn (dùng cho songs)
   List<dynamic> _results = []; // Kết quả trả về từ API
+
+  // Danh sách các thể loại có thể chọn
+  final List<String> _availableGenres = ["POP", "PO", "BALLAD"];
 
   // Hàm thực hiện gọi API
   Future<void> performSearch() async {
     final query = _searchController.text.trim();
     if (query.isEmpty &&
         _selectedFunction == "songs" &&
-        _selectedGenres.isEmpty) {
+        (_selectedGenre == null || _selectedGenre!.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Please enter a search query or select a genre.")),
       );
@@ -32,8 +35,8 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
       final params = {
         "songName": query,
       };
-      if (_selectedGenres.isNotEmpty) {
-        params["genre"] = _selectedGenres.join(',');
+      if (_selectedGenre != null && _selectedGenre!.isNotEmpty) {
+        params["genre"] = _selectedGenre!.toLowerCase();
       }
       uri = Uri.https(
         "us-central1-spotifo-ded50.cloudfunctions.net",
@@ -83,24 +86,27 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
     }
   }
 
-  // Widget nút chọn genre
-  Widget genreButton(String genre) {
-    final lowerGenre = genre.toLowerCase();
-    final isSelected = _selectedGenres.contains(lowerGenre);
-    return ElevatedButton(
-      onPressed: () {
+  // Widget nút chọn genre (chỉ cho phép chọn một thể loại duy nhất)
+  Widget genreDropdown() {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: "Select Genre",
+        border: OutlineInputBorder(),
+      ),
+      value: _selectedGenre,
+      items: _availableGenres.map((genre) {
+        return DropdownMenuItem<String>(
+          value: genre,
+          child: Text(genre),
+        );
+      }).toList(),
+      onChanged: (value) {
         setState(() {
-          if (isSelected) {
-            _selectedGenres.remove(lowerGenre);
-          } else {
-            _selectedGenres.add(lowerGenre);
-          }
+          _selectedGenre = value;
         });
       },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Colors.blue : Colors.grey,
-      ),
-      child: Text(genre),
+      isExpanded: true,
+      hint: Text("Choose a genre"),
     );
   }
 
@@ -135,7 +141,7 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
                   onPressed: () {
                     setState(() {
                       _selectedFunction = "songs";
-                      _selectedGenres = []; // Reset genres khi đổi loại tìm kiếm
+                      _selectedGenre = null; // Reset genre khi đổi loại tìm kiếm
                     });
                   },
                   style: ElevatedButton.styleFrom(
@@ -149,7 +155,7 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
                   onPressed: () {
                     setState(() {
                       _selectedFunction = "artists";
-                      _selectedGenres = []; // Reset genres khi đổi loại tìm kiếm
+                      _selectedGenre = null; // Reset genre khi đổi loại tìm kiếm
                     });
                   },
                   style: ElevatedButton.styleFrom(
@@ -163,7 +169,7 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
                   onPressed: () {
                     setState(() {
                       _selectedFunction = "albums";
-                      _selectedGenres = []; // Reset genres khi đổi loại tìm kiếm
+                      _selectedGenre = null; // Reset genre khi đổi loại tìm kiếm
                     });
                   },
                   style: ElevatedButton.styleFrom(
@@ -179,22 +185,8 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
 
             // Chọn genre (chỉ áp dụng cho songs)
             if (_selectedFunction == "songs")
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Select Genre:"),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      genreButton("POP"),
-                      genreButton("ROCK"),
-                      genreButton("BALLAD"),
-                      // Thêm các thể loại khác nếu cần
-                    ],
-                  ),
-                ],
-              ),
-            const SizedBox(height: 16),
+              genreDropdown(),
+            if (_selectedFunction == "songs") const SizedBox(height: 16),
 
             // Nút thực hiện tìm kiếm
             Center(
