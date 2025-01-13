@@ -17,7 +17,7 @@ HSLColor hashToHSL(int hash, {int index = 0}) {
   final hue = (hash + offset).abs() % 377 % 360;
   final saturation = 60 + (hash + offset).abs() % 10;
   final lightness = 45 + (hash + offset).abs() % 10;
-  return HSLColor.fromAHSL(1.0, hue as double, saturation / 100.0, lightness / 100.0);
+  return HSLColor.fromAHSL(1.0, hue / 1.0, saturation / 100.0, lightness / 100.0);
 }
 
 Alignment getGradientRotate(num degree) {

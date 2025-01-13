@@ -330,7 +330,7 @@ class HomeScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [color, color.withAlphaD(0.6)]), //generateHashGradient(genre)
+        gradient: LinearGradient(colors: [color, color.withAlphaD(0.6)]), //generateHashGradient(genre),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
