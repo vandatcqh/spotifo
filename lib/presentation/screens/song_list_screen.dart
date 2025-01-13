@@ -75,11 +75,16 @@ class SongListScreen extends StatelessWidget {
                             ),
                             onTap: () {
                               context.read<PlayerCubit>().listenToPositionStream();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PlayerView(song: song),
-                                ),
+
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (BuildContext context) {
+                                  return PlayerView(
+                                    song: song,
+                                  );
+                                },
                               );
                             },
                           );
