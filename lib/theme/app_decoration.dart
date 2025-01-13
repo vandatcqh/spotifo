@@ -13,7 +13,7 @@ class GradientBoxDecoration extends BoxDecoration {
     super.shape,
     AlignmentGeometry? alignment,
     required GradientType gradientType,
-    required List<Color> colors,
+    List<Color>? colors,
     List<double>? stops,
     AlignmentGeometry? begin,
     AlignmentGeometry? end,
@@ -22,13 +22,13 @@ class GradientBoxDecoration extends BoxDecoration {
           gradient: gradient ??
               (gradientType == GradientType.linear
                   ? LinearGradient(
-                      colors: colors,
+                      colors: colors ??  [Colors.black, Colors.white],
                       stops: stops,
                       begin: begin ?? Alignment.topLeft,
                       end: end ?? Alignment.bottomRight,
                     )
                   : RadialGradient(
-                      colors: colors,
+                      colors: colors ??  [Colors.black, Colors.white],
                       stops: stops,
                       radius: radius,
                       center: begin ?? Alignment.center,
