@@ -24,12 +24,17 @@ class MiniPlayer extends StatelessWidget {
       right: 0,
       child: GestureDetector(
         onTap: () {
-          // Navigate to the player screen when the mini-player is tapped
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => PlayerView(song: currentSong),
-            ),
+          context.read<PlayerCubit>().listenToPositionStream();
+
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (BuildContext context) {
+              return PlayerView(
+                song: currentSong,
+              );
+            },
           );
         },
         child: Container(
