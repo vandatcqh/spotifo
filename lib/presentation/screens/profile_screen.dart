@@ -1,4 +1,4 @@
-// presentation/screens/user_info_screen.dart
+// presentation/screens/profile_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
