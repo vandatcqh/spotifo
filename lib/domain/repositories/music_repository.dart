@@ -6,4 +6,6 @@ import '../entities/song_entity.dart';
 abstract class MusicRepository {
   /// Lấy các bài hát hot
   Future<List<SongEntity>> getHotSongs();
+
+  Future<List<SongEntity>> getSongsByGenre(String genre);
 }

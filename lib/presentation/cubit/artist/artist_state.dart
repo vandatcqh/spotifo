@@ -41,3 +41,12 @@ class SongsLoaded extends ArtistState {
   @override
   List<Object?> get props => [songs];
 }
+
+class ArtistNameLoaded extends ArtistState {
+  final String artistName;
+
+  const ArtistNameLoaded(this.artistName);
+
+  @override
+  List<Object?> get props => [artistName];
+}

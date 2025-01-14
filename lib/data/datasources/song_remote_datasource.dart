@@ -80,7 +80,7 @@ class SongRemoteDataSource {
   Future<List<SongModel>> getSongsByGenre(String genre) async {
     try {
       QuerySnapshot querySnapshot = await firestore
-          .collection('songs')
+          .collection('Songs')
           .where('genre', isEqualTo: genre)
           .get();
       return querySnapshot.docs.map((doc) => SongModel.fromDocument(doc)).toList();

@@ -7,9 +7,11 @@ class MusicRepositoryImpl implements MusicRepository {
   final SongRemoteDataSource songRemoteDataSource;
   final FirebaseFirestore firestore;
 
-  MusicRepositoryImpl(this.firestore, {
-    required this.songRemoteDataSource,
-  });
+  MusicRepositoryImpl(
+      this.firestore, {
+        required this.songRemoteDataSource,
+      });
+
   @override
   Future<List<SongModel>> getHotSongs({int limit = 5}) async {
     try {
@@ -21,6 +23,15 @@ class MusicRepositoryImpl implements MusicRepository {
       return querySnapshot.docs.map((doc) => SongModel.fromDocument(doc)).toList();
     } catch (e) {
       throw Exception("Get Hot Songs Failed: $e");
+    }
+  }
+
+  @override
+  Future<List<SongModel>> getSongsByGenre(String genre) async {
+    try {
+      return await songRemoteDataSource.getSongsByGenre(genre);
+    } catch (e) {
+      throw Exception("Get Songs By Genre Failed: $e");
     }
   }
 }

@@ -27,11 +27,30 @@ class ArtistCubit extends Cubit<ArtistState> {
   Future<void> fetchSongsByArtistId(String artistId) async {
     emit(ArtistLoading());
     try {
-      print("duma: $artistId");
       final songs = await getSongsByArtistIdUseCase(artistId);
       emit(SongsLoaded(songs));
     } catch (e) {
       emit(ArtistError("Không thể tải danh sách bài hát."));
     }
   }
+
+  /// Lấy tên nghệ sĩ từ ID nghệ sĩ
+  Future<void> fetchArtistNameById(String artistId) async {
+    // Kiểm tra nếu state hiện tại đã load danh sách nghệ sĩ
+    if (state is ArtistLoaded) {
+      final artists = (state as ArtistLoaded).artists;
+      try {
+        final artist = artists.firstWhere(
+              (artist) => artist.id == artistId,
+          orElse: () => throw Exception("Không tìm thấy nghệ sĩ."),
+        );
+        emit(ArtistNameLoaded(artist.artistName));
+      } catch (e) {
+        emit(ArtistError("Không thể tìm thấy tên nghệ sĩ."));
+      }
+    } else {
+      emit(ArtistError("Danh sách nghệ sĩ chưa được tải."));
+    }
+  }
+
 }

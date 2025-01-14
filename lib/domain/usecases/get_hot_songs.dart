@@ -11,4 +11,8 @@ class GetHotSongsUseCase {
   Future<List<SongEntity>> call() {
     return musicRepository.getHotSongs();
   }
+
+  Future<List<SongEntity>> getSongsByGenre(String genre) {
+    return musicRepository.getSongsByGenre(genre);
+  }
 }
