@@ -170,7 +170,6 @@ class UserRepositoryImpl implements UserRepository {
     try {
       // Gọi hàm lấy danh sách bài hát yêu thích dưới dạng SongModel
       List<SongModel> favoriteSongModels = await userRemoteDataSource.getFavoriteSongs();
-      print("dududu $favoriteSongModels.length");
       // Chuyển đổi từ SongModel sang SongEntity
       return favoriteSongModels.map((songModel) {
         return SongEntity(

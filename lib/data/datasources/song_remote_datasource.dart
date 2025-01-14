@@ -102,7 +102,6 @@ class SongRemoteDataSource {
   /// Lấy danh sách bài hát theo ID nghệ sĩ từ collection 'Songs' trong Firestore.
   Future<List<SongModel>> getSongsByArtistId(String artistId) async {
     try {
-      print("duma: $artistId");
       final querySnapshot = await firestore
           .collection('Songs')
           .where('artistId', isEqualTo: artistId)

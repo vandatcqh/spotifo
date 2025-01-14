@@ -13,7 +13,6 @@ class ArtistRemoteDataSource {
       final artists = querySnapshot.docs
           .map((doc) => ArtistModel.fromDocument(doc))
           .toList();
-      print("ArtistsLength ${artists.length}");
       return artists;
     } catch (e) {
       throw Exception("Failed to fetch artists: $e");
