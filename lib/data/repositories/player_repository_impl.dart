@@ -60,4 +60,21 @@ class PlayerRepositoryImpl implements PlayerRepository {
       throw Exception("Error while fetching duration stream: $e");
     }
   }
+
+
+  Future<void> setVolume(double volume) async {
+    try {
+      await _audioPlayer.setVolume(volume);
+    } catch (e) {
+      throw Exception("Error while setting volume: $e");
+    }
+  }
+
+  Future<void> setPlaybackSpeed(double speed) async {
+    try {
+      await _audioPlayer.setSpeed(speed);
+    } catch (e) {
+      throw Exception("Error setting playback speed: $e");
+    }
+  }
 }

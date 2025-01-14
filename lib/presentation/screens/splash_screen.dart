@@ -3,7 +3,7 @@ import '../../core/app_export.dart';
 import 'sign_in_screen.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class SplashScreen extends StatelessWidget {
               width: 20.h,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/music_icon.png'), // Replace with your actual image asset
+                  image: AssetImage('images/music_icon.png'), // Replace with your actual image asset
                   fit: BoxFit.contain,
                 ),
               ),

@@ -4,9 +4,20 @@ import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:spotifo/domain/usecases/set_volume.dart';
+import 'package:spotifo/presentation/cubit/queue/queue_cubit.dart';
 // ------------------- //
 //  Import Cubits     //
 // ------------------- //
+import 'data/repositories/queue_repository_impl.dart';
+import 'domain/repositories/queue_repository.dart';
+import 'domain/usecases/add_queue.dart';
+import 'domain/usecases/add_songs.dart';
+import 'domain/usecases/fetch_queue.dart';
+import 'domain/usecases/remove_from_queue.dart';
+import 'domain/usecases/set_speed.dart';
+import 'domain/usecases/shuffle_queue.dart';
+import 'domain/usecases/update_queue.dart';
 import 'presentation/cubit/auth/sign_in_cubit.dart';
 import 'presentation/cubit/auth/sign_up_cubit.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
@@ -102,6 +113,7 @@ Future<void> init() async {
   sl.registerLazySingleton<PlayerRepository>(
         () => PlayerRepositoryImpl(sl<AudioPlayer>()),
   );
+  sl.registerLazySingleton<QueueRepository>(() => QueueRepositoryImpl());
 
   // --- UseCases ---
   sl.registerLazySingleton<SignInUseCase>(
@@ -141,6 +153,14 @@ Future<void> init() async {
   sl.registerLazySingleton<GetFavoriteSongsUseCase>(
         () => GetFavoriteSongsUseCase(sl()),
   );
+  sl.registerLazySingleton(() => SetVolumeUseCase(sl<PlayerRepository>()));
+  sl.registerLazySingleton(() => SetSongSpeedUseCase(sl<PlayerRepository>()));
+  sl.registerLazySingleton(() => FetchQueue(sl()));
+  sl.registerLazySingleton(() => AddToQueue(sl()));
+  sl.registerLazySingleton(() => RemoveFromQueue(sl()));
+  sl.registerLazySingleton(() => ShuffleQueue(sl()));
+  sl.registerLazySingleton(() => UpdateQueue(sl()));
+  sl.registerLazySingleton(() => AddSongsToQueueUseCase(sl()));
   // --- Cubits ---
   // Note:
   // - Use `registerFactory` for Cubits to ensure a new instance is created each time.
@@ -181,8 +201,16 @@ Future<void> init() async {
     pauseSongUseCase: sl(),
     resumeSongUseCase: sl(),
     seekSongUseCase: sl(),
+    setVolumeUseCase: sl(),
+    setSongSpeedUseCase: sl(),
   ));
 
-
-
+  sl.registerLazySingleton(() => QueueCubit(
+    fetchQueue: sl(),
+    addToQueue: sl(),
+    removeFromQueue: sl(),
+    shuffleQueue: sl(),
+    updateQueue: sl(),
+    addSongsToQueueUseCase: sl(),
+  ));
 }

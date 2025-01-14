@@ -6,16 +6,13 @@ import '../../core/app_export.dart';
 // ignore_for_file: must_be_immutable
 class CustomSwitch extends StatelessWidget {
   CustomSwitch(
-      {Key? key,
+      {super.key,
         required this.onChange,
         this.alignment,
         this.value,
         this.width,
         this.height,
-        this.margin})
-      : super(
-    key: key,
-  );
+        this.margin});
 
   final Alignment? alignment;
   bool? value;
@@ -44,13 +41,13 @@ class CustomSwitch extends StatelessWidget {
     toggleSize: 18,
     borderRadius: 14.h,
     switchBorder: Border.all(
-      color: theme.colorScheme.onPrimaryContainer,
+      color: colorTheme.primary,
       width: 1.h,
     ),
-    activeColor: appTheme.orange20001,
-    activeToggleColor: appTheme.lightGreen50,
-    inactiveColor: appTheme.blueGray800,
-    inactiveToggleColor: appTheme.lightGreen50,
+    activeColor: colorTheme.onPrimary,
+    activeToggleColor: colorTheme.surface,
+    inactiveColor: colorTheme.onSecondary,
+    inactiveToggleColor: colorTheme.surface,
     onToggle: (value) {
       onChange(value);
     },

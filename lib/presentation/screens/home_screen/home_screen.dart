@@ -239,13 +239,19 @@ class HomeScreen extends StatelessWidget {
                                           ),
                                           onTap: () {
                                             context.read<PlayerCubit>().listenToPositionStream();
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => SongPlayerScreen(song: song),
-                                              ),
+
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor: Colors.transparent,
+                                              builder: (BuildContext context) {
+                                                return PlayerView(
+                                                  song: song,
+                                                );
+                                              },
                                             );
                                           },
+
                                         );
                                       }).toList(),
                                     );
@@ -344,10 +350,10 @@ class SectionHeader extends StatelessWidget {
   final VoidCallback onIconPressed; // Callback for the icon press
 
   const SectionHeader({
-    Key? key,
+    super.key,
     required this.title,
     required this.onIconPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

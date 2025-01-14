@@ -17,7 +17,7 @@ class CustomButtonStyles {
 // Outline button style
   static ButtonStyle get outline =>
       ElevatedButton.styleFrom(
-        backgroundColor: appTheme.lightGreen50.withOpacity(0.4,),
+        backgroundColor: colorTheme.surface.withAlphaD(0.4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.h),
         ),

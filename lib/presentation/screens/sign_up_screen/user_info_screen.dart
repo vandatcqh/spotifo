@@ -14,7 +14,7 @@ class UserInfoScreen extends StatefulWidget {
   const UserInfoScreen({super.key});
 
   @override
-  _UserInfoScreenState createState() => _UserInfoScreenState();
+  State<UserInfoScreen> createState() => _UserInfoScreenState();
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
@@ -79,7 +79,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       vertical: 20.0,
                     ),
                     decoration: BoxDecoration(
-                      color:        appTheme.lightGreen50,
+                      color: colorTheme.onSurface,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
@@ -121,15 +121,15 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
                               // Define a map of decorations for selected genres
                               final decorations = {
-                                'POP': AppDecoration.gradientBlueToPurpleA,
-                                'ROCK': AppDecoration.gradientGreenToDeepPurple,
-                                'BLUE': AppDecoration.gradientRedToPurple,
-                                'VIETNAM': AppDecoration.gradientIndigoToTeal,
-                                'JAZZ': AppDecoration.gradientOrangeToRed,
-                                'COUNTRY': AppDecoration.gradientGreenToIndigo,
-                                'CLASSICAL': AppDecoration.gradientPurpleAToDeepPurple,
-                                'HIP HOP': AppDecoration.gradientRedToTeal,
-                                'FUNK': AppDecoration.gradientTealToLime,
+                                'POP': AppDecoration.gradientA,
+                                'ROCK': AppDecoration.gradientB,
+                                'BLUE': AppDecoration.gradientC,
+                                'VIETNAM': AppDecoration.gradientD,
+                                'JAZZ': AppDecoration.gradientE,
+                                'COUNTRY': AppDecoration.gradientF,
+                                'CLASSICAL': AppDecoration.gradientG,
+                                'HIP HOP': AppDecoration.gradientH,
+                                'FUNK': AppDecoration.gradientA,
                               };
 
                               return Center(
@@ -164,7 +164,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                                             ? decorations[genre.toUpperCase()]?.copyWith(
                                               borderRadius: BorderRadius.circular(2.h)
                                             ) ??
-                                            AppDecoration.gradientBlueToPurpleA
+                                            AppDecoration.gradientA
                                             : BoxDecoration(
                                           color: Colors.grey.shade300,
                                           borderRadius: BorderRadius.circular(2.h),

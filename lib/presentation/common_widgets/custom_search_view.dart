@@ -3,8 +3,8 @@ import '../../core/app_export.dart';
 
 
 class CustomSearchView extends StatelessWidget {
-  CustomSearchView(
-      {Key? key,
+  const CustomSearchView(
+      {super.key,
         this.alignment,
         this.width,
         this.boxDecoration,
@@ -26,10 +26,7 @@ class CustomSearchView extends StatelessWidget {
         this.fillColor,
         this.filled = true,
         this.validator,
-        this.onChanged})
-      : super(
-    key: key,
-  );
+        this.onChanged});
 
   final Alignment? alignment;
   final double? width;
@@ -90,7 +87,7 @@ class CustomSearchView extends StatelessWidget {
   );
   InputDecoration get decoration => InputDecoration(
     hintText: hintText ?? "",
-    hintStyle: hintStyle ?? CustomTextStyles.bodySmallTea1900,
+    hintStyle: hintStyle ?? textTheme.bodySmall,
     prefixIcon: prefix ??
         Container(
           margin: EdgeInsets.fromLTRB(14.h, 8.h, 10.h, 8.h),
@@ -123,7 +120,7 @@ class CustomSearchView extends StatelessWidget {
         ),
     isDense: true,
     contentPadding: contentPadding ?? EdgeInsets.all(8.h),
-    fillColor: fillColor ?? appTheme.lightGreen100,
+    fillColor: fillColor ?? colorTheme.surface,
     filled: filled,
     border: borderDecoration ??
         OutlineInputBorder(

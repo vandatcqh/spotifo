@@ -5,7 +5,9 @@ import 'package:sizer/sizer.dart';
 import 'package:spotifo/presentation/cubit/favoriteSongs/favorite_songs_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/screens/favorite_songs_screen.dart';
+
 import 'firebase_options.dart';
+
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
 import 'presentation/cubit/favoriteArtists/favorite_artists_cubit.dart';
@@ -13,6 +15,12 @@ import 'presentation/cubit/artist/artist_cubit.dart';
 import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/favorite_artist_screen.dart';
 import 'presentation/screens/libra.dart';
+
+import 'presentation/screens/list_artist_screen.dart';
+import 'presentation/screens/home_screen/home_screen.dart';
+import 'presentation/screens/song_list_screen.dart';
+import 'presentation/cubit/queue/queue_cubit.dart';
+import 'presentation/screens/splash_screen.dart';
 
 import 'injection_container.dart' as di;
 
@@ -49,10 +57,14 @@ class MyApp extends StatelessWidget {
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
               home: SplashScreen(),
+              //home: HomeScreen(),
               routes: {
                 '/favorite_artists': (context) => const FavoriteArtistScreen(),
                 '/favorite_songs': (context) => const FavoriteSongsScreen(),
                 '/libra': (context) => const LibraryScreen(),
+                '/artists': (context) => const ListArtistScreen(),
+                '/home' : (context) => const HomeScreen(),
+                '/your_playlist': (context) => const SongListScreen()
                 // Thêm các route khác nếu cần
               },
             ),
