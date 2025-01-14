@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sizer/sizer.dart';
+import 'package:spotifo/presentation/screens/home_screen/home_screen.dart';
+import 'package:spotifo/presentation/screens/song_list_screen.dart';
 import 'firebase_options.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
@@ -26,21 +28,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
 
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider<UserInfoCubit>(
-                create: (_) => di.sl<UserInfoCubit>(),
-              ),
-              BlocProvider(create: (_) => di.sl<PlayerCubit>()),
-              // Thêm các Cubit khác nếu cần
-            ],
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<UserInfoCubit>(
+                  create: (_) => di.sl<UserInfoCubit>(),
+                ),
+                BlocProvider(create: (_) => di.sl<PlayerCubit>()),
+                // Thêm các Cubit khác nếu cần
+              ],
             child: MaterialApp(
               title: 'Flutter Clean Architecture với Firebase',
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
-              home: SplashScreen(),
+              //home: SplashScreen(),
+              home: HomeScreen(),
               routes: {
                 '/artists': (context) => const ListArtistScreen(),
+                '/home' : (context) => const HomeScreen(),
+                '/your_playlist': (context) => const SongListScreen()
                 // Thêm các route khác nếu cần
               },
             ),
