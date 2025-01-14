@@ -1,16 +1,22 @@
-// data/repositories/auth_repository_impl.dart
+// data/repositories/user_repository_impl.dart
+
+import 'package:spotifo/domain/entities/song_entity.dart';
 
 import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
+import '../../domain/entities/song_entity.dart';
+import '../../domain/repositories/user_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../datasources/user_remote_datasource.dart';
 import '../models/user_model.dart';
+import '../models/song_model.dart';
+import '../models/artist_model.dart';
+import '../../domain/entities/artist_entity.dart';
 
-class AuthRepositoryImpl implements AuthRepository {
+class UserRepositoryImpl implements UserRepository {
   final AuthRemoteDataSource authRemoteDataSource;
   final UserRemoteDataSource userRemoteDataSource;
 
-  AuthRepositoryImpl({
+  UserRepositoryImpl({
     required this.authRemoteDataSource,
     required this.userRemoteDataSource,
   });
@@ -103,7 +109,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserEntity?> getCurrentUser() async {
     try {
-      UserEntity? userEntity = await authRemoteDataSource.getCurrentUser();
+      UserEntity? userEntity = await userRemoteDataSource.getCurrentUser();
       if (userEntity != null) {
         // Lấy dữ liệu user từ Firestore
         UserModel userModel = await userRemoteDataSource.getUser(userEntity.id);
@@ -149,6 +155,93 @@ class AuthRepositoryImpl implements AuthRepository {
       return updatedUser;
     } catch (e) {
       throw Exception("AuthRepositoryImpl updateUserProfile Failed: $e");
+    }
+  }
+  @override
+  Future<void> updateFullName(String fullName) async {
+    try {
+      await userRemoteDataSource.updateFullName(fullName);
+    } catch (e) {
+      throw Exception("UserRepositoryImpl updateFullName Failed: $e");
+    }
+  }
+  @override
+  Future<List<SongEntity>> GetFavoriteSongs() async {
+    try {
+      // Gọi hàm lấy danh sách bài hát yêu thích dưới dạng SongModel
+      List<SongModel> favoriteSongModels = await userRemoteDataSource.getFavoriteSongs();
+      // Chuyển đổi từ SongModel sang SongEntity
+      return favoriteSongModels.map((songModel) {
+        return SongEntity(
+          id: songModel.id,
+          songName: songModel.songName,
+          songImageUrl: songModel.songImageUrl,
+          artistId: songModel.artistId,
+          albumId: songModel.albumId,
+          genre: songModel.genre,
+          releaseDate: songModel.releaseDate,
+          lyric: songModel.lyric,
+          audioUrl: songModel.audioUrl,
+        );
+      }).toList();
+    } catch (e) {
+      throw Exception("UserRepositoryImpl GetFavoriteSongs Failed: $e");
+    }
+  }
+  @override
+  Future<void> addFavoriteSong(String songId) async {
+    try {
+      await userRemoteDataSource.addFavoriteSong(songId);
+    } catch (e) {
+      throw Exception("UserRepositoryImpl addFavoriteSong Failed: $e");
+    }
+  }
+
+  @override
+  Future<void> removeFavoriteSong(String songId) async {
+    try {
+      await userRemoteDataSource.removeFavoriteSong(songId);
+    } catch (e) {
+      throw Exception("UserRepositoryImpl removeFavoriteSong Failed: $e");
+    }
+  }
+
+  @override
+  Future<List<ArtistEntity>> GetFavoriteArtists() async {
+    try {
+      // Gọi hàm lấy danh sách nghệ sĩ yêu thích dưới dạng ArtistModel
+      List<ArtistModel> favoriteArtistModels = await userRemoteDataSource.getFavoriteArtists();
+
+      // Chuyển đổi từ ArtistModel sang ArtistEntity
+      return favoriteArtistModels.map((artistModel) {
+        return ArtistEntity(
+          id: artistModel.id,
+          artistName: artistModel.artistName,
+          artistImageUrl: artistModel.artistImageUrl,
+          followers: artistModel.followers,
+          description: artistModel.description,
+        );
+      }).toList();
+    } catch (e) {
+      throw Exception("UserRepositoryImpl GetFavoriteArtists Failed: $e");
+    }
+  }
+
+  @override
+  Future<void> addFavoriteArtist(String artistId) async {
+    try {
+      await userRemoteDataSource.addFavoriteArtist(artistId);
+    } catch (e) {
+      throw Exception("UserRepositoryImpl addFavoriteArtist Failed: $e");
+    }
+  }
+
+  @override
+  Future<void> removeFavoriteArtist(String artistId) async {
+    try {
+      await userRemoteDataSource.removeFavoriteArtist(artistId);
+    } catch (e) {
+      throw Exception("UserRepositoryImpl removeFavoriteArtist Failed: $e");
     }
   }
 }

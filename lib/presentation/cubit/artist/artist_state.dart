@@ -2,6 +2,7 @@
 
 import '../../../domain/entities/artist_entity.dart';
 import 'package:equatable/equatable.dart';
+import '../../../domain/entities/song_entity.dart';
 
 abstract class ArtistState extends Equatable {
   const ArtistState();
@@ -30,4 +31,22 @@ class ArtistError extends ArtistState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class SongsLoaded extends ArtistState {
+  final List<SongEntity> songs;
+
+  const SongsLoaded(this.songs);
+
+  @override
+  List<Object?> get props => [songs];
+}
+
+class ArtistNameLoaded extends ArtistState {
+  final String artistName;
+
+  const ArtistNameLoaded(this.artistName);
+
+  @override
+  List<Object?> get props => [artistName];
 }

@@ -8,6 +8,7 @@ import '../../../domain/usecases/get_hot_songs.dart';
 
 class SongInfoCubit extends Cubit<SongInfoState> {
   final GetHotSongsUseCase getHotSongsUseCase;
+
   SongInfoCubit({
     required this.getHotSongsUseCase,
   }) : super(SongInfoInitial());
@@ -16,11 +17,19 @@ class SongInfoCubit extends Cubit<SongInfoState> {
     emit(SongInfoLoading());
     try {
       final songs = await getHotSongsUseCase.call();
-      print("Fetched songs: ${songs.length}"); // In ra số lượng bài hát
       emit(SongHotSongsLoaded(songs));
     } catch (e) {
       emit(SongError(e.toString()));
     }
   }
 
+  Future<void> fetchSongsByGenre(String genre) async {
+    emit(SongInfoLoading());
+    try {
+      final songs = await getHotSongsUseCase.getSongsByGenre(genre);
+      emit(SongByGenreLoaded(genre, songs));
+    } catch (e) {
+      emit(SongError(e.toString()));
+    }
+  }
 }

@@ -1,9 +1,9 @@
 // domain/usecases/auth/sign_out.dart
 
-import '../repositories/auth_repository.dart';
+import '../repositories/user_repository.dart';
 
 class SignOutUseCase {
-  final AuthRepository authRepository;
+  final UserRepository authRepository;
 
   SignOutUseCase(this.authRepository);
 

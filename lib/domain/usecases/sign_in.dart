@@ -1,10 +1,10 @@
 // domain/usecases/auth/sign_in.dart
 
-import '../repositories/auth_repository.dart';
+import '../repositories/user_repository.dart';
 import '../entities/user_entity.dart';
 
 class SignInUseCase {
-  final AuthRepository authRepository;
+  final UserRepository authRepository;
 
   SignInUseCase(this.authRepository);
 

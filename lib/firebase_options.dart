@@ -35,7 +35,7 @@ class DefaultFirebaseOptions {
         );
       default:
         throw UnsupportedError(
-          'DefaultFirebaseOptions are not supported for this platform.',
+          'DefaultFirebaseOption  s are not supported for this platform.',
         );
     }
   }

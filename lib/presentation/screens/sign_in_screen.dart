@@ -125,6 +125,7 @@ class SignInScreen extends StatelessWidget {
                                     settings: RouteSettings(name: '/home'),
                                   ),
                                 );
+                                //Navigator.pushNamed(context, '/genre_song');
                               } else if (state is SignInFailure) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text(state.error)),
