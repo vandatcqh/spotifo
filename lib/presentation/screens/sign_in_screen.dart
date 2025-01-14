@@ -113,9 +113,11 @@ class SignInScreen extends StatelessWidget {
                           BlocListener<SignInCubit, SignInState>(
                             listener: (context, state) {
                               if (state is SignInSuccess) {
-                                Navigator.of(context).pushReplacement(
+                                Navigator.pushReplacement(
+                                  context,
                                   MaterialPageRoute(
-                                    builder: (_) => HomeScreen(),
+                                    builder: (context) => HomeScreen(),
+                                    settings: RouteSettings(name: '/home'),
                                   ),
                                 );
                               } else if (state is SignInFailure) {
