@@ -98,4 +98,22 @@ class SongRemoteDataSource {
       throw Exception("Get All Songs Failed: $e");
     }
   }
+
+  /// Lấy danh sách bài hát theo ID nghệ sĩ từ collection 'Songs' trong Firestore.
+  Future<List<SongModel>> getSongsByArtistId(String artistId) async {
+    try {
+      print("duma: $artistId");
+      final querySnapshot = await firestore
+          .collection('Songs')
+          .where('artistId', isEqualTo: artistId)
+          .get();
+      final songs = querySnapshot.docs
+          .map((doc) => SongModel.fromDocument(doc))
+          .toList();
+      print("Số lượng bài hát cho nghệ sĩ $artistId: ${songs.length}");
+      return songs;
+    } catch (e) {
+      throw Exception("Không thể lấy bài hát cho nghệ sĩ $artistId: $e");
+    }
+  }
 }

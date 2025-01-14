@@ -1,3 +1,5 @@
+// presentation/cubit/favoriteArtists/favorite_artists_cubit.dart
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../domain/entities/artist_entity.dart';
@@ -45,7 +47,7 @@ class FavoriteArtistsCubit extends Cubit<FavoriteArtistsState> {
   }
 
   /// Xóa nghệ sĩ khỏi danh sách yêu thích
-  Future<void> removeFavoriteArtist(String artistId) async {
+  Future<void> removeFavoriteArtist(ArtistEntity artist) async {
     if (state is! FavoriteArtistsLoaded) return;
 
     final currentState = state as FavoriteArtistsLoaded;
@@ -54,10 +56,13 @@ class FavoriteArtistsCubit extends Cubit<FavoriteArtistsState> {
     emit(FavoriteArtistsLoading());
     try {
       // Gọi use case để xóa nghệ sĩ
-      await getFavoriteArtistsUseCase.removeFavoriteArtist(artistId);
+      await getFavoriteArtistsUseCase.removeFavoriteArtist(artist.id);
+
+      // Trừ followers
+      artist.followers = artist.followers - 1;
 
       // Xóa nghệ sĩ khỏi danh sách hiện tại
-      currentArtists.removeWhere((artist) => artist.id == artistId);
+      currentArtists.removeWhere((a) => a.id == artist.id);
 
       emit(FavoriteArtistsLoaded(currentArtists));
     } catch (e) {
@@ -87,5 +92,4 @@ class FavoriteArtistsCubit extends Cubit<FavoriteArtistsState> {
 
     emit(FavoriteArtistsLoaded(sortedArtists));
   }
-
 }

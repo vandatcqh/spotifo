@@ -30,13 +30,14 @@ import 'domain/usecases/get_favorite_artists.dart';
 import 'domain/usecases/get_favorite_songs.dart';
 import 'domain/repositories/user_repository.dart';
 import 'domain/repositories/genre_repository.dart';
-import 'domain/usecases/get_hot_artists.dart';
+import 'domain/usecases/get_all_artists.dart';
 import 'domain/repositories/artist_repository.dart';
 import 'domain/usecases/pause_song.dart';
 import 'domain/usecases/play_song.dart';
 import 'domain/usecases/resume_song.dart';
 import 'domain/usecases/seek_song.dart';
 import 'domain/usecases/get_hot_songs.dart';
+import 'domain/usecases/get_songs_by_artist_id.dart';
 import 'domain/repositories/music_repository.dart';
 import 'domain/repositories/player_repository.dart';
 
@@ -88,9 +89,10 @@ Future<void> init() async {
   sl.registerLazySingleton<GenreRepository>(
         () => GenreRepositoryImpl(sl()),
   );
-  sl.registerLazySingleton<ArtistRepository>(
-        () => ArtistRepositoryImpl(sl()),
-  );
+  sl.registerLazySingleton<ArtistRepository>(() => ArtistRepositoryImpl(
+    remoteDataSource: sl(),
+    songRemoteDataSource: sl(), // Cung cấp SongRemoteDataSource
+  ));
   sl.registerLazySingleton<MusicRepository>(
         () => MusicRepositoryImpl(
       firebaseFirestore,
@@ -129,6 +131,9 @@ Future<void> init() async {
   sl.registerLazySingleton<GetHotSongsUseCase>(
         () => GetHotSongsUseCase(sl()),
   );
+  sl.registerLazySingleton<GetSongsByArtistIdUseCase>(
+        () => GetSongsByArtistIdUseCase(sl()),
+  );
   sl.registerLazySingleton(() => PlaySongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => PauseSongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => ResumeSongUseCase(sl<PlayerRepository>()));
@@ -158,7 +163,7 @@ Future<void> init() async {
         () => GenreCubit(sl()),
   );
   sl.registerFactory<ArtistCubit>(
-        () => ArtistCubit(sl()),
+        () => ArtistCubit(sl(), sl()),
   );
   sl.registerFactory<SongInfoCubit>(
         () => SongInfoCubit(
@@ -177,6 +182,7 @@ Future<void> init() async {
     resumeSongUseCase: sl(),
     seekSongUseCase: sl(),
   ));
+
 
 
 }

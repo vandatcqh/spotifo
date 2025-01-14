@@ -1,3 +1,5 @@
+// presentation/screens/favorite_songs_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/favoriteSongs/favorite_songs_cubit.dart';
@@ -10,9 +12,8 @@ class FavoriteSongsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Chú ý: bạn nên gọi fetchFavoriteSongs() trong initState của StatefulWidget
-    // hoặc khi khởi tạo BlocProvider. Ví dụ:
-    // BlocProvider.of<FavoriteSongsCubit>(context).fetchFavoriteSongs();
+    // Fetch favorite songs when the screen is built
+    context.read<FavoriteSongsCubit>().fetchFavoriteSongs();
 
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +42,7 @@ class FavoriteSongsScreen extends StatelessWidget {
                   )
                       : const Icon(Icons.music_note, size: 50),
                   title: Text(song.songName),
-                  subtitle: Text('Lượt nghe:'),
+                  subtitle: Text('Lượt nghe: '), // Assuming there's a playCount property
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -71,6 +72,44 @@ class FavoriteSongsScreen extends StatelessWidget {
           );
         },
         child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              blurRadius: 10,
+              offset: const Offset(0, -1),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                BlocProvider.of<FavoriteSongsCubit>(context).sortSongsAscending();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Sắp xếp A → Z'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                BlocProvider.of<FavoriteSongsCubit>(context).sortSongsDescending();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Sắp xếp Z → A'),
+            ),
+          ],
+        ),
       ),
     );
   }
