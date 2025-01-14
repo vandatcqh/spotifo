@@ -1,5 +1,9 @@
+// presentation/screens/sign_in_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotifo/presentation/screens/queue_screen.dart';
+import 'package:spotifo/presentation/screens/search_screen.dart';
 
 // Import necessary Cubit and screens
 import '../cubit/auth/sign_in_cubit.dart';
@@ -23,6 +27,7 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+      // Lấy SignInCubit từ service locator
       create: (_) => sl<SignInCubit>(),
       child: Scaffold(
         backgroundColor: colorTheme.onSurface,
