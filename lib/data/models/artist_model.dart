@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../domain/entities/artist_entity.dart';
 
 class ArtistModel extends ArtistEntity {
-  const ArtistModel({
+  ArtistModel({
     required String id,
     required String artistName,
     String? artistImageUrl,

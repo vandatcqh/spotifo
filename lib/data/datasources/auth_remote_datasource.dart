@@ -74,17 +74,4 @@ class AuthRemoteDataSource {
       throw Exception("Sign Out Failed: $e");
     }
   }
-
-  Future<UserEntity?> getCurrentUser() async {
-    User? user = firebaseAuth.currentUser;
-    if (user != null) {
-      return UserEntity(
-        id: user.uid,
-        username: user.email ?? '',
-        password: '', // Không lưu mật khẩu
-        fullName: '',
-      );
-    }
-    return null;
-  }
 }

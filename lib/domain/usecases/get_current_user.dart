@@ -1,10 +1,10 @@
 // domain/usecases/auth/get_current_user.dart
 
 import '../entities/user_entity.dart';
-import '../repositories/auth_repository.dart';
+import '../repositories/user_repository.dart';
 
 class GetCurrentUserUseCase {
-  final AuthRepository authRepository;
+  final UserRepository authRepository;
 
   GetCurrentUserUseCase(this.authRepository);
 

@@ -6,7 +6,7 @@ import '../../../domain/entities/user_entity.dart';
 import '../../../domain/usecases/get_current_user.dart';
 import '../../../domain/usecases/sign_out.dart';
 import '../../../domain/usecases/update_user_profile.dart';
-import '../../../domain/usecases/artist_follow_usecase.dart';
+// import '../../../domain/usecases/artist_follow_usecase.dart'; // Xóa dòng này
 
 part 'user_info_state.dart';
 
@@ -14,13 +14,13 @@ class UserInfoCubit extends Cubit<UserInfoState> {
   final GetCurrentUserUseCase getCurrentUserUseCase;
   final SignOutUseCase signOutUseCase;
   final UpdateUserProfileUseCase updateUserProfileUseCase;
-  final ArtistFollowUseCase artistFollowUseCase;
+  // final ArtistFollowUseCase artistFollowUseCase; // Xóa dòng này
 
   UserInfoCubit({
     required this.getCurrentUserUseCase,
     required this.signOutUseCase,
     required this.updateUserProfileUseCase,
-    required this.artistFollowUseCase,
+    // required this.artistFollowUseCase, // Xóa dòng này
   }) : super(UserInfoInitial());
 
   /// Fetches user information
@@ -66,54 +66,26 @@ class UserInfoCubit extends Cubit<UserInfoState> {
       }
     }
   }
-  /// Thêm nghệ sĩ vào danh sách yêu thích
-  Future<void> addFavoriteArtist(String artistId) async {
-    if (state is UserInfoLoaded) {
 
-      final currentState = state as UserInfoLoaded;
-      final user = currentState.user;
-      final favoriteArtists = List<String>.from(user.favoriteArtists);
-
-      if (!favoriteArtists.contains(artistId)) {
-        favoriteArtists.add(artistId);
-      }
-
-      final updatedUser = user.copyWith(favoriteArtists: favoriteArtists);
-
-      emit(UserInfoUpdating());
-
-      try {
-        await artistFollowUseCase.increaseFollower(artistId);
-        final updated = await updateUserProfileUseCase.call(updatedUser);
-        emit(UserInfoLoaded(updated));
-      } catch (e) {
-        print("dudu: $e");
-        emit(UserInfoFailure("Không thể thêm nghệ sĩ yêu thích."));
-      }
-    }
-  }
-
-  /// Xoá nghệ sĩ khỏi danh sách yêu thích
-  Future<void> removeFavoriteArtist(String artistId) async {
+  Future<void> updateFullName(String fullName) async {
     if (state is UserInfoLoaded) {
       final currentState = state as UserInfoLoaded;
       final user = currentState.user;
-      final favoriteArtists = List<String>.from(user.favoriteArtists);
 
-      if (favoriteArtists.contains(artistId)) {
-        favoriteArtists.remove(artistId);
-      }
+      // Tạo một bản sao mới của user với fullName được cập nhật
+      final updatedUser = user.copyWith(fullName: fullName);
 
-      final updatedUser = user.copyWith(favoriteArtists: favoriteArtists);
-
-      emit(UserInfoUpdating());
+      emit(UserInfoUpdating()); // Emit trạng thái đang cập nhật
 
       try {
-        await artistFollowUseCase.decreaseFollower(artistId);
-        final updated = await updateUserProfileUseCase.call(updatedUser);
-        emit(UserInfoLoaded(updated));
+        // Gửi yêu cầu cập nhật thông tin người dùng
+        await updateUserProfileUseCase.updateFullName(fullName);
+
+        // Cập nhật thành công, emit trạng thái mới với user đã cập nhật
+        emit(UserInfoLoaded(updatedUser));
       } catch (e) {
-        emit(UserInfoFailure("Không thể xoá nghệ sĩ yêu thích."));
+        // Nếu lỗi xảy ra, emit trạng thái lỗi
+        emit(UserInfoFailure("Không thể cập nhật tên đầy đủ."));
       }
     }
   }

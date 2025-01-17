@@ -4,16 +4,29 @@ import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:spotifo/domain/usecases/set_volume.dart';
+import 'package:spotifo/presentation/cubit/queue/queue_cubit.dart';
 // ------------------- //
 //  Import Cubits     //
 // ------------------- //
+import 'data/repositories/queue_repository_impl.dart';
+import 'domain/repositories/queue_repository.dart';
+import 'domain/usecases/add_queue.dart';
+import 'domain/usecases/add_songs.dart';
+import 'domain/usecases/fetch_queue.dart';
+import 'domain/usecases/remove_from_queue.dart';
+import 'domain/usecases/set_speed.dart';
+import 'domain/usecases/shuffle_queue.dart';
+import 'domain/usecases/update_queue.dart';
 import 'presentation/cubit/auth/sign_in_cubit.dart';
 import 'presentation/cubit/auth/sign_up_cubit.dart';
 import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/genre/genre_cubit.dart';
 import 'presentation/cubit/artist/artist_cubit.dart';
+import 'presentation/cubit/favoriteSongs/favorite_songs_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
+import 'presentation/cubit/favoriteArtists/favorite_artists_cubit.dart';
 
 // ------------------- //
 //    Import Domain    //
@@ -24,16 +37,18 @@ import 'domain/usecases/get_current_user.dart';
 import 'domain/usecases/sign_out.dart';
 import 'domain/usecases/get_all_genre.dart';
 import 'domain/usecases/update_user_profile.dart';
-import 'domain/usecases/artist_follow_usecase.dart';
-import 'domain/repositories/auth_repository.dart';
+import 'domain/usecases/get_favorite_artists.dart';
+import 'domain/usecases/get_favorite_songs.dart';
+import 'domain/repositories/user_repository.dart';
 import 'domain/repositories/genre_repository.dart';
-import 'domain/usecases/get_hot_artists.dart';
+import 'domain/usecases/get_all_artists.dart';
 import 'domain/repositories/artist_repository.dart';
 import 'domain/usecases/pause_song.dart';
 import 'domain/usecases/play_song.dart';
 import 'domain/usecases/resume_song.dart';
 import 'domain/usecases/seek_song.dart';
 import 'domain/usecases/get_hot_songs.dart';
+import 'domain/usecases/get_songs_by_artist_id.dart';
 import 'domain/repositories/music_repository.dart';
 import 'domain/repositories/player_repository.dart';
 
@@ -44,7 +59,7 @@ import 'data/datasources/auth_remote_datasource.dart';
 import 'data/datasources/user_remote_datasource.dart';
 import 'data/datasources/genre_remote_datasource.dart';
 import 'data/datasources/artist_remote_datasource.dart';
-import 'data/repositories/auth_repository_impl.dart';
+import 'data/repositories/user_repository_impl.dart';
 import 'data/repositories/genre_repository_impl.dart';
 import 'data/repositories/artist_repository_impl.dart';
 import 'data/datasources/song_remote_datasource.dart';
@@ -63,7 +78,7 @@ Future<void> init() async {
         () => AuthRemoteDataSource(firebaseAuth: firebaseAuth),
   );
   sl.registerLazySingleton<UserRemoteDataSource>(
-        () => UserRemoteDataSource(firestore: firebaseFirestore),
+        () => UserRemoteDataSource(firestore: firebaseFirestore, firebaseAuth: firebaseAuth),
   );
   sl.registerLazySingleton<GenreRemoteDataSource>(
         () => GenreRemoteDataSource(firestore: firebaseFirestore),
@@ -76,8 +91,8 @@ Future<void> init() async {
   );
 
   // --- Repositories ---
-  sl.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(
+  sl.registerLazySingleton<UserRepository>(
+        () => UserRepositoryImpl(
       authRemoteDataSource: sl(),
       userRemoteDataSource: sl(),
     ),
@@ -85,9 +100,10 @@ Future<void> init() async {
   sl.registerLazySingleton<GenreRepository>(
         () => GenreRepositoryImpl(sl()),
   );
-  sl.registerLazySingleton<ArtistRepository>(
-        () => ArtistRepositoryImpl(sl()),
-  );
+  sl.registerLazySingleton<ArtistRepository>(() => ArtistRepositoryImpl(
+    remoteDataSource: sl(),
+    songRemoteDataSource: sl(), // Cung cấp SongRemoteDataSource
+  ));
   sl.registerLazySingleton<MusicRepository>(
         () => MusicRepositoryImpl(
       firebaseFirestore,
@@ -97,6 +113,7 @@ Future<void> init() async {
   sl.registerLazySingleton<PlayerRepository>(
         () => PlayerRepositoryImpl(sl<AudioPlayer>()),
   );
+  sl.registerLazySingleton<QueueRepository>(() => QueueRepositoryImpl());
 
   // --- UseCases ---
   sl.registerLazySingleton<SignInUseCase>(
@@ -120,17 +137,30 @@ Future<void> init() async {
   sl.registerLazySingleton<UpdateUserProfileUseCase>(
         () => UpdateUserProfileUseCase(sl()),
   );
-  sl.registerLazySingleton<ArtistFollowUseCase>(
-        () => ArtistFollowUseCase(sl()),
+  sl.registerLazySingleton<GetFavoriteArtistsUseCase>(
+        () => GetFavoriteArtistsUseCase(sl(), sl()),
   );
   sl.registerLazySingleton<GetHotSongsUseCase>(
         () => GetHotSongsUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetSongsByArtistIdUseCase>(
+        () => GetSongsByArtistIdUseCase(sl()),
   );
   sl.registerLazySingleton(() => PlaySongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => PauseSongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => ResumeSongUseCase(sl<PlayerRepository>()));
   sl.registerLazySingleton(() => SeekSongUseCase(sl<PlayerRepository>()));
-
+  sl.registerLazySingleton<GetFavoriteSongsUseCase>(
+        () => GetFavoriteSongsUseCase(sl()),
+  );
+  sl.registerLazySingleton(() => SetVolumeUseCase(sl<PlayerRepository>()));
+  sl.registerLazySingleton(() => SetSongSpeedUseCase(sl<PlayerRepository>()));
+  sl.registerLazySingleton(() => FetchQueue(sl()));
+  sl.registerLazySingleton(() => AddToQueue(sl()));
+  sl.registerLazySingleton(() => RemoveFromQueue(sl()));
+  sl.registerLazySingleton(() => ShuffleQueue(sl()));
+  sl.registerLazySingleton(() => UpdateQueue(sl()));
+  sl.registerLazySingleton(() => AddSongsToQueueUseCase(sl()));
   // --- Cubits ---
   // Note:
   // - Use `registerFactory` for Cubits to ensure a new instance is created each time.
@@ -147,26 +177,40 @@ Future<void> init() async {
       getCurrentUserUseCase: sl(),
       signOutUseCase: sl(),
       updateUserProfileUseCase: sl(),
-      artistFollowUseCase: sl(),
     ),
   );
   sl.registerFactory<GenreCubit>(
         () => GenreCubit(sl()),
   );
   sl.registerFactory<ArtistCubit>(
-        () => ArtistCubit(sl()),
+        () => ArtistCubit(sl(), sl()),
   );
   sl.registerFactory<SongInfoCubit>(
         () => SongInfoCubit(
       getHotSongsUseCase: sl(),
     ),
   );
+  sl.registerFactory<FavoriteSongsCubit>(
+        () => FavoriteSongsCubit(sl()),
+  );
+  sl.registerFactory<FavoriteArtistsCubit>(
+        () => FavoriteArtistsCubit(sl()),
+  );
   sl.registerLazySingleton(() => PlayerCubit(
     playSongUseCase: sl(),
     pauseSongUseCase: sl(),
     resumeSongUseCase: sl(),
     seekSongUseCase: sl(),
+    setVolumeUseCase: sl(),
+    setSongSpeedUseCase: sl(),
   ));
 
-
+  sl.registerLazySingleton(() => QueueCubit(
+    fetchQueue: sl(),
+    addToQueue: sl(),
+    removeFromQueue: sl(),
+    shuffleQueue: sl(),
+    updateQueue: sl(),
+    addSongsToQueueUseCase: sl(),
+  ));
 }
