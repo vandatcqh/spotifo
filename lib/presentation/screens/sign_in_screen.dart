@@ -122,7 +122,7 @@ class SignInScreen extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => HomeScreen(),
-                                    settings: RouteSettings(name: '/home'),
+                                    // settings: RouteSettings(name: '/home'),
                                   ),
                                 );
                               } else if (state is SignInFailure) {

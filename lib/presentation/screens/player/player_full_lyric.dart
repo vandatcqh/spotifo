@@ -189,12 +189,9 @@ class _PlayerFullLyricState extends State<PlayerFullLyric> {
                     ),
                     IconButton(
                       icon: Icon(
-                        currentPosition >= totalDuration &&
-                            !context.read<PlayerCubit>().isFirstLoad
-                            ? Icons.replay
-                            : (isPlaying
+                        isPlaying
                             ? Icons.pause_circle_filled
-                            : Icons.play_circle_filled),
+                            : Icons.play_circle_filled,
                         size: 7.h,
                         color: Colors.white,
                       ),

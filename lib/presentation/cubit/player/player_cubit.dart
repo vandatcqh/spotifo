@@ -34,30 +34,45 @@ class PlayerCubit extends Cubit<AppPlayerState> {
   Duration _totalDuration = Duration.zero;
   double get currentVolume => _currentVolume;
   double get playbackSpeed => _playbackSpeed;
-  Future<void> togglePlayPause(SongEntity song) async {
+  Future<void> togglePlayPause(SongEntity song)   async {
     try {
+      // print("state ${state}");
+
       if (state is PlayerInitial || _currentSong?.id != song.id) {
-        // New song is being loaded
-        listenToPositionStream();
+
+        // print("Playing song(before): ${_currentSong?.id}");
         _currentSong = song;
         _currentPosition = Duration.zero;
         _totalDuration = Duration.zero;
-
-        emit(PlayerPlaying(song, _currentPosition, _totalDuration));
-        await playSongUseCase.call(song.audioUrl);
+        listenToPositionStreamValue();
         _isFirstLoad = false; // Set first load flag
-        // Ensure the streams are listened to again
-        listenToPositionStream();
-      } else if (state is PlayerPlaying) {
-        // Pause the song
+        emit(PlayerPlaying(song, _currentPosition, _totalDuration));
+        // print("Playing song(after): ${_currentSong?.id}");
+        await playSongUseCase.call(song.audioUrl);
+        listenToPositionStreamValue();
+
+
+      } else if (state is PlayerPlaying && _currentSong?.id == song.id) {
+
+        // print("Playing song(before): ${_currentSong?.id}");
         emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
+        // print("Paused song(after): ${_currentSong?.id}");
         await pauseSongUseCase.call();
-      } else if (state is PlayerPaused) {
-        // Resume playback
-        _isFirstLoad = false; // Reset first load flag
-        emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
-        await resumeSongUseCase.call();
+
       }
+
+      else if (state is PlayerPaused) {
+
+
+        // print("Paused song(before): ${_currentSong?.id}");
+        emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+        // print("Playing song(after): ${_currentSong?.id}");
+        await resumeSongUseCase.call();
+
+      }
+
+      // print("state(after): ${state}");
+
     } catch (e) {
       emit(PlayerError("Error toggling play/pause: $e"));
     }
@@ -86,7 +101,6 @@ class PlayerCubit extends Cubit<AppPlayerState> {
 
         if(state is PlayerPaused)
         {
-          emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
           await resumeSongUseCase.call();
         }
 
@@ -108,6 +122,26 @@ class PlayerCubit extends Cubit<AppPlayerState> {
       emit(PlayerError("Cannot set playback speed: $e"));
     }
   }
+  Future<void> playSong(SongEntity song) async {
+    // New song is being loaded
+
+    print("Playing song(before): ${_currentSong?.id}");
+    _currentSong = song;
+    _currentPosition = Duration.zero;
+    _totalDuration = Duration.zero;
+
+
+
+    print("Playing song(after): ${_currentSong?.id}");
+
+    emit(PlayerPlaying(song, _currentPosition, _totalDuration));
+
+    await playSongUseCase.call(song.audioUrl);
+    _isFirstLoad = false; // Set first load flag
+
+    listenToPositionStream();
+  }
+
 
   Future<void> pauseSong() async {
     if (state is PlayerPlaying) {
@@ -118,34 +152,44 @@ class PlayerCubit extends Cubit<AppPlayerState> {
     }
   }
 
-  void listenToPositionStream() {
+  void listenToPositionStreamValue() {
     playSongUseCase.positionStream.listen((position) async {
       _currentPosition = position;
-      if (state is PlayerPlaying) {
-        emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
-      } else if (state is PlayerPaused) {
-        emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
-      }
-
-      if(!isFirstLoad && _currentPosition >= _totalDuration)
-      {
-        emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
-        await pauseSongUseCase.call();
-      }
 
     });
 
-    // Lắng nghe tổng thời gian từ use case
     playSongUseCase.durationStream.listen((duration) {
       if (duration != null && duration != Duration.zero) {
         _totalDuration = duration;
-        if (state is PlayerPlaying) {
-          emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
-        } else if (state is PlayerPaused) {
-          emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
-        }
       }
     });
+  }
+
+  void listenToPositionStream() {
+    playSongUseCase.positionStream.listen((position) async {
+      _currentPosition = position;
+      _emitPlayerState();
+
+      if (!isFirstLoad && _currentPosition >= _totalDuration) {
+        emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
+        await pauseSongUseCase.call();
+      }
+    });
+
+    playSongUseCase.durationStream.listen((duration) {
+      if (duration != null && duration != Duration.zero) {
+        _totalDuration = duration;
+        _emitPlayerState();
+      }
+    });
+  }
+
+  void _emitPlayerState() {
+    if (state is PlayerPlaying) {
+      emit(PlayerPlaying(_currentSong!, _currentPosition, _totalDuration));
+    } else if (state is PlayerPaused) {
+      emit(PlayerPaused(_currentSong!, _currentPosition, _totalDuration));
+    }
   }
 
   Future<void> replay() async {

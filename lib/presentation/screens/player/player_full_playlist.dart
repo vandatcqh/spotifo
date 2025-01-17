@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:spotifo/presentation/screens/player/player_full_lyric.dart';
-import 'package:spotifo/presentation/screens/player/player_screen.dart';
+
 import '../../../core/app_export.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
@@ -15,7 +14,7 @@ import '../../../injection_container.dart';
 class PlayerFullPlaylist extends StatefulWidget {
   final SongEntity song;
 
-  const PlayerFullPlaylist({Key? key, required this.song})
+   PlayerFullPlaylist({Key? key, required this.song})
       : super(key: key);
 
   @override
@@ -24,10 +23,12 @@ class PlayerFullPlaylist extends StatefulWidget {
 
 class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
   Color _backgroundColor = Colors.blue;
+  late SongEntity currentSong;
 
   @override
   void initState() {
     super.initState();
+    currentSong = widget.song;
     _updateBackgroundColor();
   }
 
@@ -59,8 +60,6 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
         ],
         child: BlocBuilder<PlayerCubit, AppPlayerState>(
           builder: (context, state) {
-            bool isPlaying = state is PlayerPlaying &&
-                state.currentSong.id == widget.song.id;
 
             Duration currentPosition = (state is PlayerPlaying ||
                 state is PlayerPaused)
@@ -70,6 +69,16 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
                 state is PlayerPaused)
                 ? state.totalDuration
                 : Duration.zero;
+
+            if(state is PlayerPaused) {
+              currentSong = state.currentSong;
+            }
+
+            if(state is PlayerPlaying) {
+              currentSong = state.currentSong;
+            }
+            bool isPlaying = (state is PlayerPlaying && state.currentSong.id == currentSong.id) ? true : false;
+
 
             return Scaffold(
               backgroundColor: _backgroundColor,
@@ -83,59 +92,68 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
                   ),
                   child: IntrinsicHeight(
                     child: Column(
+
                       children: [
                         // Scrollable song list
                         Expanded(
                           child: BlocBuilder<SongInfoCubit, SongInfoState>(
                             builder: (context, state) {
                               if (state is SongInfoLoading) {
+
                                 return const Center(
                                     child: CircularProgressIndicator());
                               } else if (state is SongHotSongsLoaded) {
                                 final songs = state.songs;
+
                                 return ListView.builder(
                                   itemCount: songs.length,
                                   itemBuilder: (context, index) {
                                     final song = songs[index];
-                                    return ListTile(
-                                      leading: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: song.songImageUrl != null
-                                            ? Image.network(
-                                          song.songImageUrl!,
-                                          width: 48,
-                                          height: 48,
-                                          fit: BoxFit.cover,
-                                        )
-                                            : const Icon(Icons.music_note,
-                                            size: 48, color: Colors.white),
-                                      ),
-                                      title: Text(
-                                        song.songName,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
+
+                                    return Container(
+                                      color: song.id == currentSong.id ? Colors.blueGrey : Colors.transparent, // Change background color if playing
+                                      child: ListTile(
+                                        leading: ClipRRect(
+                                          borderRadius: BorderRadius.circular(8),
+                                          child: song.songImageUrl != null
+                                              ? Image.network(
+                                            song.songImageUrl!,
+                                            width: 48,
+                                            height: 48,
+                                            fit: BoxFit.cover,
+                                          )
+                                              : const Icon(Icons.music_note, size: 48, color: Colors.white),
                                         ),
-                                      ),
-                                      subtitle: Text(
-                                        song.artistId,
-                                        style: const TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 14,
+                                        title: Text(
+                                          song.songName,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
                                         ),
-                                      ),
-                                      trailing: IconButton(
-                                        icon: const Icon(Icons.play_arrow,
-                                            color: Colors.white),
-                                        onPressed: () {
-                                          context
-                                              .read<PlayerCubit>()
-                                              .togglePlayPause(song);
-                                        },
+                                        subtitle: Text(
+                                          song.artistId,
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        trailing: IconButton(
+                                          icon: Icon(
+                                            isPlaying && currentSong.id == song.id ? Icons.pause : Icons.play_arrow,
+                                            color: Colors.white,
+                                          ),
+                                          onPressed: () {
+                                            currentSong = song;
+                                            context.read<PlayerCubit>().togglePlayPause(currentSong);
+
+                                          },
+                                        ),
                                       ),
                                     );
                                   },
                                 );
+
                               } else if (state is SongError) {
                                 return Center(
                                   child: Text(
@@ -157,14 +175,14 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
                         // Playback slider
                         Slider(
                           value: currentPosition.inSeconds.toDouble(),
-                          max: totalDuration.inSeconds > 0 ? totalDuration.inSeconds.toDouble() : 1.0,
+                          max: totalDuration.inSeconds > 0 ? totalDuration.inSeconds.toDouble() : 9999.0,
                           activeColor: Colors.white,
                           inactiveColor: Colors.white38,
                           onChanged: (value) {
 
                             if(currentPosition >= totalDuration)
                             {
-                              context.read<PlayerCubit>().togglePlayPause(widget.song);
+                              context.read<PlayerCubit>().togglePlayPause(currentSong);
                             }
 
                             // Update the duration in real-time while dragging the slider
@@ -214,9 +232,9 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
                             // Play/Pause or Replay button
                             IconButton(
                               icon: Icon(
-                                currentPosition >= totalDuration && !context.read<PlayerCubit>().isFirstLoad
-                                    ? Icons.replay // Show replay button if not on first load and song has finished
-                                    : (isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled),
+                                isPlaying
+                                    ? Icons.pause_circle_filled
+                                    : Icons.play_circle_filled,
                                 size: 7.h,
                                 color: Colors.white,
                               ),
@@ -226,8 +244,8 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
                                   // Replay the song
                                   playerCubit.replay();
                                 } else {
-                                  // Toggle play/pause
-                                  playerCubit.togglePlayPause(widget.song);
+                                  context.read<PlayerCubit>().listenToPositionStream();
+                                  playerCubit.togglePlayPause(currentSong);
                                 }
                               },
                             ),
@@ -243,7 +261,7 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
                                 final newPosition = currentPosition + Duration(seconds: 10);
                                 if(newPosition >= totalDuration)
                                 {
-                                  context.read<PlayerCubit>().togglePlayPause(widget.song);
+                                  context.read<PlayerCubit>().togglePlayPause(currentSong);
                                 }
 
                                 playerCubit.seekTo(newPosition > totalDuration ? totalDuration : newPosition);

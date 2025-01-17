@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
+import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_state.dart';
 import '../../../injection_container.dart';
@@ -11,8 +12,23 @@ import '../player/mini_player.dart';
 import '../player/player_screen.dart';
 import '../song_list_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+
+  //late final bool isPlaying = false;
+
   const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+class _HomeScreenState extends State<HomeScreen> {
+  SongEntity? currentSong;
+
+  @override
+  void initState() {
+    super.initState();
+    currentSong = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,76 +203,92 @@ class HomeScreen extends StatelessWidget {
                           SizedBox(height: 2.h),
                           BlocBuilder<SongInfoCubit, SongInfoState>(
                             builder: (context, state) {
+
                               if (state is SongInfoLoading) {
                                 return const Center(child: CircularProgressIndicator());
                               } else if (state is SongHotSongsLoaded) {
                                 final songs = state.songs.take(5).toList(); // Display only 5 songs
                                 return BlocBuilder<PlayerCubit, AppPlayerState>(
                                   builder: (context, playerState) {
+
+                                    if(playerState is PlayerPaused) {
+                                      currentSong = playerState.currentSong;
+                                    }
+
+                                    if(playerState is PlayerPlaying) {
+                                      currentSong = playerState.currentSong;
+                                    }
+
+
+
+                                    // print(playerState);
+                                    // print(currentSong?.songName);
                                     return Column(
                                       children: songs.map((song) {
-                                        bool isPlaying = playerState is PlayerPlaying &&
-                                            playerState.currentSong.id == song.id;
-
-                                        return ListTile(
-                                          leading: ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
-                                            child: Image.network(
-                                              song.songImageUrl ?? '',
-                                              width: 50,
-                                              height: 50,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return Container(
-                                                  width: 50,
-                                                  height: 50,
-                                                  color: Colors.grey.shade300,
-                                                  child: const Icon(
-                                                    Icons.music_note,
-                                                    size: 40,
-                                                    color: Colors.grey,
-                                                  ),
-                                                );
+                                        bool isSelect = song.id == currentSong?.id ? true : false;
+                                        bool isPlaying = playerState is PlayerPlaying && playerState.currentSong.id == song.id;
+                                        return Container(
+                                          color: isSelect ? Colors.orange.shade100 : Colors.transparent, // Highlight playing song
+                                          child: ListTile(
+                                            leading: ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: Image.network(
+                                                song.songImageUrl ?? '',
+                                                width: 50,
+                                                height: 50,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  return Container(
+                                                    width: 50,
+                                                    height: 50,
+                                                    color: Colors.grey.shade300,
+                                                    child: const Icon(
+                                                      Icons.music_note,
+                                                      size: 40,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            title: Text(
+                                              song.songName,
+                                              style: const TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                            subtitle: Text(song.artistId),
+                                            trailing: IconButton(
+                                              icon: Icon(
+                                                isPlaying
+                                                    ? Icons.pause_circle_filled
+                                                    : Icons.play_circle_filled,
+                                                size: 40,
+                                                color: isSelect ? Colors.orange : Colors.grey,
+                                              ),
+                                              onPressed: () {
+                                                context.read<PlayerCubit>().togglePlayPause(song);
                                               },
                                             ),
-                                          ),
-                                          title: Text(
-                                            song.songName,
-                                            style: const TextStyle(fontWeight: FontWeight.bold),
-                                          ),
-                                          subtitle: Text(song.artistId),
-                                          trailing: IconButton(
-                                            icon: Icon(
-                                              isPlaying
-                                                  ? Icons.pause_circle_filled
-                                                  : Icons.play_circle_filled,
-                                              size: 40,
-                                              color: isPlaying ? Colors.orange : Colors.grey,
-                                            ),
-                                            onPressed: () {
-                                              context.read<PlayerCubit>().togglePlayPause(song);
+                                            onTap: () {
+                                              //context.read<PlayerCubit>().listenToPositionStream();
+
+                                              showModalBottomSheet(
+                                                context: context,
+                                                isScrollControlled: true,
+                                                backgroundColor: Colors.transparent,
+                                                builder: (BuildContext context) {
+                                                  return PlayerView(
+                                                      song: song,
+                                                  );
+                                                },
+                                              );
                                             },
                                           ),
-                                          onTap: () {
-                                            context.read<PlayerCubit>().listenToPositionStream();
-
-                                            showModalBottomSheet(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              backgroundColor: Colors.transparent,
-                                              builder: (BuildContext context) {
-                                                return PlayerView(
-                                                  song: song,
-                                                );
-                                              },
-                                            );
-                                          },
-
                                         );
                                       }).toList(),
                                     );
                                   },
                                 );
+
                               } else if (state is SongError) {
                                 return Center(child: Text('Error: \${state.error}'));
                               }

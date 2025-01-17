@@ -46,8 +46,8 @@ class MyApp extends StatelessWidget {
               title: 'Flutter Clean Architecture với Firebase',
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
-              home: SplashScreen(),
-              //home: HomeScreen(),
+              //home: SplashScreen(),
+              home: HomeScreen(),
               routes: {
                 '/artists': (context) => const ListArtistScreen(),
                 '/home' : (context) => const HomeScreen(),
