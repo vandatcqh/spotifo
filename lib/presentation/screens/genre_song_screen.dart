@@ -9,9 +9,9 @@ class GenreSongsScreen extends StatelessWidget {
   final String genreName;
 
   const GenreSongsScreen({
-    Key? key,
+    super.key,
     required this.genreName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

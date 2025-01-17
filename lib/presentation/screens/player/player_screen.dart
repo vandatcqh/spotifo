@@ -23,7 +23,7 @@ class PlayerView extends StatefulWidget {
   });
 
   @override
-  _PlayerViewState createState() => _PlayerViewState();
+  State<PlayerView> createState() => _PlayerViewState();
 }
 
 class _PlayerViewState extends State<PlayerView> {

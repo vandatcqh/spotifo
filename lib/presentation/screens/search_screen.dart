@@ -3,8 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class CloudFunctionTestScreen extends StatefulWidget {
+  const CloudFunctionTestScreen({super.key});
+
   @override
-  _CloudFunctionTestScreenState createState() =>
+  State<CloudFunctionTestScreen> createState() =>
       _CloudFunctionTestScreenState();
 }
 

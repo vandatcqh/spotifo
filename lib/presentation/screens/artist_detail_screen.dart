@@ -11,10 +11,10 @@ import '../../../domain/entities/song_entity.dart';
 class ArtistDetailScreen extends StatefulWidget {
   final ArtistEntity artist;
 
-  const ArtistDetailScreen({Key? key, required this.artist}) : super(key: key);
+  const ArtistDetailScreen({super.key, required this.artist});
 
   @override
-  _ArtistDetailScreenState createState() => _ArtistDetailScreenState();
+  State<ArtistDetailScreen> createState() => _ArtistDetailScreenState();
 }
 
 class _ArtistDetailScreenState extends State<ArtistDetailScreen> {

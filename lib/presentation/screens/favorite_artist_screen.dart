@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotifo/core/app_export.dart';
 import '../cubit/favoriteArtists/favorite_artists_cubit.dart';
 import '../cubit/artist/artist_cubit.dart';
 import '../cubit/artist/artist_state.dart';
@@ -7,7 +8,7 @@ import 'artist_detail_screen.dart';
 import 'add_artist_screen.dart';
 
 class FavoriteArtistScreen extends StatelessWidget {
-  const FavoriteArtistScreen({Key? key}) : super(key: key);
+  const FavoriteArtistScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +75,7 @@ class FavoriteArtistScreen extends StatelessWidget {
           color: Colors.grey[200],
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
+              color: Colors.grey.withAlphaD(0.5),
               blurRadius: 10,
               offset: const Offset(0, -1),
             ),

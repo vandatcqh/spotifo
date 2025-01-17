@@ -11,7 +11,7 @@ import '../cubit/song/song_cubit.dart';
 import '../cubit/song/song_state.dart'; // Xem code bạn có sẵn
 
 class AddSongScreen extends StatelessWidget {
-  const AddSongScreen({Key? key}) : super(key: key);
+  const AddSongScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

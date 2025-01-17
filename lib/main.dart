@@ -17,11 +17,9 @@ import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/favorite_artist_screen.dart';
 import 'presentation/screens/libra.dart';
 
-import 'presentation/screens/favorite_artist_screen.dart';
 import 'presentation/screens/home_screen/home_screen.dart';
 import 'presentation/screens/song_list_screen.dart';
 import 'presentation/cubit/queue/queue_cubit.dart';
-import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/genre_song_screen.dart';
 
 import 'injection_container.dart' as di;

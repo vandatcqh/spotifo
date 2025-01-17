@@ -12,10 +12,10 @@ import '../../cubit/player/player_state.dart';
 class PlayerFullLyric extends StatefulWidget {
   final SongEntity song;
 
-  const PlayerFullLyric({Key? key, required this.song}) : super(key: key);
+  const PlayerFullLyric({super.key, required this.song});
 
   @override
-  _PlayerFullLyricState createState() => _PlayerFullLyricState();
+  State<PlayerFullLyric> createState() => _PlayerFullLyricState();
 }
 
 class _PlayerFullLyricState extends State<PlayerFullLyric> {

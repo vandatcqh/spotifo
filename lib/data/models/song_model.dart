@@ -7,27 +7,17 @@ class SongModel extends SongEntity {
   final int playCount; // Thêm trường playCount
 
   const SongModel({
-    required String id,
-    required String songName,
-    String? songImageUrl,
-    required String artistId,
-    required String albumId,
-    required String genre,
-    DateTime? releaseDate,
-    String? lyric,
-    required String audioUrl,
+    required super.id,
+    required super.songName,
+    super.songImageUrl,
+    required super.artistId,
+    required super.albumId,
+    required super.genre,
+    super.releaseDate,
+    super.lyric,
+    required super.audioUrl,
     this.playCount = 0,
-  }) : super(
-    id: id,
-    songName: songName,
-    songImageUrl: songImageUrl,
-    artistId: artistId,
-    albumId: albumId,
-    genre: genre,
-    releaseDate: releaseDate,
-    lyric: lyric,
-    audioUrl: audioUrl,
-  );
+  });
 
   /// Từ Firestore DocumentSnapshot sang SongModel
   factory SongModel.fromDocument(DocumentSnapshot doc) {
@@ -49,7 +39,6 @@ class SongModel extends SongEntity {
   }
 
   /// Từ SongModel sang JSON để lưu vào Firestore
-  @override
   Map<String, dynamic> toDocument() {
     return {
       'songName': songName,

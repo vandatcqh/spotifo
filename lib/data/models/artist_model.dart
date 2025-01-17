@@ -4,18 +4,12 @@ import '../../../domain/entities/artist_entity.dart';
 
 class ArtistModel extends ArtistEntity {
   ArtistModel({
-    required String id,
-    required String artistName,
-    String? artistImageUrl,
-    int followers = 0,
-    String? description,
-  }) : super(
-    id: id,
-    artistName: artistName,
-    artistImageUrl: artistImageUrl,
-    followers: followers,
-    description: description,
-  );
+    required super.id,
+    required super.artistName,
+    super.artistImageUrl,
+    super.followers,
+    super.description,
+  });
 
   // Từ Firestore DocumentSnapshot sang ArtistModel
   factory ArtistModel.fromDocument(DocumentSnapshot doc) {

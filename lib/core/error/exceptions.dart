@@ -4,5 +4,6 @@ class ServerException implements Exception {
   ServerException({required this.message});
 
   @override
+  // ignore: unnecessary_string_interpolations
   String toString() => '$message';
 }

@@ -14,11 +14,10 @@ import '../../../injection_container.dart';
 class PlayerFullPlaylist extends StatefulWidget {
   final SongEntity song;
 
-   PlayerFullPlaylist({Key? key, required this.song})
-      : super(key: key);
+   const PlayerFullPlaylist({super.key, required this.song});
 
   @override
-  _PlayerFullPlaylistState createState() => _PlayerFullPlaylistState();
+  State<PlayerFullPlaylist> createState() => _PlayerFullPlaylistState();
 }
 
 class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {

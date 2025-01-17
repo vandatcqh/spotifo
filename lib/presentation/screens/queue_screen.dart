@@ -10,7 +10,7 @@ import 'package:spotifo/presentation/cubit/song/song_state.dart';
 import '../../../injection_container.dart';
 
 class QueueScreen extends StatelessWidget {
-  const QueueScreen({Key? key}) : super(key: key);
+  const QueueScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

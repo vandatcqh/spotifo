@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  CustomAppBar(
-      {Key? key, this.height,
+  const CustomAppBar(
+      {super.key, this.height,
         this.shape,
         this.leadingWidth,
         this.leading,
         this.title,
         this.centerTitle,
-        this.actions})
-      : super(
-    key: key,
-  );
+        this.actions});
 
   final double? height;
   final ShapeBorder? shape;

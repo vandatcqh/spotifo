@@ -5,7 +5,7 @@ import '../cubit/artist/artist_state.dart';
 import '../cubit/favoriteArtists/favorite_artists_cubit.dart';
 
 class AddArtistScreen extends StatelessWidget {
-  const AddArtistScreen({Key? key}) : super(key: key);
+  const AddArtistScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

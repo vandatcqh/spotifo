@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sizer/sizer.dart';
 import 'package:spotifo/core/app_export.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_state.dart';
@@ -9,6 +8,7 @@ import '../../../injection_container.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
 
+import '../../common_widgets/custom_bottom_bar.dart';
 import '../player/mini_player.dart';
 import '../player/player_screen.dart';
 import '../song_list_screen.dart';
@@ -345,21 +345,26 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.library_music),
-              label: 'Library',
-            ),
-          ],
-          currentIndex: 0,
-          selectedItemColor: Colors.orange,
-          onTap: (index) {
-            // Handle bottom navigation
+        bottomNavigationBar: CustomBottomBar(
+          onChanged: (type) {
+            
           },
         ),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   items: const [
+        //     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        //     BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.library_music),
+        //       label: 'Library',
+        //     ),
+        //   ],
+        //   currentIndex: 0,
+        //   selectedItemColor: Colors.orange,
+        //   onTap: (index) {
+        //     // Handle bottom navigation
+        //   },
+        // ),
       ),
     );
   }
@@ -372,7 +377,7 @@ class HomeScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlphaD(0.05),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

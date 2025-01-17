@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
+import '../components/svg.dart';
 
-
-enum BottomBarEnum {
-  HeroIconsSolidHome,
-  HeroIconsSolidUserCircle,
-  Search,
-  HeroIconsSolidRectangleStack
-}
+enum BottomBarEnum { home, profile, search, library }
 
 // ignore_for_file: must_be_immutable
 class CustomBottomBar extends StatefulWidget {
@@ -24,27 +19,22 @@ class CustomBottomBarState extends State<CustomBottomBar> {
 
   List<BottomMenuModel> bottomMenuList = [
     BottomMenuModel(
-      icon: ImageConstant.imgHeroiconssolidHome,
-      activeIcon: ImageConstant.imgHeroiconssolidHome,
-      type: BottomBarEnum.HeroIconsSolidHome,
+      icon: "assets/svgs/heroicons-solid/home.svg",
+      type: BottomBarEnum.home,
     ),
     BottomMenuModel(
-      icon: ImageConstant.imgHeroiconssolidUsercircle,
-      activeIcon: ImageConstant.imgHeroiconssolidUsercircle,
-      type: BottomBarEnum.HeroIconsSolidUserCircle,
+      icon: "assets/svgs/heroicons-solid/user-circle.svg",
+      type: BottomBarEnum.profile,
     ),
     BottomMenuModel(
-      icon: ImageConstant.imgSearch,
-      activeIcon: ImageConstant.imgSearch,
-      type: BottomBarEnum.Search,
+      icon: "assets/svgs/heroicons-solid/magnifying-glass.svg",
+      type: BottomBarEnum.search,
     ),
     BottomMenuModel(
-      icon: ImageConstant.imgHeroiconssolidRectanglestack,
-      activeIcon: ImageConstant.imgHeroiconssolidRectanglestack,
-      type: BottomBarEnum.HeroIconsSolidRectangleStack,
+      icon: "assets/svgs/heroicons-solid/rectangle-stack.svg",
+      type: BottomBarEnum.library,
     )
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -62,18 +52,10 @@ class CustomBottomBarState extends State<CustomBottomBar> {
         type: BottomNavigationBarType.fixed,
         items: List.generate(bottomMenuList.length, (index) {
           return BottomNavigationBarItem(
-            icon: CustomImageView(
-              imagePath: bottomMenuList[index].icon,
-              height: 32.h,
-              width: 34.h,
-              color: colorTheme.surface,
-            ),
-
-            activeIcon: CustomImageView(
-              imagePath: bottomMenuList[index].activeIcon,
-              height: 32.h,
-              width: 34.h,
-              color: colorTheme.surface,
+            icon: Padding(
+              padding:  EdgeInsets.symmetric(vertical: 4.h),
+              child: SVG(bottomMenuList[index].icon,
+                  size: 4.h, color: selectedIndex == index ? colorTheme.onSurface : colorTheme.onSecondary),
             ),
             label: '',
           );
@@ -89,35 +71,8 @@ class CustomBottomBarState extends State<CustomBottomBar> {
 }
 
 class BottomMenuModel {
-  BottomMenuModel(
-      {required this.icon, required this.activeIcon, required this.type});
+  BottomMenuModel({required this.icon, required this.type});
 
   String icon;
-  String activeIcon;
   BottomBarEnum type;
-}
-
-
-class Defaultwidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Color(0xffffffff),
-      padding: EdgeInsets.all(10),
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Please replace the respective widget here',
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
 }

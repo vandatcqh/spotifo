@@ -11,10 +11,10 @@ import 'sign_in_screen.dart';
 import '../../../injection_container.dart';
 
 class UserInfoScreen extends StatefulWidget {
-  UserInfoScreen({Key? key}) : super(key: key);
+  const UserInfoScreen({super.key});
 
   @override
-  _UserInfoScreenState createState() => _UserInfoScreenState();
+  State<UserInfoScreen> createState() => _UserInfoScreenState();
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
