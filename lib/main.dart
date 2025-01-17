@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
               routes: {
                 '/favorite_artists': (context) => const FavoriteArtistScreen(),
                 '/favorite_songs': (context) => const FavoriteSongsScreen(),
-                '/libra': (context) => const LibraryScreen(),
+                '/library': (context) => const LibraryScreen(),
                 '/artists': (context) => const FavoriteArtistScreen(),
                 '/home' : (context) => const HomeScreen(),
                 '/your_playlist': (context) => const SongListScreen(),
