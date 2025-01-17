@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/favoriteArtists/favorite_artists_cubit.dart';
-import '../cubit/artist/artist_cubit.dart';
-import '../cubit/artist/artist_state.dart';
-import 'artist_detail_screen.dart';
-import 'add_artist_screen.dart';
+import '../../cubit/favoriteArtists/favorite_artists_cubit.dart';
+import '../../cubit/artist/artist_cubit.dart';
+import '../../cubit/artist/artist_state.dart';
+import '../artist_detail_screen.dart';
+import '../add_artist_screen.dart';
 
 class FavoriteArtistScreen extends StatelessWidget {
   const FavoriteArtistScreen({Key? key}) : super(key: key);

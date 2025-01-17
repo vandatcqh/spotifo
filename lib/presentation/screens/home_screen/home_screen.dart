@@ -9,7 +9,7 @@ import '../../../injection_container.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
 
-import '../libra.dart';
+import '../library/libra.dart';
 import '../player/mini_player.dart';
 import '../player/player_screen.dart';
 import '../search_screen.dart';

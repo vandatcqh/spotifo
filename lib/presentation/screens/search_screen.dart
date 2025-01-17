@@ -192,24 +192,25 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
     return Scaffold(
         backgroundColor: Colors.orange.shade50,
         body: Center(
-          child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white, // Background color of the box
-                borderRadius: BorderRadius.circular(16.0), // Rounded corners
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5), // Shadow color
-                    spreadRadius: 4,
-                    blurRadius: 8,
-                    offset: Offset(0, 4), // Shadow position
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(16.0), // Padding inside the box
-              margin: const EdgeInsets.all(16.0), // Margin outside the box
+
             child: Stack(
               children: [
-                Padding(
+            Container(
+            decoration: BoxDecoration(
+            color: Colors.white, // Background color of the box
+              borderRadius: BorderRadius.circular(16.0), // Rounded corners
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5), // Shadow color
+                  spreadRadius: 4,
+                  blurRadius: 8,
+                  offset: Offset(0, 4), // Shadow position
+                ),
+              ],
+            ),
+          padding: const EdgeInsets.all(16.0), // Padding inside the box
+          margin: const EdgeInsets.all(16.0), // Margin outside the box
+          child:  Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,6 +453,7 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
                     ],
                   ),
                 ),
+            ),
                 BlocBuilder<PlayerCubit, AppPlayerState>(
                   builder: (context, state) {
                     if (state is PlayerPlaying) {
@@ -475,7 +477,7 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
               ],
             )
           )
-        )
+
     );
   }
 

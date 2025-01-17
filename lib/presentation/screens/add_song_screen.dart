@@ -59,7 +59,7 @@ class AddSongScreen extends StatelessWidget {
                       )
                           : const Icon(Icons.music_note, size: 50),
                       title: Text(song.songName),
-                      subtitle: Text('Lượt nghe: '),
+                      subtitle: Text('Tác giả: ${song.artistId}'),
                       trailing: IconButton(
                         icon: const Icon(Icons.favorite_border),
                         onPressed: () async {

@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/favoriteSongs/favorite_songs_cubit.dart';
-import '../cubit/favoriteSongs/favorite_songs_state.dart';
-import 'add_song_screen.dart';
-import 'song_detail_screen.dart';
+import '../../cubit/favoriteSongs/favorite_songs_cubit.dart';
+import '../../cubit/favoriteSongs/favorite_songs_state.dart';
+import '../add_song_screen.dart';
+import '../song_detail_screen.dart';
 
 class FavoriteSongsScreen extends StatelessWidget {
   const FavoriteSongsScreen({Key? key}) : super(key: key);
