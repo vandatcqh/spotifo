@@ -90,7 +90,7 @@ class SignUpScreen extends StatelessWidget {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
                               } else if (!RegExp(
-                                      r"^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$")
+                                      r"^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$")
                                   .hasMatch(value)) {
                                 return 'Invalid email format';
                               }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
-import 'package:spotifo/domain/entities/song_entity.dart';
+import 'package:spotifo/core/app_export.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_state.dart';
+import 'package:spotifo/presentation/util/hash_gradient.dart';
 import '../../../injection_container.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
@@ -12,23 +13,15 @@ import '../player/mini_player.dart';
 import '../player/player_screen.dart';
 import '../song_list_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+// Thêm import cho GenreCubit & GenreState
+import '../../cubit/genre/genre_cubit.dart';
+import '../../cubit/genre/genre_state.dart';
 
-  //late final bool isPlaying = false;
+// Import màn hình hiển thị danh sách bài hát theo genre
+import '../genre_song_screen.dart';
 
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-class _HomeScreenState extends State<HomeScreen> {
-  SongEntity? currentSong;
-
-  @override
-  void initState() {
-    super.initState();
-    currentSong = null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         BlocProvider<PlayerCubit>.value(
           value: sl<PlayerCubit>(),
+        ),
+        // Thêm GenreCubit
+        BlocProvider<GenreCubit>(
+          create: (_) => sl<GenreCubit>()..fetchGenres(),
         ),
       ],
       child: Scaffold(
@@ -64,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Suggested for You Section
+                    // Suggested For You Section
                     _buildBoxedSection(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onIconPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => SongListScreen(), // Replace with the correct screen
+                                  builder: (_) => SongListScreen(),
                                 ),
                               );
                             },
@@ -144,7 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               }
                               return const Center(
-                                  child: CircularProgressIndicator());
+                                child: CircularProgressIndicator(),
+                              );
                             },
                           ),
                         ],
@@ -162,23 +160,45 @@ class _HomeScreenState extends State<HomeScreen> {
                             onIconPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => SongListScreen(), // Replace with the correct screen
+                                  builder: (_) => SongListScreen(),
                                 ),
                               );
                             },
                           ),
                           SizedBox(height: 2.h),
-                          Wrap(
-                            spacing: 4.w,
-                            runSpacing: 2.h,
-                            children: [
-                              _buildGenreChip(context, "Pop", Colors.purple),
-                              _buildGenreChip(context, "Blue", Colors.blue),
-                              _buildGenreChip(context, "Rock", Colors.red),
-                              _buildGenreChip(context, "Jazz", Colors.orange),
-                              _buildGenreChip(context, "Romance", Colors.pink),
-                              _buildGenreChip(context, "Indie", Colors.green),
-                            ],
+
+                          // BlocBuilder để hiển thị danh sách thể loại
+                          BlocBuilder<GenreCubit, GenreState>(
+                            builder: (context, genreState) {
+                              if (genreState is GenreLoading) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (genreState is GenreLoaded) {
+                                final genres = genreState.genres;
+                                // genres là danh sách các String (tên thể loại)
+                                return Wrap(
+                                  spacing: 4.w,
+                                  runSpacing: 2.h,
+                                  children: genres.map((genre) {
+                                    // Bạn có thể tuỳ chọn cách gán màu ở đây
+                                    return _buildGenreChip(
+                                      context,
+                                      genre,
+                                      Colors.purple,
+                                    );
+                                  }).toList(),
+                                );
+                              } else if (genreState is GenreError) {
+                                return Center(
+                                  child: Text(
+                                    'Lỗi tải thể loại: ${genreState.message}',
+                                  ),
+                                );
+                              }
+                              // GenreInitial hoặc những trường hợp khác
+                              return const SizedBox.shrink();
+                            },
                           ),
                         ],
                       ),
@@ -195,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onIconPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => SongListScreen(), // Replace with the correct screen
+                                  builder: (_) => SongListScreen(),
                                 ),
                               );
                             },
@@ -203,96 +223,94 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(height: 2.h),
                           BlocBuilder<SongInfoCubit, SongInfoState>(
                             builder: (context, state) {
-
                               if (state is SongInfoLoading) {
-                                return const Center(child: CircularProgressIndicator());
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               } else if (state is SongHotSongsLoaded) {
-                                final songs = state.songs.take(5).toList(); // Display only 5 songs
+                                final songs =
+                                state.songs.take(5).toList(); // Hiển thị 5 bài
                                 return BlocBuilder<PlayerCubit, AppPlayerState>(
                                   builder: (context, playerState) {
-
-                                    if(playerState is PlayerPaused) {
-                                      currentSong = playerState.currentSong;
-                                    }
-
-                                    if(playerState is PlayerPlaying) {
-                                      currentSong = playerState.currentSong;
-                                    }
-
-
-
-                                    // print(playerState);
-                                    // print(currentSong?.songName);
                                     return Column(
                                       children: songs.map((song) {
-                                        bool isSelect = song.id == currentSong?.id ? true : false;
-                                        bool isPlaying = playerState is PlayerPlaying && playerState.currentSong.id == song.id;
-                                        return Container(
-                                          color: isSelect ? Colors.orange.shade100 : Colors.transparent, // Highlight playing song
-                                          child: ListTile(
-                                            leading: ClipRRect(
-                                              borderRadius: BorderRadius.circular(8),
-                                              child: Image.network(
-                                                song.songImageUrl ?? '',
-                                                width: 50,
-                                                height: 50,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (context, error, stackTrace) {
-                                                  return Container(
-                                                    width: 50,
-                                                    height: 50,
-                                                    color: Colors.grey.shade300,
-                                                    child: const Icon(
-                                                      Icons.music_note,
-                                                      size: 40,
-                                                      color: Colors.grey,
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                            title: Text(
-                                              song.songName,
-                                              style: const TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                            subtitle: Text(song.artistId),
-                                            trailing: IconButton(
-                                              icon: Icon(
-                                                isPlaying
-                                                    ? Icons.pause_circle_filled
-                                                    : Icons.play_circle_filled,
-                                                size: 40,
-                                                color: isSelect ? Colors.orange : Colors.grey,
-                                              ),
-                                              onPressed: () {
-                                                context.read<PlayerCubit>().togglePlayPause(song);
+                                        bool isPlaying =
+                                            playerState is PlayerPlaying &&
+                                                playerState.currentSong.id == song.id;
+
+                                        return ListTile(
+                                          leading: ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(
+                                              song.songImageUrl ?? '',
+                                              width: 50,
+                                              height: 50,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error,
+                                                  stackTrace) {
+                                                return Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  color: Colors.grey.shade300,
+                                                  child: const Icon(
+                                                    Icons.music_note,
+                                                    size: 40,
+                                                    color: Colors.grey,
+                                                  ),
+                                                );
                                               },
                                             ),
-                                            onTap: () {
-                                              //context.read<PlayerCubit>().listenToPositionStream();
-
-                                              showModalBottomSheet(
-                                                context: context,
-                                                isScrollControlled: true,
-                                                backgroundColor: Colors.transparent,
-                                                builder: (BuildContext context) {
-                                                  return PlayerView(
-                                                      song: song,
-                                                  );
-                                                },
-                                              );
+                                          ),
+                                          title: Text(
+                                            song.songName,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          subtitle: Text(song.artistId),
+                                          trailing: IconButton(
+                                            icon: Icon(
+                                              isPlaying
+                                                  ? Icons.pause_circle_filled
+                                                  : Icons.play_circle_filled,
+                                              size: 40,
+                                              color: isPlaying
+                                                  ? Colors.orange
+                                                  : Colors.grey,
+                                            ),
+                                            onPressed: () {
+                                              context
+                                                  .read<PlayerCubit>()
+                                                  .togglePlayPause(song);
                                             },
                                           ),
+                                          onTap: () {
+                                            context
+                                                .read<PlayerCubit>()
+                                                .listenToPositionStream();
+
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor: Colors.transparent,
+                                              builder: (BuildContext context) {
+                                                return PlayerView(song: song);
+                                              },
+                                            );
+                                          },
                                         );
                                       }).toList(),
                                     );
                                   },
                                 );
-
                               } else if (state is SongError) {
-                                return Center(child: Text('Error: \${state.error}'));
+                                return Center(
+                                  child: Text('Error: ${state.error}'),
+                                );
                               }
-                              return const Center(child: Text('No songs available.'));
+                              return const Center(
+                                child: Text('No songs available.'),
+                              );
                             },
                           ),
                         ],
@@ -332,7 +350,9 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.library_music), label: 'Library'),
+              icon: Icon(Icons.library_music),
+              label: 'Library',
+            ),
           ],
           currentIndex: 0,
           selectedItemColor: Colors.orange,
@@ -362,16 +382,29 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Refactor _buildGenreChip để khi bấm vào, ta chuyển sang GenreSongsScreen
   Widget _buildGenreChip(BuildContext context, String genre, Color color) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [color, color.withOpacity(0.6)]),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        genre,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => GenreSongsScreen(genreName: genre),
+          ),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [color, color.withAlphaD(0.6)]), //generateHashGradient(genre),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          genre,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
@@ -379,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class SectionHeader extends StatelessWidget {
   final String title;
-  final VoidCallback onIconPressed; // Callback for the icon press
+  final VoidCallback onIconPressed; // Callback cho icon
 
   const SectionHeader({
     super.key,
@@ -401,7 +434,7 @@ class SectionHeader extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.arrow_forward, color: Colors.grey),
-          onPressed: onIconPressed, // Trigger navigation when pressed
+          onPressed: onIconPressed, // Khi nhấn vào icon
         ),
       ],
     );
