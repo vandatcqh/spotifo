@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotifo/core/app_export.dart';
 import 'package:spotifo/presentation/screens/player/mini_player.dart';
 import 'package:spotifo/presentation/screens/player/player_screen.dart';
 import '../../../injection_container.dart';
@@ -34,7 +34,7 @@ class GenreSongsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16.0),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: Colors.grey.withAlphaD(0.5),
                       spreadRadius: 4,
                       blurRadius: 8,
                       offset: const Offset(0, 4),

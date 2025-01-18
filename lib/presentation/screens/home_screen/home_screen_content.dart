@@ -120,6 +120,7 @@ class HomeScreenContent extends StatelessWidget {
                                       imageUrl: artist.artistImageUrl,
                                       label: artist.artistName,
                                       onPressed: () {
+                                        print("Hello");
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder: (_) => ArtistDetailScreen(artist: artist),

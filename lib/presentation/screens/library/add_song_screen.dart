@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotifo/core/app_export.dart';
 import '../../cubit/favoriteSongs/favorite_songs_cubit.dart';
 import '../../cubit/favoriteSongs/favorite_songs_state.dart';
@@ -76,8 +75,9 @@ class AddSongScreen extends StatelessWidget {
                               await BlocProvider.of<FavoriteSongsCubit>(context)
                                   .addFavoriteSong(song.id);
 
-                              // Quay lại màn hình trước
-                              Navigator.pop(context);
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
                             },
                           ),
                         )

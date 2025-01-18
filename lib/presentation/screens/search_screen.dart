@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:spotifo/presentation/screens/player/mini_player.dart';
 import 'dart:convert';
@@ -203,7 +202,7 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
               borderRadius: BorderRadius.circular(16.0), // Rounded corners
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.5), // Shadow color
+                  color: Colors.grey.withAlphaD(0.5), // Shadow color
                   spreadRadius: 4,
                   blurRadius: 8,
                   offset: Offset(0, 4), // Shadow position

@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:palette_generator/palette_generator.dart';
-import 'package:spotifo/presentation/screens/player/player_full_playlist.dart';
-import 'package:spotifo/presentation/screens/player/player_screen.dart';
 import '../../../core/app_export.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 

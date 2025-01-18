@@ -1,10 +1,8 @@
 // presentation/screens/artist_detail_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:spotifo/presentation/common_widgets/custom_bottom_bar.dart';
 import '../../../core/app_export.dart';
 import '../../../domain/entities/artist_entity.dart';
-import '../../../domain/entities/song_entity.dart';
 import '../../components/svg.dart';
 import '../../cubit/artist/artist_cubit.dart';
 import '../../cubit/artist/artist_state.dart';
@@ -221,7 +219,6 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomBar(),
     );
   }
 }

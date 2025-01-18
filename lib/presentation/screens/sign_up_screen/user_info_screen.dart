@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import 'package:spotifo/presentation/util/hash_gradient.dart';
-import '../../../theme/app_decoration.dart';
 import '../../../theme/theme_helper.dart';
 import '../../cubit/user/user_info_cubit.dart';
 import '../../cubit/genre/genre_cubit.dart';

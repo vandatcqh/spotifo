@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Import necessary Cubit and screens
 import '../../common_widgets/custom_elevated_button.dart';
@@ -10,7 +9,6 @@ import 'user_info_screen.dart';
 // Import service locator
 
 import '../../../../injection_container.dart';
-import '../../../theme/custom_button_style.dart';
 import '../../../core/app_export.dart';
 
 class SignUpScreen extends StatelessWidget {

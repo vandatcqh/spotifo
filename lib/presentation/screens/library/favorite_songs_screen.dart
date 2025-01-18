@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotifo/core/app_export.dart';
 import '../../cubit/favoriteSongs/favorite_songs_cubit.dart';
 import '../../cubit/favoriteSongs/favorite_songs_state.dart';
 import 'add_song_screen.dart';
 import '../details/song_detail_screen.dart';
 
 class FavoriteSongsScreen extends StatelessWidget {
-  const FavoriteSongsScreen({Key? key}) : super(key: key);
+  const FavoriteSongsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class FavoriteSongsScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
+                color: Colors.grey.withAlphaD(0.5),
                 spreadRadius: 4,
                 blurRadius: 8,
                 offset: const Offset(0, 4),
@@ -111,7 +111,7 @@ class FavoriteSongsScreen extends StatelessWidget {
           color: Colors.grey[200],
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
+              color: Colors.grey.withAlphaD(0.5),
               blurRadius: 10,
               offset: const Offset(0, -1),
             ),

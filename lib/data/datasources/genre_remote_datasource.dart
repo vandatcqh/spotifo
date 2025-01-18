@@ -13,7 +13,7 @@ class GenreRemoteDataSource {
     try {
       final querySnapshot = await firestore.collection('genres').get();
       final genres = querySnapshot.docs
-          .map((doc) => GenreModel.fromJson(doc.data() as Map<String, dynamic>))
+          .map((doc) => GenreModel.fromJson(doc.data()))
           .toList();
       return genres;
     } catch (e) {

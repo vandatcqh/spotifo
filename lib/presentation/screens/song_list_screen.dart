@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotifo/core/app_export.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_state.dart';
@@ -40,7 +39,7 @@ class SongListScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16.0), // Rounded corners
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5), // Shadow color
+                      color: Colors.grey.withAlphaD(0.5), // Shadow color
                       spreadRadius: 4,
                       blurRadius: 8,
                       offset: const Offset(0, 4), // Shadow position

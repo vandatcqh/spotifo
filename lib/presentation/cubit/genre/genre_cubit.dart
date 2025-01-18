@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/usecases/get_all_genre.dart';
-import '../../../domain/entities/genre_entity.dart';
 import 'genre_state.dart';
 
 class GenreCubit extends Cubit<GenreState> {

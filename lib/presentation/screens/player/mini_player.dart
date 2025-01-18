@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotifo/core/app_export.dart';
 import '../../cubit/player/player_cubit.dart';
 import '../../../domain/entities/song_entity.dart';

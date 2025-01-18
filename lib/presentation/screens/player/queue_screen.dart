@@ -14,11 +14,10 @@ import '../../../../injection_container.dart';
 class QueueScreen extends StatefulWidget {
   final SongEntity song;
 
-  const QueueScreen({Key? key, required this.song})
-      : super(key: key);
+  const QueueScreen({super.key, required this.song});
 
   @override
-  _QueueScreenState createState() => _QueueScreenState();
+  State<QueueScreen> createState() => _QueueScreenState();
 }
 
 class _QueueScreenState extends State<QueueScreen> {

@@ -1,7 +1,6 @@
 // presentation/screens/profile_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotifo/core/app_export.dart';
 
 import '../common_widgets/custom_bottom_bar.dart';
@@ -57,7 +56,7 @@ class _UserInfoScreenState extends State<UserInfoGenreScreen> {
               return const Center(child: CircularProgressIndicator());
             } else if (state is UserInfoLoaded) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,7 +114,7 @@ class _UserInfoScreenState extends State<UserInfoGenreScreen> {
                     ),
                     const SizedBox(height: 8),
                     IconButton(
-                      padding: EdgeInsets.zero,
+                      padding: EdgeInsets.all(12),
                       onPressed: () {
                         context.read<UserInfoCubit>().updateFavoriteGenres(tempFavoriteGenres);
                       },
@@ -146,7 +145,6 @@ class _UserInfoScreenState extends State<UserInfoGenreScreen> {
             return const SizedBox.shrink();
           },
         ),
-        bottomNavigationBar: CustomBottomBar(type: CustomBottomBarType.profile),
       ),
     );
   }

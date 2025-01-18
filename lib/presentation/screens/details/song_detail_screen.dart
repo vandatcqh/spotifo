@@ -8,7 +8,7 @@ import '../../../../domain/entities/song_entity.dart';
 class SongDetailScreen extends StatelessWidget {
   final SongEntity song;
 
-  const SongDetailScreen({Key? key, required this.song}) : super(key: key);
+  const SongDetailScreen({super.key, required this.song});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class SongDetailScreen extends StatelessWidget {
               const SizedBox(height: 8),
 
               // Artist Name (if available)
-              if (song.artistId != null && song.artistId.isNotEmpty)
+              if (song.artistId.isNotEmpty)
                 Text(
                   "Artist: ${song.artistId}",
                   style: const TextStyle(
@@ -102,7 +102,7 @@ class SongDetailScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
+                        color: Colors.grey.withAlphaD(0.2),
                         blurRadius: 6,
                         spreadRadius: 2,
                       ),

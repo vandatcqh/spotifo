@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/domain/usecases/add_songs.dart';
 import 'package:spotifo/domain/usecases/fetch_queue.dart';
