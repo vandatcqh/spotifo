@@ -7,6 +7,8 @@ import '../../components/svg.dart';
 import '../../cubit/artist/artist_cubit.dart';
 import '../../cubit/artist/artist_state.dart';
 import '../../cubit/favoriteArtists/favorite_artists_cubit.dart';
+import '../../cubit/player/player_cubit.dart';
+import '../../cubit/player/player_state.dart';
 
 class ArtistDetailScreen extends StatefulWidget {
   final ArtistEntity artist;
@@ -151,7 +153,6 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   // Mô tả nghệ sĩ
                   if (_artist.description != null)
                     Text(
@@ -183,26 +184,30 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                           itemCount: songs.length,
                           itemBuilder: (context, index) {
                             final song = songs[index];
-                            return ListTile(
-                              leading: song.songImageUrl != null && song.songImageUrl!.isNotEmpty
-                                  ? Image.network(
-                                      song.songImageUrl!,
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : const Icon(Icons.music_note, size: 50),
-                              title: Text(song.songName),
-                              subtitle: Text('Thể loại: ${song.genre}'),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.play_arrow),
-                                  //Text(song.playCount.toString()),
-                                ],
-                              ),
-                              onTap: () {
-                                // Xử lý khi nhấn vào bài hát, ví dụ: phát nhạc
+                            return BlocBuilder<PlayerCubit, AppPlayerState>(
+                              builder: (context, playerState) {
+                                return ListTile(
+                                  leading: song.songImageUrl != null && song.songImageUrl!.isNotEmpty
+                                      ? Image.network(
+                                          song.songImageUrl!,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const Icon(Icons.music_note, size: 50),
+                                  title: Text(song.songName),
+                                  subtitle: Text('Thể loại: ${song.genre}'),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      playerState is PlayerPlaying && playerState.currentSong.id == song.id ? Icon(Icons.pause) : Icon(Icons.play_arrow),
+                                      //Text(song.playCount.toString()),
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    context.read<PlayerCubit>().togglePlayPause(song);
+                                  },
+                                );
                               },
                             );
                           },

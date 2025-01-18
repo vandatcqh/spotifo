@@ -61,7 +61,7 @@ class HomeScreenContent extends StatelessWidget {
                               ),
                             );
                           },
-                          showIcon: false,
+                          showIcon: true,
                         ),
                         SizedBox(height: 2.h),
                         BlocBuilder<SongInfoCubit, SongInfoState>(
@@ -71,6 +71,7 @@ class HomeScreenContent extends StatelessWidget {
                               return SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
+                                  spacing: 8,
                                   children: songs.map((song) {
                                     return MusicDisplayItem(
                                       imageUrl: song.songImageUrl,

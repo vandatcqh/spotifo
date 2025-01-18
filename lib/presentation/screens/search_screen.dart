@@ -217,21 +217,21 @@ class _CloudFunctionTestScreenState extends State<CloudFunctionTestScreen> {
                             child: Text("Search Songs"),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedFunction = "artists";
-                              _selectedGenre = null;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _selectedFunction == "artists" ? colorTheme.onPrimary : colorTheme.onSecondary,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            child: Text("Search Artists"),
-                          ),
-                        ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     setState(() {
+                        //       _selectedFunction = "artists";
+                        //       _selectedGenre = null;
+                        //     });
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     backgroundColor: _selectedFunction == "artists" ? colorTheme.onPrimary : colorTheme.onSecondary,
+                        //   ),
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        //     child: Text("Search Artists"),
+                        //   ),
+                        // ),
                         // ElevatedButton(
                         //   onPressed: () {
                         //     setState(() {
