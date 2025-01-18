@@ -269,7 +269,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 48),
-                          child: Container(color: colorTheme.secondary, height: 1),
+                          child: Container(color: colorTheme.secondary.withAlphaD(0.6), height: 1),
                         ),
                         IconButton(
                           padding: EdgeInsets.zero,
