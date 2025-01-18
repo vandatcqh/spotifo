@@ -5,13 +5,7 @@ import 'package:sizer/sizer.dart';
 import 'package:spotifo/presentation/cubit/favoriteSongs/favorite_songs_cubit.dart';
 import 'package:spotifo/presentation/cubit/genre/genre_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
-<<<<<<< HEAD
-import 'package:spotifo/presentation/screens/favorite_songs_screen.dart';
 import 'package:spotifo/theme/theme_helper.dart';
-=======
-import 'package:spotifo/presentation/screens/library/favorite_artist_screen.dart';
-import 'package:spotifo/presentation/screens/library/favorite_songs_screen.dart';
->>>>>>> thanh
 
 import 'firebase_options.dart';
 
@@ -19,6 +13,8 @@ import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
 import 'presentation/cubit/favoriteArtists/favorite_artists_cubit.dart';
 import 'presentation/cubit/artist/artist_cubit.dart';
+import 'presentation/screens/library/favorite_artist_screen.dart';
+import 'presentation/screens/library/favorite_songs_screen.dart';
 import 'presentation/screens/profile_screen.dart';
 import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/library/libra.dart';

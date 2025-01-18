@@ -8,7 +8,6 @@ import '../common_widgets/custom_bottom_bar.dart';
 import '../components/svg.dart';
 import '../cubit/user/user_info_cubit.dart';
 import '../cubit/genre/genre_cubit.dart';
-import '../cubit/genre/genre_state.dart';
 import 'profile_genre_screen.dart';
 import 'sign_in_screen.dart';
 
@@ -36,7 +35,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         ),
       ],
       child: Scaffold(
-        appBar: AppBar(title: const Text('Profile')),
         body: BlocConsumer<UserInfoCubit, UserInfoState>(
           listener: (context, state) {
             if (state is UserInfoNotAuthenticated) {
@@ -305,7 +303,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             return const SizedBox.shrink();
           },
         ),
-        bottomNavigationBar: CustomBottomBar(type: CustomBottomBarType.profile),
       ),
     );
   }
