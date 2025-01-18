@@ -5,11 +5,13 @@ import 'package:spotifo/presentation/components/svg.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final VoidCallback onIconPressed; // Callback cho icon
+  final bool showIcon;
 
   const SectionHeader({
     super.key,
     required this.title,
     required this.onIconPressed,
+    required this.showIcon,
   });
 
   @override
@@ -21,10 +23,11 @@ class SectionHeader extends StatelessWidget {
           title,
           style: textTheme.titleMedium?.withColor(colorTheme.onSurface),
         ),
-        IconButton(
-          icon: SVG("assets/svgs/heroicons-solid/chevron-right.svg", size: 16, color: colorTheme.onSurface),
-          onPressed: onIconPressed, // Khi nhấn vào icon
-        ),
+        if (showIcon)
+          IconButton(
+            icon: SVG("assets/svgs/heroicons-solid/chevron-right.svg", size: 16, color: colorTheme.onSurface),
+            onPressed: onIconPressed, // Khi nhấn vào icon
+          ),
       ],
     );
   }

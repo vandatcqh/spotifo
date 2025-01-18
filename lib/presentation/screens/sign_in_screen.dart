@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spotifo/presentation/screens/queue_screen.dart';
+import 'package:spotifo/presentation/screens/player/queue_screen.dart';
 import 'package:spotifo/presentation/screens/search_screen.dart';
 
 // Import necessary Cubit and screens
@@ -168,7 +168,12 @@ class SignInScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      child: const Text('Don’t have an account? Sign Up'),
+                      child: Text(
+                        'Don’t have an account? Sign Up',
+                        style: TextStyle(
+                          color: colorTheme.surface,
+                        ),
+                      ),
                     ),
                   ],
                 ),

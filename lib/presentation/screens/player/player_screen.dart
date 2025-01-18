@@ -9,6 +9,10 @@ import 'package:spotifo/presentation/cubit/player/player_state.dart';
 import 'package:spotifo/core/app_export.dart';
 
 import '../../common_widgets/volume_control.dart';
+import '../../cubit/favoriteSongs/favorite_songs_cubit.dart';
+import '../../cubit/favoriteSongs/favorite_songs_state.dart';
+import '../details/song_detail_screen.dart';
+import 'queue_screen.dart';
 
 enum PlayerViewMode { mainPlayer, lyrics, playlist }
 
@@ -172,7 +176,7 @@ class _PlayerViewState extends State<PlayerView> {
       case PlayerViewMode.lyrics:
         return PlayerFullLyric(song: currentSong);
       case PlayerViewMode.playlist:
-        return PlayerFullPlaylist(song: currentSong);
+        return QueueScreen(song: currentSong);
       default:
         return _buildMainPlayerView(
           isPlaying: isPlaying,
@@ -292,16 +296,38 @@ class _PlayerViewState extends State<PlayerView> {
               ),
 
 
-              // Heart Button
-              IconButton(
-                icon: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border, // Switch icon
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  setState(() {
-                    isFavorite = !isFavorite; // Toggle favorite state
-                  });
+              BlocConsumer<FavoriteSongsCubit, FavoriteSongsState>(
+                listener: (context, state) {
+                  if (state is FavoriteSongsError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is FavoriteSongsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is FavoriteSongsLoaded) {
+                    final favoriteSongs = state.favoriteSongs;
+                    final isFavorite = favoriteSongs.any((s) => s.id == currentSong.id);
+
+                    return ElevatedButton.icon(
+                      onPressed: () {
+                        final favoriteSongsCubit = context.read<FavoriteSongsCubit>();
+                        if (isFavorite) {
+                          favoriteSongsCubit.removeFavoriteSong(currentSong.id);
+                        } else {
+                          favoriteSongsCubit.addFavoriteSong(currentSong.id);
+                        }
+                      },
+                      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                      label: Text(isFavorite ? 'Bỏ Thích' : 'Thích'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isFavorite ? Colors.red : Colors.blue,
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
                 },
               ),
 
@@ -309,7 +335,11 @@ class _PlayerViewState extends State<PlayerView> {
               IconButton(
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 onPressed: () {
-                  // Placeholder for more options
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SongDetailScreen(song: currentSong),
+                    ),
+                  );
                 },
               ),
             ],

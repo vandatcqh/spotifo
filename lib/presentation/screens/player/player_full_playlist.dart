@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:palette_generator/palette_generator.dart';
-
 import '../../../core/app_export.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
@@ -78,7 +75,6 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
             }
             bool isPlaying = (state is PlayerPlaying && state.currentSong.id == currentSong.id) ? true : false;
 
-
             return Scaffold(
               backgroundColor: _backgroundColor,
               body: SafeArea(
@@ -91,7 +87,6 @@ class _PlayerFullPlaylistState extends State<PlayerFullPlaylist> {
                   ),
                   child: IntrinsicHeight(
                     child: Column(
-
                       children: [
                         // Scrollable song list
                         Expanded(

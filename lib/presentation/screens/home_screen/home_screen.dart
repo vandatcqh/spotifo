@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:spotifo/core/app_export.dart';
 import 'package:spotifo/presentation/components/music_display_item.dart';
 import 'package:spotifo/presentation/components/section_header.dart';
@@ -7,26 +7,87 @@ import 'package:spotifo/presentation/cubit/artist/artist_cubit.dart';
 import 'package:spotifo/presentation/cubit/artist/artist_state.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_state.dart';
-import 'package:spotifo/presentation/util/hash_gradient.dart';
+
 import '../../../injection_container.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
 
-import '../../common_widgets/custom_bottom_bar.dart';
-import '../artist_detail_screen.dart';
+import '../../util/hash_gradient.dart';
+import '../library/libra.dart';
 import '../player/mini_player.dart';
 import '../player/player_screen.dart';
+import '../search_screen.dart';
 import '../song_list_screen.dart';
 
-// Thêm import cho GenreCubit & GenreState
+
+// Import GenreCubit & GenreState
 import '../../cubit/genre/genre_cubit.dart';
 import '../../cubit/genre/genre_state.dart';
 
-// Import màn hình hiển thị danh sách bài hát theo genre
+// Import GenreSongsScreen
 import '../genre_song_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const HomeScreenContent(), // Main content of the Home tab
+    CloudFunctionTestScreen(),
+    const LibraryScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.orange.shade50,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          _currentIndex == 0
+              ? 'Home'
+              : _currentIndex == 1
+              ? 'Search'
+              : 'Library',
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.library_music), label: 'Library'),
+        ],
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.orange,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+    );
+  }
+}
+
+class HomeScreenContent extends StatelessWidget {
+  const HomeScreenContent({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,22 +106,7 @@ class HomeScreen extends StatelessWidget {
           create: (_) => sl<ArtistCubit>()..fetchArtists(),
         ),
       ],
-      child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: const Text(
-            'Home',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        body: Stack(
+      child: Stack(
           children: [
             SingleChildScrollView(
               child: Padding(
@@ -82,6 +128,7 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               );
                             },
+                            showIcon: false,
                           ),
                           SizedBox(height: 2.h),
                           BlocBuilder<SongInfoCubit, SongInfoState>(
@@ -91,7 +138,6 @@ class HomeScreen extends StatelessWidget {
                                 return SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
-                                    spacing: 8,
                                     children: songs.map((song) {
                                       return MusicDisplayItem(
                                         imageUrl: song.songImageUrl,
@@ -111,71 +157,24 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 4.h),
-                    _buildBoxedSection(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SectionHeader(
-                            title: "On The Rise",
-                            onIconPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => SongListScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          SizedBox(height: 2.h),
-                          BlocBuilder<ArtistCubit, ArtistState>(
-                            builder: (context, state) {
-                              if (state is ArtistLoaded) {
-                                final artists = state.artists;
-                                return SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    spacing: 8,
-                                    children: artists.map((artist) {
-                                      return MusicDisplayItem(
-                                        imageUrl: artist.artistImageUrl,
-                                        label: artist.artistName,
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (_) => ArtistDetailScreen(artist: artist),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    }).toList(),
-                                  ),
-                                );
-                              }
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
 
-                    // By Genre Section
-                    _buildBoxedSection(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SectionHeader(
-                            title: "By Genre",
-                            onIconPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => SongListScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          SizedBox(height: 2.h),
+                  // By Genre Section
+                  _buildBoxedSection(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: "By Genre",
+                          onIconPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => SongListScreen(),
+                              ),
+                            );
+                          },
+                          showIcon: false,
+                        ),
+                        SizedBox(height: 2.h),
 
                           // BlocBuilder để hiển thị danh sách thể loại
                           BlocBuilder<GenreCubit, GenreState>(
@@ -192,7 +191,10 @@ class HomeScreen extends StatelessWidget {
                                   runSpacing: 8,
                                   children: genres.map((genre) {
                                     // Bạn có thể tuỳ chọn cách gán màu ở đây
-                                    return _buildGenreChip(context, genre);
+                                    return _buildGenreChip(
+                                      context,
+                                      genre
+                                    );
                                   }).toList(),
                                 );
                               } else if (genreState is GenreError) {
@@ -225,6 +227,7 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               );
                             },
+                            showIcon: false,
                           ),
                           SizedBox(height: 2.h),
                           BlocBuilder<SongInfoCubit, SongInfoState>(
@@ -241,7 +244,10 @@ class HomeScreen extends StatelessWidget {
                                       children: songs.map((song) {
                                         bool isPlaying = playerState is PlayerPlaying && playerState.currentSong.id == song.id;
 
-                                        return ListTile(
+                                      return Container(
+                                        color: isPlaying ? colorTheme.onPrimary : colorTheme.surface,
+                                        child :
+                                        ListTile(
                                           leading: ClipRRect(
                                             borderRadius: BorderRadius.circular(8),
                                             child: Image.network(
@@ -292,54 +298,54 @@ class HomeScreen extends StatelessWidget {
                                               },
                                             );
                                           },
-                                        );
-                                      }).toList(),
-                                    );
-                                  },
-                                );
-                              } else if (state is SongError) {
-                                return Center(
-                                  child: Text('Error: ${state.error}'),
-                                );
-                              }
-                              return const Center(
-                                child: Text('No songs available.'),
+                                        )
+                                      );
+                                    }).toList(),
+                                  );
+                                },
                               );
-                            },
-                          ),
-                        ],
-                      ),
+                            } else if (state is SongError) {
+                              return Center(
+                                child: Text('Error: ${state.error}'),
+                              );
+                            }
+                            return const Center(
+                              child: Text('No songs available.'),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 10.h),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 10.h),
+
+                  // Additional sections can be added here.
+                ],
               ),
             ),
-
-            // Mini Player
-            BlocBuilder<PlayerCubit, AppPlayerState>(
-              builder: (context, state) {
-                if (state is PlayerPlaying) {
-                  final song = state.currentSong;
-                  final isPlaying = true;
-                  return MiniPlayer(
-                    currentSong: song,
-                    isPlaying: isPlaying,
-                  );
-                } else if (state is PlayerPaused) {
-                  final song = state.currentSong;
-                  final isPlaying = false;
-                  return MiniPlayer(
-                    currentSong: song,
-                    isPlaying: isPlaying,
-                  );
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
-        ),
-        bottomNavigationBar: CustomBottomBar(type: CustomBottomBarType.home),
+          ),
+          // Mini Player
+          BlocBuilder<PlayerCubit, AppPlayerState>(
+            builder: (context, state) {
+              if (state is PlayerPlaying) {
+                final song = state.currentSong;
+                final isPlaying = true;
+                return MiniPlayer(
+                  currentSong: song,
+                  isPlaying: isPlaying,
+                );
+              } else if (state is PlayerPaused) {
+                final song = state.currentSong;
+                final isPlaying = false;
+                return MiniPlayer(
+                  currentSong: song,
+                  isPlaying: isPlaying,
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
     );
   }
