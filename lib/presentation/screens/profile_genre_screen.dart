@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:spotifo/core/app_export.dart';
 
-import '../common_widgets/custom_bottom_bar.dart';
 import '../components/svg.dart';
 import '../cubit/user/user_info_cubit.dart';
 import '../cubit/genre/genre_cubit.dart';
