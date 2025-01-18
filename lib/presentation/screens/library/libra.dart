@@ -21,31 +21,31 @@ class LibraryScreen extends StatelessWidget {
               mainAxisSpacing: 16.0,
               children: [
                 // Playlist Button
-                _buildLibraryItem(
-                  context,
-                  title: 'Playlist',
-                  gradientColors: [Colors.red, Colors.pink],
-                  route: '/favorite_playlist',
-                ),
+                // _buildLibraryItem(
+                //   context,
+                //   title: 'Playlist',
+                //   gradientColors: [Colors.red, Colors.pink],
+                //   route: '/favorite_playlist',
+                // ),
                 // Songs Button
                 _buildLibraryItem(
                   context,
                   title: 'Songs',
-                  gradientColors: [Colors.blue, Colors.purple],
+                  gradientColors: [Colors.blue, Colors.red],
                   route: '/favorite_songs',
                 ),
                 // Albums Button
-                _buildLibraryItem(
-                  context,
-                  title: 'Albums',
-                  gradientColors: [Colors.green, Colors.yellow],
-                  route: '/favorite_albums',
-                ),
+                // _buildLibraryItem(
+                //   context,
+                //   title: 'Albums',
+                //   gradientColors: [Colors.green, Colors.yellow],
+                //   route: '/favorite_albums',
+                // ),
                 // Artists Button
                 _buildLibraryItem(
                   context,
                   title: 'Artists',
-                  gradientColors: [Colors.purple, Colors.blue],
+                  gradientColors: [Colors.green, Colors.orange],
                   route: '/favorite_artists',
                 ),
 

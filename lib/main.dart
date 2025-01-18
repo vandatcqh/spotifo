@@ -60,8 +60,8 @@ class MyApp extends StatelessWidget {
             child: MaterialApp(
               title: 'SPOTIFO',
               theme: theme.getThemeData(),
-              //home: SplashScreen(),
-              home: HomeScreen(),
+              home: SplashScreen(),
+              // home: HomeScreen(),
               routes: {
                 '/favorite_artists': (context) => const FavoriteArtistScreen(),
                 '/favorite_songs': (context) => const FavoriteSongsScreen(),
