@@ -90,7 +90,10 @@ class FavoriteArtistScreen extends StatelessWidget {
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Sắp xếp A → Z'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: const Text('Sắp xếp A → Z'),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -100,7 +103,10 @@ class FavoriteArtistScreen extends StatelessWidget {
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Sắp xếp Z → A'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: const Text('Sắp xếp Z → A'),
+              ),
             ),
           ],
         ),

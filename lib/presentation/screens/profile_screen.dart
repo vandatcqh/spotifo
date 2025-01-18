@@ -66,7 +66,17 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       ),
                       width: 100,
                       height: 100,
-                      child: user.avatarUrl != null && user.avatarUrl!.isNotEmpty ? Image.asset(user.avatarUrl!) : SizedBox(width: 100, height: 100),
+                      child: user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                          ? Image.asset(user.avatarUrl!)
+                          : SizedBox(
+                              width: 100,
+                              height: 100,
+                              child: const Icon(
+                                Icons.music_note,
+                                size: 40,
+                                color: Colors.black,
+                              ),
+                            ),
                     ),
                     SizedBox(height: 10),
                     Text(user.username, style: textTheme.headlineMedium?.withColor(colorTheme.secondary)),
