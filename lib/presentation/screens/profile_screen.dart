@@ -2,10 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotifo/core/app_export.dart';
 
+import '../common_widgets/custom_bottom_bar.dart';
+import '../components/svg.dart';
 import '../cubit/user/user_info_cubit.dart';
 import '../cubit/genre/genre_cubit.dart';
 import '../cubit/genre/genre_state.dart';
+import 'profile_genre_screen.dart';
 import 'sign_in_screen.dart';
 
 import '../../../injection_container.dart';
@@ -32,73 +36,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         ),
       ],
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Thông Tin Người Dùng'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                context.read<UserInfoCubit>().signOut();
-              },
-            ),
-            // Nút Save
-            BlocBuilder<UserInfoCubit, UserInfoState>(
-              builder: (context, state) {
-                if (state is UserInfoLoaded) {
-                  return IconButton(
-                    icon: const Icon(Icons.save),
-                    onPressed: () {
-                      context.read<UserInfoCubit>().updateFavoriteGenres(tempFavoriteGenres);
-                    },
-                  );
-                }
-                return SizedBox.shrink();
-              },
-            ),
-            // Nút Đổi Tên
-            BlocBuilder<UserInfoCubit, UserInfoState>(
-              builder: (context, state) {
-                if (state is UserInfoLoaded) {
-                  return IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () async {
-                      final newName = await showDialog<String>(
-                        context: context,
-                        builder: (context) {
-                          String? tempName = state.user.fullName;
-                          return AlertDialog(
-                            title: const Text('Đổi tên'),
-                            content: TextField(
-                              onChanged: (value) {
-                                tempName = value;
-                              },
-                              decoration: const InputDecoration(hintText: 'Nhập tên mới'),
-                              controller: TextEditingController(text: state.user.fullName),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Hủy'),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(tempName),
-                                child: const Text('Lưu'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                      if (newName != null && newName.trim().isNotEmpty) {
-                        context.read<UserInfoCubit>().updateFullName(newName.trim());
-                      }
-                    },
-                  );
-                }
-                return SizedBox.shrink();
-              },
-            ),
-          ],
-        ),
+        appBar: AppBar(title: const Text('Profile')),
         body: BlocConsumer<UserInfoCubit, UserInfoState>(
           listener: (context, state) {
             if (state is UserInfoNotAuthenticated) {
@@ -121,70 +59,240 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               final user = state.user;
 
               return Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Họ và Tên: ${user.fullName}',
-                        style: const TextStyle(fontSize: 18)),
-                    Text('Email: ${user.username}',
-                        style: const TextStyle(fontSize: 18)),
-                    if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
-                      Image.network(user.avatarUrl!),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Thể loại yêu thích:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: BlocBuilder<GenreCubit, GenreState>(
-                        builder: (context, genreState) {
-                          if (genreState is GenreLoading || genreState is GenreInitial) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (genreState is GenreLoaded) {
-                            final genres = genreState.genres;
-                            if (genres.isEmpty) {
-                              return const Center(child: Text('Không có thể loại nào.'));
-                            }
-                            return ListView.builder(
-                              itemCount: genres.length,
-                              itemBuilder: (context, index) {
-                                final genre = genres[index];
-                                final isSelected = tempFavoriteGenres.contains(genre);
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                      isSelected ? Colors.blue : Colors.grey,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        if (isSelected) {
-                                          tempFavoriteGenres.remove(genre);
-                                        } else {
-                                          tempFavoriteGenres.add(genre);
-                                        }
-                                      });
-                                    },
-                                    child: Text(
-                                      genre,
-                                      style: TextStyle(
-                                        color:
-                                        isSelected ? Colors.white : Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          } else if (genreState is GenreError) {
-                            return Center(child: Text(genreState.message));
-                          }
-                          return const SizedBox.shrink();
-                        },
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100.0),
+                        color: Colors.grey,
                       ),
+                      width: 100,
+                      height: 100,
+                      child: user.avatarUrl != null && user.avatarUrl!.isNotEmpty ? Image.asset(user.avatarUrl!) : SizedBox(width: 100, height: 100),
+                    ),
+                    SizedBox(height: 10),
+                    Text(user.username, style: textTheme.headlineMedium?.withColor(colorTheme.secondary)),
+                    SizedBox(height: 30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      spacing: 20,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          spacing: 32,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              spacing: 10,
+                              children: [
+                                SVG("assets/svgs/heroicons-solid/user-circle.svg", size: 32, color: colorTheme.secondary),
+                                Text("Name", style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                              ],
+                            ),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: colorTheme.secondary, width: 1))),
+                                child: Row(
+                                  spacing: 8,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                                      child: Text(user.fullName, style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                                    ),
+                                    IconButton(
+                                      icon: SVG("assets/svgs/heroicons-solid/pencil.svg", color: colorTheme.secondary, size: 16),
+                                      onPressed: () async {
+                                        final newName = await showDialog<String>(
+                                          context: context,
+                                          builder: (context) {
+                                            String? tempName = state.user.fullName;
+                                            return AlertDialog(
+                                              title: const Text('Rename'),
+                                              content: TextField(
+                                                onChanged: (value) {
+                                                  tempName = value;
+                                                },
+                                                decoration: const InputDecoration(hintText: 'New name'),
+                                                controller: TextEditingController(text: state.user.fullName),
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                  child: const Text('Discard'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () => Navigator.of(context).pop(tempName),
+                                                  child: const Text('Save'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                        if (newName != null && newName.trim().isNotEmpty) {
+                                          if (context.mounted) {
+                                            context.read<UserInfoCubit>().updateFullName(newName.trim());
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          spacing: 32,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              spacing: 10,
+                              children: [
+                                SVG("assets/svgs/heroicons-solid/envelope.svg", size: 32, color: colorTheme.secondary),
+                                Text("Email", style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                              ],
+                            ),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: colorTheme.secondary, width: 1))),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                                  child: Text(user.username, style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        if (user.dateOfBirth != null)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            spacing: 32,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                spacing: 10,
+                                children: [
+                                  SVG("assets/svgs/heroicons-solid/calendar.svg", size: 32, color: colorTheme.secondary),
+                                  Text("Birthday", style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                                ],
+                              ),
+                              // ignore: avoid_unnecessary_containers
+                              Container(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                                  child: Text(user.dateOfBirth!.toString(), style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                                ),
+                              )
+                            ],
+                          ),
+
+                        //Dark mode toggle
+
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   spacing: 32,
+                        //   children: [
+                        //     Row(
+                        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //       spacing: 10,
+                        //       children: [
+                        //         SVG("assets/svgs/heroicons-solid/sparkles.svg", size: 32, color: colorTheme.secondary),
+                        //         Text("Interface", style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                        //       ],
+                        //     ),
+                        //     Switch(
+                        //       value: theme.isDarkMode(),
+                        //       activeTrackColor: colorTheme.onPrimary,
+                        //       activeColor: colorTheme.onError,
+                        //       inactiveTrackColor: colorTheme.secondary,
+                        //       inactiveThumbColor: colorTheme.onError,
+                        //       onChanged: (bool value) {
+                        //         setState(() {
+                        //           theme.toggleMode();
+                        //         });
+                        //       },
+                        //     )
+                        //   ],
+                        // ),
+
+                        //Notification toggle
+
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   spacing: 32,
+                        //   children: [
+                        //     Row(
+                        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //       spacing: 10,
+                        //       children: [
+                        //         SVG("assets/svgs/heroicons-solid/bell.svg", size: 32, color: colorTheme.secondary),
+                        //         Text("Notification", style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                        //       ],
+                        //     ),
+                        //     Switch(
+                        //       value: true,
+                        //       activeTrackColor: colorTheme.onPrimary,
+                        //       activeColor: colorTheme.onError,
+                        //       inactiveTrackColor: colorTheme.secondary,
+                        //       inactiveThumbColor: colorTheme.onError,
+                        //       onChanged: (bool value) {
+                        //         setState(() {});
+                        //       },
+                        //     )
+                        //   ],
+                        // ),
+
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => UserInfoGenreScreen()));
+                          },
+                          icon: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            spacing: 32,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                spacing: 10,
+                                children: [
+                                  SVG("assets/svgs/heroicons-solid/heart.svg", size: 32, color: colorTheme.secondary),
+                                  Text("Interests", style: textTheme.titleMedium?.withColor(colorTheme.secondary)),
+                                ],
+                              ),
+                              SVG("assets/svgs/heroicons-solid/chevron-right.svg", size: 24, color: colorTheme.secondary)
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 48),
+                          child: Container(color: colorTheme.secondary, height: 1),
+                        ),
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            context.read<UserInfoCubit>().signOut();
+                          },
+                          icon: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            spacing: 32,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                spacing: 10,
+                                children: [
+                                  SVG("assets/svgs/heroicons-solid/arrow-right-end-on-rectangle.svg", size: 32, color: colorTheme.error),
+                                  Text("Log Out", style: textTheme.titleMedium?.withColor(colorTheme.error)),
+                                ],
+                              ),
+                              SVG("assets/svgs/heroicons-solid/chevron-right.svg", size: 24, color: colorTheme.error)
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -197,6 +305,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             return const SizedBox.shrink();
           },
         ),
+        bottomNavigationBar: CustomBottomBar(type: CustomBottomBarType.profile),
       ),
     );
   }

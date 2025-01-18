@@ -98,7 +98,7 @@ class CustomRadioButton extends StatelessWidget {
         text ?? "",
         textAlign: textAlignment ?? TextAlign.start,
         overflow: overflow,
-        style: textstyle ?? theme.textTheme.bodySmall,
+        style: textstyle ?? textTheme.bodySmall,
       );
 
 

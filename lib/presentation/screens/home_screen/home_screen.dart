@@ -345,26 +345,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        bottomNavigationBar: CustomBottomBar(
-          onChanged: (type) {
-            
-          },
-        ),
-        // bottomNavigationBar: BottomNavigationBar(
-        //   items: const [
-        //     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        //     BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-        //     BottomNavigationBarItem(
-        //       icon: Icon(Icons.library_music),
-        //       label: 'Library',
-        //     ),
-        //   ],
-        //   currentIndex: 0,
-        //   selectedItemColor: Colors.orange,
-        //   onTap: (index) {
-        //     // Handle bottom navigation
-        //   },
-        // ),
+        bottomNavigationBar: CustomBottomBar(type: CustomBottomBarType.home),
       ),
     );
   }
@@ -400,7 +381,7 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [color, color.withAlphaD(0.6)]), //generateHashGradient(genre),
+          gradient: generateHashGradient(genre),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(

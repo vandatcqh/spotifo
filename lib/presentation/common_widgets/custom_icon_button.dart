@@ -3,7 +3,7 @@ import '../../core/app_export.dart';
 extension IconButtonStyleHelper on CustomIconButton {
   static BoxDecoration get fillOnPrimaryContainer =>
       BoxDecoration(
-        color: theme.colorScheme.onPrimaryContainer,
+        color: colorTheme.onPrimaryContainer,
         borderRadius: BorderRadius.circular(20.h),
       );
 

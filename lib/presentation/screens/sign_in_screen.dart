@@ -106,7 +106,7 @@ class SignInScreen extends StatelessWidget {
                             alignment: Alignment.centerRight,
                             child: Text(
                               "Forgot your password?",
-                              style: theme.textTheme.bodySmall,
+                              style: textTheme.bodySmall,
                             ),
                           ),
                           SizedBox(height: 2.h),

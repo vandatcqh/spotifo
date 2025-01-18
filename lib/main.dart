@@ -6,6 +6,7 @@ import 'package:spotifo/presentation/cubit/favoriteSongs/favorite_songs_cubit.da
 import 'package:spotifo/presentation/cubit/genre/genre_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/screens/favorite_songs_screen.dart';
+import 'package:spotifo/theme/theme_helper.dart';
 
 import 'firebase_options.dart';
 
@@ -13,6 +14,7 @@ import 'presentation/cubit/user/user_info_cubit.dart';
 import 'presentation/cubit/player/player_cubit.dart';
 import 'presentation/cubit/favoriteArtists/favorite_artists_cubit.dart';
 import 'presentation/cubit/artist/artist_cubit.dart';
+import 'presentation/screens/profile_screen.dart';
 import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/favorite_artist_screen.dart';
 import 'presentation/screens/libra.dart';
@@ -57,8 +59,7 @@ class MyApp extends StatelessWidget {
             ],
             child: MaterialApp(
               title: 'SPOTIFO',
-              theme: _lightTheme(),
-              darkTheme: _darkTheme(),
+              theme: theme.getThemeData(),
               //home: SplashScreen(),
               home: HomeScreen(),
               routes: {
@@ -68,6 +69,7 @@ class MyApp extends StatelessWidget {
                 '/artists': (context) => const FavoriteArtistScreen(),
                 '/home' : (context) => const HomeScreen(),
                 '/your_playlist': (context) => const SongListScreen(),
+                '/profile': (context) => const UserInfoScreen(),
                 // Thêm các route khác nếu cần
               },
               onGenerateRoute: (settings) {
@@ -83,41 +85,5 @@ class MyApp extends StatelessWidget {
           );
     });
 
-  }
-
-  ThemeData _lightTheme() {
-    // Tương tự như code bạn đã viết
-    return ThemeData(
-      primaryColor: const Color(0xFF011C39),
-      colorScheme: const ColorScheme.light(
-        primary: Color(0xFF324A59),
-        onPrimary: Color(0xFFFFBB55),
-        secondary: Color(0xFF143D5D),
-        onSecondary: Color(0xFFE7D6C6),
-        surface: Color(0xFFF6F4E7),
-        onSurface: Color(0xFF173A5B),
-        error: Color(0xFFC44D4F),
-        onError: Color(0xFFF6F4E7),
-      ),
-      textTheme: Typography.material2021().black,
-    );
-  }
-
-  ThemeData _darkTheme() {
-    // Tương tự như code bạn đã viết
-    return ThemeData(
-      primaryColor: const Color(0xFFE7D6C6),
-      colorScheme: const ColorScheme.dark(
-        primary: Color(0xFFE7D6C6),
-        onPrimary: Color(0xFF0E3A60),
-        secondary: Color(0xFFF6F4E7),
-        onSecondary: Color(0xFF173A5B),
-        surface: Color(0xFF143D5D),
-        onSurface: Color(0xFFF6F4E7),
-        error: Color(0xFFC44D4F),
-        onError: Color(0xFFF6F4E7),
-      ),
-      textTheme: Typography.material2021().white,
-    );
   }
 }

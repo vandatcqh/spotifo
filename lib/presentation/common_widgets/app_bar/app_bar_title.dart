@@ -18,7 +18,7 @@ class AppbarTitle extends StatelessWidget {
         },
         child: Text(
           text,
-          style: theme.textTheme.headlineMedium!.withColor(colorTheme.onSurface),
+          style: textTheme.headlineMedium!.withColor(colorTheme.onSurface),
         ),
       ),
     );
