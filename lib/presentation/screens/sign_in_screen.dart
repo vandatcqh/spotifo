@@ -168,7 +168,12 @@ class SignInScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      child: const Text('Don’t have an account? Sign Up'),
+                      child: Text(
+                        'Don’t have an account? Sign Up',
+                        style: TextStyle(
+                          color: colorTheme.surface,
+                        ),
+                      ),
                     ),
                   ],
                 ),

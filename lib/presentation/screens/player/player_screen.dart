@@ -11,6 +11,7 @@ import 'package:spotifo/core/app_export.dart';
 import '../../common_widgets/volume_control.dart';
 import '../../cubit/favoriteSongs/favorite_songs_cubit.dart';
 import '../../cubit/favoriteSongs/favorite_songs_state.dart';
+import '../details/song_detail_screen.dart';
 import 'queue_screen.dart';
 
 enum PlayerViewMode { mainPlayer, lyrics, playlist }
@@ -334,7 +335,11 @@ class _PlayerViewState extends State<PlayerView> {
               IconButton(
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 onPressed: () {
-                  // Placeholder for more options
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SongDetailScreen(song: currentSong),
+                    ),
+                  );
                 },
               ),
             ],

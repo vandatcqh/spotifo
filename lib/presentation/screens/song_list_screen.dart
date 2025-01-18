@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotifo/core/app_export.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_state.dart';
 import 'package:spotifo/presentation/screens/player/mini_player.dart';
@@ -26,7 +27,9 @@ class SongListScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Bài Hát Nổi Bật'),
+          backgroundColor: colorTheme.surface,
         ),
+
         body: Stack(
           children: [
             Padding(

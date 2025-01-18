@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sizer/sizer.dart';
+
 import 'package:spotifo/core/app_export.dart';
 import 'package:spotifo/presentation/cubit/song/song_cubit.dart';
 import 'package:spotifo/presentation/cubit/song/song_state.dart';
-import 'package:spotifo/presentation/util/hash_gradient.dart';
+
 import '../../../injection_container.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
@@ -121,6 +120,7 @@ class HomeScreenContent extends StatelessWidget {
                               ),
                             );
                           },
+                          showIcon: false,
                         ),
                         SizedBox(height: 2.h),
                         BlocBuilder<SongInfoCubit, SongInfoState>(
@@ -209,6 +209,7 @@ class HomeScreenContent extends StatelessWidget {
                               ),
                             );
                           },
+                          showIcon: false,
                         ),
                         SizedBox(height: 2.h),
 
@@ -283,66 +284,70 @@ class HomeScreenContent extends StatelessWidget {
                                           playerState is PlayerPlaying &&
                                               playerState.currentSong.id == song.id;
 
-                                      return ListTile(
-                                        leading: ClipRRect(
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Image.network(
-                                            song.songImageUrl ?? '',
-                                            width: 50,
-                                            height: 50,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error,
-                                                stackTrace) {
-                                              return Container(
-                                                width: 50,
-                                                height: 50,
-                                                color: Colors.grey.shade300,
-                                                child: const Icon(
-                                                  Icons.music_note,
-                                                  size: 40,
-                                                  color: Colors.grey,
-                                                ),
-                                              );
+                                      return Container(
+                                        color: isPlaying ? colorTheme.onPrimary : colorTheme.surface,
+                                        child :
+                                        ListTile(
+                                          leading: ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(
+                                              song.songImageUrl ?? '',
+                                              width: 50,
+                                              height: 50,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error,
+                                                  stackTrace) {
+                                                return Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  color: Colors.grey.shade300,
+                                                  child: const Icon(
+                                                    Icons.music_note,
+                                                    size: 40,
+                                                    color: Colors.grey,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          title: Text(
+                                            song.songName,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          subtitle: Text(song.artistId),
+                                          trailing: IconButton(
+                                            icon: Icon(
+                                              isPlaying
+                                                  ? Icons.pause_circle_filled
+                                                  : Icons.play_circle_filled,
+                                              size: 40,
+                                              color: isPlaying
+                                                  ? Colors.orange
+                                                  : Colors.grey,
+                                            ),
+                                            onPressed: () {
+                                              context
+                                                  .read<PlayerCubit>()
+                                                  .togglePlayPause(song);
                                             },
                                           ),
-                                        ),
-                                        title: Text(
-                                          song.songName,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        subtitle: Text(song.artistId),
-                                        trailing: IconButton(
-                                          icon: Icon(
-                                            isPlaying
-                                                ? Icons.pause_circle_filled
-                                                : Icons.play_circle_filled,
-                                            size: 40,
-                                            color: isPlaying
-                                                ? Colors.orange
-                                                : Colors.grey,
-                                          ),
-                                          onPressed: () {
+                                          onTap: () {
                                             context
                                                 .read<PlayerCubit>()
-                                                .togglePlayPause(song);
-                                          },
-                                        ),
-                                        onTap: () {
-                                          context
-                                              .read<PlayerCubit>()
-                                              .listenToPositionStream();
+                                                .listenToPositionStream();
 
-                                          showModalBottomSheet(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            backgroundColor: Colors.transparent,
-                                            builder: (BuildContext context) {
-                                              return PlayerView(song: song);
-                                            },
-                                          );
-                                        },
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor: Colors.transparent,
+                                              builder: (BuildContext context) {
+                                                return PlayerView(song: song);
+                                              },
+                                            );
+                                          },
+                                        )
                                       );
                                     }).toList(),
                                   );
@@ -442,12 +447,14 @@ class HomeScreenContent extends StatelessWidget {
 
 class SectionHeader extends StatelessWidget {
   final String title;
-  final VoidCallback onIconPressed;
+  final VoidCallback? onIconPressed;
+  final bool showIcon;
 
   const SectionHeader({
     super.key,
     required this.title,
-    required this.onIconPressed,
+    this.onIconPressed,
+    this.showIcon = true, // Default to showing the icon
   });
 
   @override
@@ -462,12 +469,12 @@ class SectionHeader extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        IconButton(
-          icon: const Icon(Icons.arrow_forward, color: Colors.grey),
-          onPressed: onIconPressed,
-        ),
+        if (showIcon)
+          IconButton(
+            icon: Icon(Icons.arrow_forward, color: Colors.grey),
+            onPressed: onIconPressed,
+          ),
       ],
     );
   }
-
 }

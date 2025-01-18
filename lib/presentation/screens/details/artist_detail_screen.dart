@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/artist/artist_cubit.dart'; // Đảm bảo đường dẫn đúng
-import '../cubit/artist/artist_state.dart';
-import '../cubit/favoriteArtists/favorite_artists_cubit.dart';
-import '../../../domain/entities/artist_entity.dart';
-import '../../../domain/entities/song_entity.dart';
+import '../../cubit/artist/artist_cubit.dart'; // Đảm bảo đường dẫn đúng
+import '../../cubit/artist/artist_state.dart';
+import '../../cubit/favoriteArtists/favorite_artists_cubit.dart';
+import '../../../../domain/entities/artist_entity.dart';
+import '../../../../domain/entities/song_entity.dart';
 
 class ArtistDetailScreen extends StatefulWidget {
   final ArtistEntity artist;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/artist/artist_cubit.dart';
-import '../cubit/artist/artist_state.dart';
-import '../cubit/favoriteArtists/favorite_artists_cubit.dart';
+import '../../cubit/artist/artist_cubit.dart';
+import '../../cubit/artist/artist_state.dart';
+import '../../cubit/favoriteArtists/favorite_artists_cubit.dart';
 
 class AddArtistScreen extends StatelessWidget {
   const AddArtistScreen({Key? key}) : super(key: key);
