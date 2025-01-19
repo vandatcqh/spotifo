@@ -17,7 +17,9 @@ class PlayerLoading extends AppPlayerState {}
 
 class PlayerPlaying extends AppPlayerState {
   final SongEntity currentSong;
+  @override
   final Duration position;
+  @override
   final Duration totalDuration;
 
   const PlayerPlaying(this.currentSong, this.position, this.totalDuration);
@@ -28,7 +30,9 @@ class PlayerPlaying extends AppPlayerState {
 
 class PlayerPaused extends AppPlayerState {
   final SongEntity currentSong;
+  @override
   final Duration position;
+  @override
   final Duration totalDuration;
 
   const PlayerPaused(this.currentSong, this.position, this.totalDuration);

@@ -75,7 +75,7 @@ class CustomSearchView extends StatelessWidget {
         }
       },
       autofocus: autofocus!,
-      style: textStyle ?? theme.textTheme.bodyLarge,
+      style: textStyle ?? textTheme.bodyLarge,
       keyboardType: textInputType,
       maxLines: maxLines ?? 1,
       decoration: decoration,
@@ -138,7 +138,7 @@ class CustomSearchView extends StatelessWidget {
         ))
         .copyWith(
       borderSide: BorderSide(
-        color: theme.colorScheme.primary,
+        color: colorTheme.primary,
         width: 1,
       ),
     ),

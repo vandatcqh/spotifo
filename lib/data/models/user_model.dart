@@ -5,30 +5,18 @@ import '../../../domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
   const UserModel({
-    required String id,
-    required String username,
-    required String password, // Lưu ý: Không nên lưu mật khẩu ở client
-    required String fullName,
-    DateTime? dateOfBirth,
-    String? gender,
-    String? avatarUrl,
-    List<String> favoriteArtists = const [],
-    List<String> favoriteSongs = const [],
-    List<String> favoriteAlbums = const [],
-    List<String> favoriteGenres = const [],
-  }) : super(
-    id: id,
-    username: username,
-    password: password,
-    fullName: fullName,
-    dateOfBirth: dateOfBirth,
-    gender: gender,
-    avatarUrl: avatarUrl,
-    favoriteArtists: favoriteArtists,
-    favoriteSongs: favoriteSongs,
-    favoriteAlbums: favoriteAlbums,
-    favoriteGenres: favoriteGenres,
-  );
+    required super.id,
+    required super.username,
+    required super.password, // Lưu ý: Không nên lưu mật khẩu ở client
+    required super.fullName,
+    super.dateOfBirth,
+    super.gender,
+    super.avatarUrl,
+    super.favoriteArtists,
+    super.favoriteSongs,
+    super.favoriteAlbums,
+    super.favoriteGenres,
+  });
 
   // Từ Firestore DocumentSnapshot sang UserModel
   factory UserModel.fromDocument(DocumentSnapshot doc) {

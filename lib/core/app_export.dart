@@ -10,3 +10,5 @@ export 'package:spotifo/theme/custom_text_style.dart';
 export 'package:spotifo/theme/theme_helper.dart';
 
 export 'package:spotifo/presentation/common_widgets/custom_image_view.dart';
+export 'package:flutter_bloc/flutter_bloc.dart';
+export 'package:palette_generator/palette_generator.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotifo/core/app_export.dart';
 import '../../cubit/player/player_cubit.dart';
 import '../../../domain/entities/song_entity.dart';
 import 'player_screen.dart';
@@ -46,7 +45,7 @@ class MiniPlayer extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withAlphaD(0.1),
                 blurRadius: 10,
                 offset: const Offset(0, -4),
               ),

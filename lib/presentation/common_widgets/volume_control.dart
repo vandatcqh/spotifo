@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:spotifo/core/app_export.dart';
 
 import '../../core/volume/volume_control_factory.dart';
 import '../../core/volume/volume_control_platform.dart';
 
 
 class VolumeControl extends StatefulWidget {
-  const VolumeControl({Key? key}) : super(key: key);
+  const VolumeControl({super.key});
 
   @override
-  _VolumeControlState createState() => _VolumeControlState();
+  State<VolumeControl> createState() => _VolumeControlState();
 }
 
 class _VolumeControlState extends State<VolumeControl> {
@@ -60,7 +61,7 @@ class _VolumeControlState extends State<VolumeControl> {
                 activeTrackColor: Colors.white,
                 inactiveTrackColor: Colors.white38,
                 thumbColor: Colors.white,
-                overlayColor: Colors.white.withOpacity(0.2),
+                overlayColor: Colors.white.withAlphaD(0.2),
               ),
               child: Slider(
                 value: _currentVolume,

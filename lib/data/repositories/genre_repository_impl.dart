@@ -1,7 +1,6 @@
 import '../../domain/entities/genre_entity.dart';
 import '../../domain/repositories/genre_repository.dart';
 import '../datasources/genre_remote_datasource.dart';
-import '../models/genre_model.dart';
 
 class GenreRepositoryImpl implements GenreRepository {
   final GenreRemoteDataSource remoteDataSource;

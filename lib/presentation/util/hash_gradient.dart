@@ -6,17 +6,17 @@ int hashString(String str) {
   int hash = 5381;
   const int mod = 0x7FFFFFFF; // 32-bit signed integer range
   for (int i = 0; i < str.length; i++) {
-    hash = ((hash << 5) + hash) ^ str.codeUnitAt(i) << (i % 8); // hash * 33 ^ char
+    hash = ((hash << 5) + hash) ^ str.codeUnitAt(i) << (i % 3); // hash * 33 ^ char
     hash = hash & mod; // Keep it within 32-bit range
   }
   return hash;
 }
 
 HSLColor hashToHSL(int hash, {int index = 0}) {
-  final offset = index * 465;
-  final hue = (hash + offset).abs() % 377 % 360;
-  final saturation = 60 + (hash + offset).abs() % 10;
-  final lightness = 45 + (hash + offset).abs() % 10;
+  final offset = hash + index * (hash % 24);
+  final hue = ((offset.abs() % 30) * 12) % 360;
+  final saturation = 60 + offset.abs() % 10;
+  final lightness = 50 + offset.abs() % 10;
   return HSLColor.fromAHSL(1.0, hue / 1.0, saturation / 100.0, lightness / 100.0);
 }
 

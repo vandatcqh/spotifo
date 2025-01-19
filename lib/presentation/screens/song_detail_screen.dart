@@ -7,7 +7,7 @@ import '../../../domain/entities/song_entity.dart';
 class SongDetailScreen extends StatelessWidget {
   final SongEntity song;
 
-  const SongDetailScreen({Key? key, required this.song}) : super(key: key);
+  const SongDetailScreen({super.key, required this.song});
 
   @override
   Widget build(BuildContext context) {

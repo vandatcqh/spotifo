@@ -62,6 +62,7 @@ class PlayerRepositoryImpl implements PlayerRepository {
   }
 
 
+  @override
   Future<void> setVolume(double volume) async {
     try {
       await _audioPlayer.setVolume(volume);
@@ -70,6 +71,7 @@ class PlayerRepositoryImpl implements PlayerRepository {
     }
   }
 
+  @override
   Future<void> setPlaybackSpeed(double speed) async {
     try {
       await _audioPlayer.setSpeed(speed);

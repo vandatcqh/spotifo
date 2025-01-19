@@ -4,16 +4,13 @@ import '../../../core/app_export.dart';
 
 class AppbarLeadingImage extends StatelessWidget {
 
-  AppbarLeadingImage(
-      {Key? key,
+  const AppbarLeadingImage(
+      {super.key,
         this.imagePath,
         this.height,
         this.width,
         this.onTap,
-        this.margin})
-      : super(
-    key: key,
-  );
+        this.margin});
 
   final double? height;
   final double? width;

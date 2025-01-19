@@ -60,10 +60,10 @@ class CustomDropDown extends StatelessWidget {
           iconSize: iconSize ?? 24,
           autofocus: autofocus!,
           isExpanded: true,
-          style: textStyle ?? theme.textTheme.bodyMedium,
+          style: textStyle ?? textTheme.bodyMedium,
           hint: Text(
             hintText ?? "",
-            style: hintStyle ?? theme.textTheme.bodyMedium,
+            style: hintStyle ?? textTheme.bodyMedium,
             overflow: TextOverflow.ellipsis,
           ),
           items: items?.map<DropdownMenuItem<String>>((String value) {
@@ -71,7 +71,7 @@ class CustomDropDown extends StatelessWidget {
               value: value, child: Text(
               value,
               overflow: TextOverflow.ellipsis,
-              style: hintStyle ?? theme.textTheme.bodyMedium,
+              style: hintStyle ?? textTheme.bodyMedium,
             ),
             );
           }).toList(),
@@ -108,7 +108,7 @@ class CustomDropDown extends StatelessWidget {
             ))
             .copyWith(
           borderSide: BorderSide(
-            color: theme.colorScheme.primary,
+            color: colorTheme.primary,
             width: 1,
           ),
         ),

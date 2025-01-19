@@ -88,7 +88,7 @@ class CustomTextFormField extends StatelessWidget {
         }
       },
       autofocus: autofocus!,
-      style: textStyle ?? theme.textTheme.bodyMedium,
+      style: textStyle ?? textTheme.bodyMedium,
       obscureText: obscureText!,
       readOnly: readOnly!,
       onTap: () {
@@ -103,7 +103,7 @@ class CustomTextFormField extends StatelessWidget {
   );
   InputDecoration get decoration => InputDecoration(
     hintText: hintText ?? "",
-    hintStyle: hintStyle ?? theme.textTheme.bodyMedium,
+    hintStyle: hintStyle ?? textTheme.bodyMedium,
     prefixIcon: prefix,
     prefixIconConstraints: prefixConstraints,
     suffixIcon: suffix,
@@ -131,7 +131,7 @@ class CustomTextFormField extends StatelessWidget {
         ))
         .copyWith(
       borderSide: BorderSide(
-        color: theme.colorScheme.primary,
+        color: colorTheme.primary,
         width: 1,
       ),
     ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 
+ThemeHelper get theme => ThemeHelper();
 String _appTheme = "lightMode";
-ColorScheme get colorTheme => ThemeHelper().themeColor();
+ColorScheme get colorTheme => theme.themeColor();
 TextTheme get textTheme => TextThemes.textTheme();
-ThemeData get theme => ThemeHelper().themeData();
 
 /// Helper class for managing themes and colors.
 // ignore_for_file: must_be_immutable
@@ -24,6 +24,18 @@ class ThemeHelper {
   /// Changes the app theme to [newTheme].
   void changeTheme(String newTheme) {
     _appTheme = newTheme;
+  }
+
+  bool isDarkMode() {
+    return _appTheme == 'darkMode';
+  }
+
+  void toggleMode() {
+    if (isDarkMode()) {
+      _appTheme = "lightMode";
+    } else {
+      _appTheme = "darkMode";
+    }
   }
 
   /// Returns the lightCode colors for the current theme.
@@ -147,7 +159,7 @@ extension CustomTextStyle on TextStyle {
 /// Class containing the supported color schemes.
 class ColorSchemes {
   static final lightModeScheme = ColorScheme.light(
-    primary: Color(0xFF324A59).withAlphaD(0.0),
+    primary: Color(0xFF324A59),
     onPrimary: Color(0xFFFFBB55),
     secondary: Color(0xFF143D5D),
     onSecondary: Color(0xFFE7D6C6),
@@ -160,7 +172,7 @@ class ColorSchemes {
     primary: Color(0xFFE7D6C6),
     onPrimary: Color(0xFF0E3A60),
     secondary: Color(0xFFF6F4E7),
-    onSecondary: Color(0xFF173A5B),
+    onSecondary: Color(0xFF4E7390),
     surface: Color(0xFF143D5D),
     onSurface: Color(0xFFF6F4E7),
     error: Color(0xFFC44D4F),

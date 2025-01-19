@@ -1,53 +1,51 @@
 import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
+import '../components/svg.dart';
 
-
-enum BottomBarEnum {
-  HeroIconsSolidHome,
-  HeroIconsSolidUserCircle,
-  Search,
-  HeroIconsSolidRectangleStack
-}
+enum CustomBottomBarType { home, profile, search, library }
 
 // ignore_for_file: must_be_immutable
 class CustomBottomBar extends StatefulWidget {
-  CustomBottomBar({super.key, this.onChanged});
+  CustomBottomBar({super.key, this.onChanged, this.type = CustomBottomBarType.home});
 
-  Function(BottomBarEnum)? onChanged;
+  Function(CustomBottomBarType)? onChanged;
+  CustomBottomBarType type;
 
   @override
   CustomBottomBarState createState() => CustomBottomBarState();
 }
 
+class CustomBottomBarItem {
+  CustomBottomBarItem({required this.icon, required this.type});
+  String icon;
+  CustomBottomBarType type;
+}
+
 class CustomBottomBarState extends State<CustomBottomBar> {
   int selectedIndex = 0;
 
-  List<BottomMenuModel> bottomMenuList = [
-    BottomMenuModel(
-      icon: ImageConstant.imgHeroiconssolidHome,
-      activeIcon: ImageConstant.imgHeroiconssolidHome,
-      type: BottomBarEnum.HeroIconsSolidHome,
+  List<CustomBottomBarItem> bottomMenuList = [
+    CustomBottomBarItem(
+      icon: "assets/svgs/heroicons-solid/home.svg",
+      type: CustomBottomBarType.home,
     ),
-    BottomMenuModel(
-      icon: ImageConstant.imgHeroiconssolidUsercircle,
-      activeIcon: ImageConstant.imgHeroiconssolidUsercircle,
-      type: BottomBarEnum.HeroIconsSolidUserCircle,
+    CustomBottomBarItem(
+      icon: "assets/svgs/heroicons-solid/user-circle.svg",
+      type: CustomBottomBarType.profile,
     ),
-    BottomMenuModel(
-      icon: ImageConstant.imgSearch,
-      activeIcon: ImageConstant.imgSearch,
-      type: BottomBarEnum.Search,
+    CustomBottomBarItem(
+      icon: "assets/svgs/heroicons-solid/magnifying-glass.svg",
+      type: CustomBottomBarType.search,
     ),
-    BottomMenuModel(
-      icon: ImageConstant.imgHeroiconssolidRectanglestack,
-      activeIcon: ImageConstant.imgHeroiconssolidRectanglestack,
-      type: BottomBarEnum.HeroIconsSolidRectangleStack,
+    CustomBottomBarItem(
+      icon: "assets/svgs/heroicons-solid/rectangle-stack.svg",
+      type: CustomBottomBarType.library,
     )
   ];
 
-
   @override
   Widget build(BuildContext context) {
+    selectedIndex = widget.type.index;
     return Container(
       decoration: BoxDecoration(
         color: colorTheme.surface,
@@ -62,61 +60,39 @@ class CustomBottomBarState extends State<CustomBottomBar> {
         type: BottomNavigationBarType.fixed,
         items: List.generate(bottomMenuList.length, (index) {
           return BottomNavigationBarItem(
-            icon: CustomImageView(
-              imagePath: bottomMenuList[index].icon,
-              height: 32.h,
-              width: 34.h,
-              color: colorTheme.surface,
-            ),
-
-            activeIcon: CustomImageView(
-              imagePath: bottomMenuList[index].activeIcon,
-              height: 32.h,
-              width: 34.h,
-              color: colorTheme.surface,
+            icon: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.h),
+              child: SVG(bottomMenuList[index].icon,
+                  size: 4.h,
+                  color: selectedIndex == index
+                      ? colorTheme.onSurface
+                      : colorTheme.onSecondary),
             ),
             label: '',
           );
         }),
         onTap: (index) {
           selectedIndex = index;
-          widget.onChanged?.call(bottomMenuList[index].type);
+          if (widget.onChanged != null) {
+            widget.onChanged?.call(bottomMenuList[index].type);
+          } else {
+            switch (bottomMenuList[index].type) {
+              case CustomBottomBarType.home:
+                Navigator.pushReplacementNamed(context, '/home');
+                break;
+              case CustomBottomBarType.profile:
+                Navigator.pushReplacementNamed(context, '/profile');
+                break;
+              case CustomBottomBarType.search:
+                Navigator.pushReplacementNamed(context, '/home');
+                break;
+              case CustomBottomBarType.library:
+                Navigator.pushReplacementNamed(context, '/your_playlist');
+                break;
+            }
+          }
           setState(() {});
         },
-      ),
-    );
-  }
-}
-
-class BottomMenuModel {
-  BottomMenuModel(
-      {required this.icon, required this.activeIcon, required this.type});
-
-  String icon;
-  String activeIcon;
-  BottomBarEnum type;
-}
-
-
-class Defaultwidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Color(0xffffffff),
-      padding: EdgeInsets.all(10),
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Please replace the respective widget here',
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            )
-          ],
-        ),
       ),
     );
   }

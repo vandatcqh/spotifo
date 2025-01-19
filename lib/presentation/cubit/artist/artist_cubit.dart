@@ -1,7 +1,6 @@
 // presentation/cubit/artist/artist_cubit.dart
 import 'package:bloc/bloc.dart';
 import 'artist_state.dart';
-import '../../../domain/entities/song_entity.dart';
 import '../../../domain/usecases/get_all_artists.dart';
 import '../../../domain/usecases/get_songs_by_artist_id.dart';
 

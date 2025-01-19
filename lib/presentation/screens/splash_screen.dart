@@ -9,9 +9,11 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Navigate to SignInScreen after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => SignInScreen()),
-      );
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => SignInScreen()),
+        );
+      }
     });
 
     return Scaffold(
@@ -26,7 +28,7 @@ class SplashScreen extends StatelessWidget {
               width: 20.h,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('images/music_icon.png'), // Replace with your actual image asset
+                  image: AssetImage('assets/images/music_icon.png'), // Replace with your actual image asset
                   fit: BoxFit.contain,
                 ),
               ),

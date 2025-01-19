@@ -1,45 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'package:spotifo/presentation/screens/player/player_full_lyric.dart';
-import 'package:spotifo/presentation/screens/player/player_full_playlist.dart';
 import 'package:spotifo/domain/entities/song_entity.dart';
 import 'package:spotifo/presentation/cubit/player/player_cubit.dart';
 import 'package:spotifo/presentation/cubit/player/player_state.dart';
 import 'package:spotifo/core/app_export.dart';
 
 import '../../common_widgets/volume_control.dart';
+import '../../cubit/favoriteSongs/favorite_songs_cubit.dart';
+import '../../cubit/favoriteSongs/favorite_songs_state.dart';
+import '../details/song_detail_screen.dart';
+import 'queue_screen.dart';
 
 enum PlayerViewMode { mainPlayer, lyrics, playlist }
 
 class PlayerView extends StatefulWidget {
   final SongEntity song;
+  //late final bool isPlaying = false;
 
   const PlayerView({
     super.key,
     required this.song,
+    isPlaying
   });
 
   @override
-  _PlayerViewState createState() => _PlayerViewState();
+  State<PlayerView> createState() => _PlayerViewState();
 }
 
 class _PlayerViewState extends State<PlayerView> {
   Color _backgroundColor = Colors.blue;
   bool isFavorite = false;
   PlayerViewMode _currentView = PlayerViewMode.mainPlayer;
+  late SongEntity currentSong;
 
   @override
   void initState() {
     super.initState();
+    currentSong = widget.song;
     _updateBackgroundColor();
   }
 
   Future<void> _updateBackgroundColor() async {
-    if (widget.song.songImageUrl != null) {
+    if (currentSong.songImageUrl != null) {
       final PaletteGenerator paletteGenerator =
       await PaletteGenerator.fromImageProvider(
-        NetworkImage(widget.song.songImageUrl!),
+        NetworkImage(currentSong.songImageUrl!),
       );
       setState(() {
         _backgroundColor =
@@ -58,13 +63,27 @@ class _PlayerViewState extends State<PlayerView> {
   Widget build(BuildContext context) {
     return BlocBuilder<PlayerCubit, AppPlayerState>(
       builder: (context, state) {
-        bool isPlaying = state is PlayerPlaying && state.currentSong.id == widget.song.id;
+
+
+
+        if(state is PlayerPlaying) {
+          currentSong = state.currentSong;
+        }
+
+        if(state is PlayerPaused) {
+          currentSong = state.currentSong;
+        }
+
+        //context.read<PlayerCubit>().listenToPositionStream();
+
         Duration currentPosition = (state is PlayerPlaying || state is PlayerPaused)
             ? state.position
             : Duration.zero;
         Duration totalDuration = (state is PlayerPlaying || state is PlayerPaused)
             ? state.totalDuration
             : Duration.zero;
+
+        bool isPlaying =  (state is PlayerPlaying && state.currentSong.id == currentSong.id);
 
         return Scaffold(
           backgroundColor: _backgroundColor,
@@ -152,9 +171,9 @@ class _PlayerViewState extends State<PlayerView> {
   }) {
     switch (_currentView) {
       case PlayerViewMode.lyrics:
-        return PlayerFullLyric(song: widget.song);
+        return PlayerFullLyric(song: currentSong);
       case PlayerViewMode.playlist:
-        return PlayerFullPlaylist(song: widget.song);
+        return QueueScreen(song: currentSong);
       default:
         return _buildMainPlayerView(
           isPlaying: isPlaying,
@@ -178,9 +197,9 @@ class _PlayerViewState extends State<PlayerView> {
           Center(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: widget.song.songImageUrl != null
+              child: currentSong.songImageUrl != null
                   ? Image.network(
-                widget.song.songImageUrl!,
+                currentSong.songImageUrl!,
                 width: 60.w,
                 height: 60.w,
                 fit: BoxFit.cover,
@@ -192,7 +211,7 @@ class _PlayerViewState extends State<PlayerView> {
 
           // Song name and artist
           Text(
-            widget.song.songName,
+            currentSong.songName,
             style: TextStyle(
               fontSize: 3.h,
               fontWeight: FontWeight.bold,
@@ -202,7 +221,7 @@ class _PlayerViewState extends State<PlayerView> {
           ),
           SizedBox(height: 1.h),
           Text(
-            widget.song.artistId,
+            currentSong.artistId,
             style: TextStyle(
               fontSize: 2.h,
               color: Colors.white70,
@@ -221,7 +240,7 @@ class _PlayerViewState extends State<PlayerView> {
 
               if(currentPosition >= totalDuration)
               {
-                context.read<PlayerCubit>().togglePlayPause(widget.song);
+                context.read<PlayerCubit>().togglePlayPause(currentSong);
               }
 
               // Update the duration in real-time while dragging the slider
@@ -274,16 +293,38 @@ class _PlayerViewState extends State<PlayerView> {
               ),
 
 
-              // Heart Button
-              IconButton(
-                icon: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border, // Switch icon
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  setState(() {
-                    isFavorite = !isFavorite; // Toggle favorite state
-                  });
+              BlocConsumer<FavoriteSongsCubit, FavoriteSongsState>(
+                listener: (context, state) {
+                  if (state is FavoriteSongsError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is FavoriteSongsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is FavoriteSongsLoaded) {
+                    final favoriteSongs = state.favoriteSongs;
+                    final isFavorite = favoriteSongs.any((s) => s.id == currentSong.id);
+
+                    return ElevatedButton.icon(
+                      onPressed: () {
+                        final favoriteSongsCubit = context.read<FavoriteSongsCubit>();
+                        if (isFavorite) {
+                          favoriteSongsCubit.removeFavoriteSong(currentSong.id);
+                        } else {
+                          favoriteSongsCubit.addFavoriteSong(currentSong.id);
+                        }
+                      },
+                      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                      label: Text(isFavorite ? 'Bỏ Thích' : 'Thích'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isFavorite ? Colors.red : Colors.blue,
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
                 },
               ),
 
@@ -291,7 +332,11 @@ class _PlayerViewState extends State<PlayerView> {
               IconButton(
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 onPressed: () {
-                  // Placeholder for more options
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SongDetailScreen(song: currentSong),
+                    ),
+                  );
                 },
               ),
             ],
@@ -319,9 +364,9 @@ class _PlayerViewState extends State<PlayerView> {
               // Play/Pause or Replay button
               IconButton(
                 icon: Icon(
-                  currentPosition >= totalDuration && !context.read<PlayerCubit>().isFirstLoad
-                      ? Icons.replay // Show replay button if not on first load and song has finished
-                      : (isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled),
+                  isPlaying
+                      ? Icons.pause_circle_filled
+                      : Icons.play_circle_filled,
                   size: 7.h,
                   color: Colors.white,
                 ),
@@ -332,7 +377,7 @@ class _PlayerViewState extends State<PlayerView> {
                     playerCubit.replay();
                   } else {
                     // Toggle play/pause
-                    playerCubit.togglePlayPause(widget.song);
+                    playerCubit.togglePlayPause(currentSong);
                   }
                 },
               ),
@@ -348,7 +393,7 @@ class _PlayerViewState extends State<PlayerView> {
                   final newPosition = currentPosition + Duration(seconds: 10);
                   if(newPosition >= totalDuration)
                   {
-                    context.read<PlayerCubit>().togglePlayPause(widget.song);
+                    context.read<PlayerCubit>().togglePlayPause(currentSong);
                   }
 
                   playerCubit.seekTo(newPosition > totalDuration ? totalDuration : newPosition);
@@ -375,4 +420,5 @@ class _PlayerViewState extends State<PlayerView> {
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return "$minutes:$seconds";
   }
+
 }

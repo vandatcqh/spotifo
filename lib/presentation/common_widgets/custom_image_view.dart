@@ -23,7 +23,7 @@ enum ImageType { svg, png, network, file, unknown }
 
 
 class CustomImageView extends StatelessWidget {
-  CustomImageView({this.imagePath, this.height,
+  const CustomImageView({super.key, this.imagePath, this.height,
     this.width,
     this.color,
     this.fit,
@@ -94,7 +94,7 @@ class CustomImageView extends StatelessWidget {
     if (imagePath != null) {
       switch (imagePath!.imageType) {
         case ImageType.svg:
-          return Container(
+          return SizedBox(
             height: height,
             width: width,
             child: SvgPicture.asset(
@@ -124,7 +124,7 @@ class CustomImageView extends StatelessWidget {
             imageUrl: imagePath!,
             color: color,
             placeholder: (context, url) =>
-                Container(
+                SizedBox(
                   height: 30,
                   width: 30,
                   child: LinearProgressIndicator(
